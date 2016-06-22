@@ -3,6 +3,7 @@
 import json
 from logging import Logger
 
+import ddt
 import httpretty
 import mock
 from django.contrib.auth import get_user_model
@@ -169,18 +170,27 @@ class BearerAuthenticationTests(AccessTokenMixin, TestCase):
         self.assertEqual(User.objects.all().count(), original_user_count)
 
 
+@ddt.ddt
 class JwtAuthenticationTests(TestCase):
     """ JWT Authentication class tests. """
-    def test_authenticate_credentials_user_creation(self):
-        """ Test whether the user model is being created and assigned fields from the payload. """
 
+    def get_jwt_payload(self, **additional_claims):
+        """ Returns a JWT payload with the necessary claims to create a new user. """
         email = 'gcostanza@gmail.com'
         username = 'gcostanza'
+        payload = dict({'preferred_username': username, 'email': email}, **additional_claims)
 
-        payload = {'preferred_username': username, 'email': email}
+        return payload
+
+    @ddt.data(True, False)
+    def test_authenticate_credentials_user_creation(self, is_staff):
+        """ Test whether the user model is being created and assigned fields from the payload. """
+
+        payload = self.get_jwt_payload(administrator=is_staff)
         user = JwtAuthentication().authenticate_credentials(payload)
-        self.assertEqual(user.username, username)
-        self.assertEqual(user.email, email)
+        self.assertEqual(user.username, payload['preferred_username'])
+        self.assertEqual(user.email, payload['email'])
+        self.assertEqual(user.is_staff, is_staff)
 
     def test_authenticate_credentials_user_updates_default_attributes(self):
         """ Test whether the user model is being assigned default fields from the payload. """
@@ -199,7 +209,9 @@ class JwtAuthenticationTests(TestCase):
         self.assertEqual(user.email, new_email)
         self.assertFalse(user.is_staff)
 
-    @override_settings(EDX_DRF_EXTENSIONS={'JWT_PAYLOAD_USER_ATTRIBUTES': ('email', 'is_staff',)})
+    @override_settings(
+        EDX_DRF_EXTENSIONS={'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {'email': 'email', 'is_staff': 'is_staff'}}
+    )
     def test_authenticate_credentials_user_attributes_custom_attributes(self):
         """ Test whether the user model is being assigned all custom fields from the payload. """
 

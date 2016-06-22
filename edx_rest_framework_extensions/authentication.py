@@ -170,9 +170,14 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         ImFkbWluaXN0cmF0b3IiOmZhbHNlLCJuYW1lIjoiaG9ub3IiLCJleHA.QHDXdo8gDJ5p9uOErTLZtl2HK_61kgLs71VHp6sLx8rIqj2tt9yCfc_0
         JUZpIYMkEd38uf1vj-4HZkzeNBnZZZ3Kdvq7F8ZioREPKNyEVSm2mnzl1v49EthehN9kwfUgFgPXfUh-pCvLDqwCCTdAXMcTJ8qufzEPTYYY54lY
     """
-    def _get_jwt_payload_attributes(self):
-        """ Returns the JWT payload attributes which should be used to update the local user model. """
-        return get_setting('JWT_PAYLOAD_USER_ATTRIBUTES')
+
+    def get_jwt_claim_attribute_map(self):
+        """ Returns a mapping of JWT claims to user model attributes.
+
+        Returns
+            dict
+        """
+        return get_setting('JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING')
 
     def authenticate(self, request):
         try:
@@ -193,12 +198,13 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             try:
                 user, __ = User.objects.get_or_create(username=username)
                 attributes_updated = False
-                for attr in self._get_jwt_payload_attributes():
-                    payload_value = payload.get(attr)
+                for claim, attr in self.get_jwt_claim_attribute_map().items():
+                    payload_value = payload.get(claim)
 
                     if getattr(user, attr) != payload_value and payload_value is not None:
                         setattr(user, attr, payload_value)
                         attributes_updated = True
+
                 if attributes_updated:
                     user.save()
             except:
