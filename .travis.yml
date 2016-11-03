@@ -9,6 +9,7 @@ python:
 env:
   - TOXENV=django18
   - TOXENV=django19
+  - TOXENV=django110
 
 matrix:
  include:
@@ -37,4 +38,4 @@ deploy:
   on:
     tags: true
     python: 3.5
-    condition: '$TOXENV = django19'
+    condition: '$TOXENV = django110'
