@@ -62,7 +62,7 @@ def jwt_decode_handler(token):
 
     options = {
         'verify_exp': api_settings.JWT_VERIFY_EXPIRATION,
-        'verify_aud': settings.JWT_AUTH['JWT_VERIFY_AUDIENCE'],
+        'verify_aud': settings.JWT_AUTH.get('JWT_VERIFY_AUDIENCE', True),
         'require_exp': True,
         'require_iat': True,
     }

@@ -29,7 +29,18 @@ JwtAuthentication
 
 .. py:currentmodule:: edx_rest_framework_extensions
 
-These settings are used by the :class:`~authentication.JwtAuthentication` class.
+These settings are used by the :class:`~authentication.JwtAuthentication` class. Since this class is based on
+:class:`JSONWebTokenAuthentication`, most of its settings can be found in the documentation for ``rest_framework_jwt``
+at http://getblimp.github.io/django-rest-framework-jwt/#additional-settings.
+
+``JWT_AUTH['JWT_VERIFY_AUDIENCE']``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Default: ``True``
+
+If you do *not* want to verify the JWT audience, set the ``'JWT_VERIFY_AUDIENCE'`` key in the ``JWT_AUTH`` setting
+to ``False``.
+
 
 ``JWT_PAYLOAD_USER_ATTRIBUTES``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
