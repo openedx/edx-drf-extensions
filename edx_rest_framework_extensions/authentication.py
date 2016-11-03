@@ -12,7 +12,6 @@ from edx_rest_framework_extensions.exceptions import UserInfoRetrievalFailed
 from edx_rest_framework_extensions.settings import get_setting
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 
 
 class BearerAuthentication(BaseAuthentication):
@@ -77,7 +76,7 @@ class BearerAuthentication(BaseAuthentication):
             logger.error(msg)
             raise exceptions.AuthenticationFailed(msg)
 
-        user, __ = User.objects.get_or_create(username=user_info['username'], defaults=user_info)
+        user, __ = get_user_model().objects.get_or_create(username=user_info['username'], defaults=user_info)
 
         if not user.is_active:
             raise exceptions.AuthenticationFailed('User inactive or deleted.')
@@ -196,7 +195,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             raise exceptions.AuthenticationFailed('JWT must include a preferred_username or username claim!')
         else:
             try:
-                user, __ = User.objects.get_or_create(username=username)
+                user, __ = get_user_model().objects.get_or_create(username=username)
                 attributes_updated = False
                 for claim, attr in self.get_jwt_claim_attribute_map().items():
                     payload_value = payload.get(claim)
