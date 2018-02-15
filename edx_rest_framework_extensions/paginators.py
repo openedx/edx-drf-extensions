@@ -119,7 +119,7 @@ def paginate_search_results(object_class, search_results, page_size, page):
                 return obj
 
     # map over the search results and get a list of database objects in the same order
-    object_results = map(ordered_objects, search_queryset_pks)
+    object_results = list(map(ordered_objects, search_queryset_pks))
     paged_results.object_list = object_results
 
     return paged_results

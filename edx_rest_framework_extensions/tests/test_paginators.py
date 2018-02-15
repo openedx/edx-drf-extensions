@@ -9,6 +9,7 @@ from unittest import TestCase
 from django.http import Http404
 from django.test import RequestFactory
 from rest_framework import serializers
+from six.moves import range
 
 from edx_rest_framework_extensions.paginators import NamespacedPageNumberPagination, paginate_search_results
 
@@ -158,7 +159,7 @@ class NamespacedPaginationTestCase(TestCase):
     def setUp(self):
         super(NamespacedPaginationTestCase, self).setUp()
         self.paginator = NamespacedPageNumberPagination()
-        self.users = [self.TestUser('user_{}'.format(idx), 'user_{}@example.com'.format(idx)) for idx in xrange(25)]
+        self.users = [self.TestUser('user_{}'.format(idx), 'user_{}@example.com'.format(idx)) for idx in range(25)]
         self.request_factory = RequestFactory()
 
     def test_basic_pagination(self):
@@ -187,4 +188,4 @@ def get_object_range(page, page_size):
     max_id = 5
     start = min((page - 1) * page_size, max_id)
     end = min(start + page_size, max_id + 1)
-    return range(start, end)
+    return list(range(start, end))
