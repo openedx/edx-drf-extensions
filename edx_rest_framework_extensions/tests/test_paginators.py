@@ -1,15 +1,15 @@
 """ Tests paginator methods """
 
 from collections import namedtuple
+from unittest import TestCase
 
 import ddt
 from mock import Mock, MagicMock
 from nose.plugins.attrib import attr
-from unittest import TestCase
 from django.http import Http404
 from django.test import RequestFactory
 from rest_framework import serializers
-from six.moves import range
+from six.moves import range  # pylint: disable=redefined-builtin
 
 from edx_rest_framework_extensions.paginators import NamespacedPageNumberPagination, paginate_search_results
 
