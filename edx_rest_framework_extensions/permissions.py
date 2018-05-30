@@ -15,7 +15,7 @@ class HasScopedToken(BasePermission):
     """
     def _token_filters(self, decoded_token):
         # get filters list from jwt token and return dict
-        if decoded_token.has_key('filters'):
+        if 'filters' in decoded_token:
             filters_list = decoded_token['filters']
             filters = {}
             for each in filters_list:
