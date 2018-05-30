@@ -1,7 +1,7 @@
 """ Permission classes. """
 from rest_framework.permissions import BasePermission
 from edx_rest_framework_extensions.utils import jwt_decode_handler, is_token_version_incompatable
-from openedx.core.djangoapps.oauth_dispatch.utils import is_oauth_scope_enforcement_enabled
+from django.conf import settings
 
 class IsSuperuser(BasePermission):
     """ Allows access only to superusers. """
@@ -15,7 +15,7 @@ class HasScopedToken(BasePermission):
     """
     def _token_filters(self, decoded_token):
         # get filters list from jwt token and return dict
-        if 'filters' in decoded_token:
+        if decoded_token.has_key('filters'):
             filters_list = decoded_token['filters']
             filters = {}
             for each in filters_list:
@@ -30,7 +30,8 @@ class HasScopedToken(BasePermission):
         """
         Implement the business logic discussed above
         """
-        if is_oauth_scope_enforcement_enabled():
+        #if is_oauth_scope_enforcement_enabled():
+        if settings.FEATURES.get('ENABLE_OAUTH_SCOPE_ENFORCEMENT', False):
             token = request.auth
             decoded_token = jwt_decode_handler(token)
             # check to see if token is a DOP token

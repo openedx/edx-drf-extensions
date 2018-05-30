@@ -90,6 +90,7 @@ def jwt_decode_handler(token):
 
 def is_token_version_incompatable(version):
     """ Checks for Token version compatibility """
-    if float(version) > settings.OAUTH_TOKEN_VERSION:
+    if float(version) > settings.FEATURES.get('OAUTH_TOKEN_VERSION', 0):
         return True
+
 
