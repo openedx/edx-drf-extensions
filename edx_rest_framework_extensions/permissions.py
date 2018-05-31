@@ -1,13 +1,15 @@
 """ Permission classes. """
 from rest_framework.permissions import BasePermission
-from edx_rest_framework_extensions.utils import jwt_decode_handler, is_token_version_incompatable
+from edx_rest_framework_extensions.utils import jwt_decode_handler, is_token_version_incompatible
 from django.conf import settings
+
 
 class IsSuperuser(BasePermission):
     """ Allows access only to superusers. """
 
     def has_permission(self, request, view):
         return request.user and request.user.is_superuser
+
 
 class HasScopedToken(BasePermission):
     """
@@ -30,7 +32,7 @@ class HasScopedToken(BasePermission):
         """
         Implement the business logic discussed above
         """
-        #if is_oauth_scope_enforcement_enabled():
+        # if is_oauth_scope_enforcement_enabled():
         if settings.FEATURES.get('ENABLE_OAUTH_SCOPE_ENFORCEMENT', False):
             token = request.auth
             decoded_token = jwt_decode_handler(token)
@@ -40,7 +42,7 @@ class HasScopedToken(BasePermission):
             if decoded_token['edx_trusted_application']:
                 return True
 
-            if is_token_version_incompatable(decoded_token['version']):
+            if is_token_version_incompatible(decoded_token['version']):
                 return False
 
             if hasattr(view, 'required_scopes'):

@@ -88,9 +88,8 @@ def jwt_decode_handler(token):
     logger.error(msg)
     raise jwt.InvalidTokenError(msg)
 
-def is_token_version_incompatable(version):
+
+def is_token_version_incompatible(version):
     """ Checks for Token version compatibility """
     if float(version) > settings.FEATURES.get('OAUTH_TOKEN_VERSION', 0):
         return True
-
-

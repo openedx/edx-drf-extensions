@@ -5,7 +5,7 @@ import ddt
 import jwt
 import mock
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from edx_rest_framework_extensions.tests.factories import UserFactory
 from edx_rest_framework_extensions import utils
@@ -111,3 +111,23 @@ class JWTDecodeHandlerTests(TestCase):
 
             msg = "All combinations of JWT issuers and secret keys failed to validate the token."
             patched_log.error.assert_any_call(msg)
+
+
+@ddt.ddt
+class IsTokenVersionIncompatibleTests(TestCase):
+    """ Tests for the `is_token_version_incompatible` utility function. """
+    def setUp(self):
+        super(IsTokenVersionIncompatibleTests, self).setUp()
+        self.user = UserFactory()
+        self.payload = generate_jwt_payload(self.user)
+        self.jwt = generate_jwt_token(self.payload)
+        self.decoded_token = utils.jwt_decode_handler(self.jwt)
+
+    def test_token_version_incompatible(self):
+        self.decoded_token['version'] = 2
+        self.assertTrue(utils.is_token_version_incompatible(self.decoded_token['version']))
+
+    @override_settings(FEATURES={'OAUTH_TOKEN_VERSION': 2})
+    def test_token_version_compatible(self):
+        self.decoded_token['version'] = 1
+        self.assertFalse(utils.is_token_version_incompatible(self.decoded_token['version']))

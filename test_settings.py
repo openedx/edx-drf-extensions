@@ -29,6 +29,11 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 EDX_DRF_EXTENSIONS = {}
 
+FEATURES = {
+    'OAUTH_TOKEN_VERSION': 0,
+
+    'ENABLE_OAUTH_SCOPE_ENFORCEMENT': True
+}
 # USER_SETTINGS overrides for djangorestframework-jwt APISettings class
 # See https://github.com/GetBlimp/django-rest-framework-jwt/blob/master/rest_framework_jwt/settings.py
 JWT_AUTH = {
