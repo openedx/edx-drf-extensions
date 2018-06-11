@@ -3,6 +3,5 @@
 
 nick: drfx
 oeps: {}
-openedx-release: {ref: release}
 owner: edx/platform-team
 track-pulls: true
