@@ -1,0 +1,8 @@
+# This file describes this Open edX repo, as described in OEP-2:
+# http://open-edx-proposals.readthedocs.io/en/latest/oep-0002-bp-repo-metadata.html#specification
+
+nick: drfx
+oeps: {}
+openedx-release: {ref: release}
+owner: edx/platform-team
+track-pulls: true
