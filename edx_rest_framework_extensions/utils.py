@@ -12,7 +12,6 @@ DEFAULT_JWT_SUPPORTED_VERSION = '1.0.0'
 logger = logging.getLogger(__name__)
 
 
-
 def jwt_decode_handler(token):
     """
     Decodes a JSON Web Token (JWT).
@@ -106,6 +105,7 @@ def verify_jwt_version(decoded_token):
     if jwt_version.major > supported_version.major:
         logger.info('Token decode failed due to unsupported JWT version number [%s]', str(jwt_version))
         raise jwt.InvalidTokenError
+
 
 def decode_jwt_scopes(token):
     """

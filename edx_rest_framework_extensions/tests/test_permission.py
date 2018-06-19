@@ -5,7 +5,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.test import RequestFactory, TestCase
 from mock import Mock, patch
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 
 from edx_rest_framework_extensions.tests.factories import UserFactory
@@ -15,7 +14,6 @@ from edx_rest_framework_extensions.permissions import (
     JwtHasContentOrgFilterForRequestedCourse,
     JwtHasScope,
 )
-from edx_rest_framework_extensions.decorators import SWITCH_ENFORCE_JWT_SCOPES
 from edx_rest_framework_extensions.tests import factories
 from edx_rest_framework_extensions.tests.test_utils import generate_jwt
 

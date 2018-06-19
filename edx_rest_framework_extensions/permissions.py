@@ -40,8 +40,7 @@ class JwtHasScope(BasePermission):
         try:
             return getattr(view, 'required_scopes')
         except AttributeError:
-            raise ImproperlyConfigured(
-                'TokenHasScope requires the view to define the required_scopes attribute')
+            raise ImproperlyConfigured('JwtHasScope requires the view to define the required_scopes attribute')
 
 
 class JwtHasContentOrgFilterForRequestedCourse(BasePermission):
