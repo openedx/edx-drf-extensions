@@ -6,7 +6,7 @@ import requests
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions
 from rest_framework.authentication import get_authorization_header, BaseAuthentication
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication, BaseJSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.exceptions import UserInfoRetrievalFailed
 from edx_rest_framework_extensions.settings import get_setting
@@ -212,3 +212,16 @@ class JwtAuthentication(JSONWebTokenAuthentication):
                 raise exceptions.AuthenticationFailed(msg)
 
         return user
+
+
+def is_jwt_authenticated(request):
+    is_jwt_authenticated = issubclass(
+        type(request.successful_authenticator),
+        BaseJSONWebTokenAuthentication,
+    )
+    if is_jwt_authenticated:
+        assert(
+            getattr(request, 'auth', None),
+            'Unexpected error: Used JwtAuthentication, but the request auth attribute was not populated with the JWT.'
+        )
+    return is_jwt_authenticated

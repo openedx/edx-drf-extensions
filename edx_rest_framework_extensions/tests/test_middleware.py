@@ -1,8 +1,8 @@
 """
-Unit tests for safe_endpoints Middleware.
+Unit tests for middlewares.
 """
-import ddt
 from itertools import product
+import ddt
 from mock import patch
 
 from django.test import TestCase, RequestFactory
@@ -23,7 +23,10 @@ class SomeJwtAuthenticationSubclass(BaseJSONWebTokenAuthentication):
     pass
 
 
-def some_auth_decorator(include_jwt_auth=True, include_required_perm=True):
+SOME_INCLUDED_SCOPE = 'some:scope'
+
+
+def some_auth_decorator(include_jwt_auth, include_required_perm, include_scopes):
     def _decorator(f):
         f.permission_classes = (SomeIncludedPermissionClass,)
         f.authentication_classes = (SessionAuthentication,)
@@ -31,6 +34,8 @@ def some_auth_decorator(include_jwt_auth=True, include_required_perm=True):
             f.authentication_classes += (SomeJwtAuthenticationSubclass,)
         if include_required_perm:
             f.permission_classes += (JwtHasScope,)
+        if include_scopes:
+            f.required_scopes = [SOME_INCLUDED_SCOPE]
         return f
     return _decorator
 
@@ -53,27 +58,38 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             (True, False),
             (True, False),
             (True, False),
+            (True, False),
         )
     )
     @ddt.unpack
-    def test_api_views(self, use_function_view, include_jwt_auth, include_required_perm):
-        @some_auth_decorator(include_jwt_auth=include_jwt_auth, include_required_perm=include_required_perm)
+    def test_api_views(self, use_function_view, include_jwt_auth, include_required_perm, include_scopes):
+        @some_auth_decorator(include_jwt_auth, include_required_perm, include_scopes)
         class SomeClassView(APIView):
             pass
 
         @api_view(["GET"])
-        @some_auth_decorator(include_jwt_auth=include_jwt_auth, include_required_perm=include_required_perm)
+        @some_auth_decorator(include_jwt_auth, include_required_perm, include_scopes)
         def some_function_view(request):
             pass
 
         view = some_function_view if use_function_view else SomeClassView
         view_class = view.view_class if use_function_view else view
 
+        # verify pre-conditions
         self._assert_included(
             SomeJwtAuthenticationSubclass,
             view_class.authentication_classes,
             should_be_included=include_jwt_auth,
         )
+
+        # Not tested for function API views since the api_view
+        # decorator does not copy over the required_scopes field.
+        if not use_function_view:
+            self._assert_included(
+                SOME_INCLUDED_SCOPE,
+                getattr(view_class, 'required_scopes', []),
+                should_be_included=include_scopes,
+            )
 
         with patch('edx_rest_framework_extensions.middleware.log.warning') as mock_warning:
             self.assertIsNone(
@@ -81,11 +97,29 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             )
             self.assertEqual(mock_warning.called, include_jwt_auth and not include_required_perm)
 
+        # verify post-conditions
+
+        # verify permission class updates
         self._assert_included(
             JwtHasScope,
             view_class.permission_classes,
             should_be_included=include_required_perm or include_jwt_auth,
         )
+
+        # verify required_scopes updates
+        #  Not supported for function API views since the api_view
+        #  decorator does not copy over the required_scopes field.
+        if not use_function_view:
+            self._assert_included(
+                SOME_INCLUDED_SCOPE,
+                getattr(view_class, 'required_scopes', []),
+                should_be_included=include_scopes,
+            )
+            self._assert_included(
+                EnsureJWTAuthSettingsMiddleware._view_does_not_support_scopes,  # pylint: disable=protected-access
+                getattr(view_class, 'required_scopes', []),
+                should_be_included=include_jwt_auth and not include_scopes,
+            )
 
     def test_simple_view(self):
         """

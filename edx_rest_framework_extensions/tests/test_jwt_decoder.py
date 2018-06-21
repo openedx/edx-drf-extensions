@@ -9,7 +9,7 @@ from django.conf import settings
 from django.test import override_settings, TestCase
 
 from edx_rest_framework_extensions.tests.factories import UserFactory
-from edx_rest_framework_extensions import utils
+from edx_rest_framework_extensions.jwt_decoder import jwt_decode_handler
 
 
 def generate_jwt(user, scopes=None, filters=None):
@@ -83,7 +83,7 @@ class JWTDecodeHandlerTests(TestCase):
         """
         Confirms that the format of the valid response from the token decoder matches the payload
         """
-        self.assertDictEqual(utils.jwt_decode_handler(self.jwt), self.payload)
+        self.assertDictEqual(jwt_decode_handler(self.jwt), self.payload)
 
     @ddt.data(*settings.JWT_AUTH['JWT_ISSUERS'])
     def test_decode_valid_token_multiple_valid_issuers(self, jwt_issuer):
@@ -95,7 +95,7 @@ class JWTDecodeHandlerTests(TestCase):
         # and used to decode the token that was generated using said valid issuer data
         self.payload['iss'] = jwt_issuer['ISSUER']
         token = generate_jwt_token(self.payload, jwt_issuer['SECRET_KEY'])
-        self.assertEqual(utils.jwt_decode_handler(token), self.payload)
+        self.assertEqual(jwt_decode_handler(token), self.payload)
 
     def test_decode_failure(self):
         """
@@ -104,7 +104,7 @@ class JWTDecodeHandlerTests(TestCase):
 
         # Create tokens using each invalid issuer and attempt to decode them against
         # the valid issuers list, which won't work
-        with mock.patch('edx_rest_framework_extensions.utils.logger') as patched_log:
+        with mock.patch('edx_rest_framework_extensions.jwt_decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
                 self.payload['iss'] = 'invalid-issuer'
                 signing_key = 'invalid-secret-key'
@@ -112,7 +112,7 @@ class JWTDecodeHandlerTests(TestCase):
                 token = generate_jwt_token(self.payload, signing_key)
                 # Attempt to decode the token against the entries in the valid issuers list,
                 # which will fail with an InvalidTokenError
-                utils.jwt_decode_handler(token)
+                jwt_decode_handler(token)
 
             # Verify that the proper entries were written to the log file
             msg = "Token decode failed for issuer 'test-issuer-1'"
@@ -131,10 +131,10 @@ class JWTDecodeHandlerTests(TestCase):
 
         # Create tokens using each invalid issuer and attempt to decode them against
         # the valid issuers list, which won't work
-        with mock.patch('edx_rest_framework_extensions.utils.logger') as patched_log:
+        with mock.patch('edx_rest_framework_extensions.jwt_decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
                 # Attempt to decode an invalid token, which will fail with an InvalidTokenError
-                utils.jwt_decode_handler("invalid.token")
+                jwt_decode_handler("invalid.token")
 
             # Verify that the proper entries were written to the log file
             msg = "Token decode failed for issuer 'test-issuer-1'"
@@ -152,7 +152,7 @@ class JWTDecodeHandlerTests(TestCase):
         Verifies the JWT is decoded successfully when the JWT_SUPPORTED_VERSION setting is not specified.
         """
         token = generate_jwt_token(self.payload)
-        self.assertDictEqual(utils.jwt_decode_handler(token), self.payload)
+        self.assertDictEqual(jwt_decode_handler(token), self.payload)
 
     @ddt.data(None, '0.5.0', '1.0.0', '1.0.5', '1.5.0', '1.5.5')
     def test_decode_supported_jwt_version(self, jwt_version):
@@ -161,7 +161,7 @@ class JWTDecodeHandlerTests(TestCase):
         """
         jwt_payload = generate_jwt_payload(self.user, version=jwt_version)
         token = generate_jwt_token(jwt_payload)
-        self.assertDictEqual(utils.jwt_decode_handler(token), jwt_payload)
+        self.assertDictEqual(jwt_decode_handler(token), jwt_payload)
 
     @override_settings(JWT_AUTH=update_jwt_auth_setting({'JWT_SUPPORTED_VERSION': '0.5.0'}))
     def test_decode_unsupported_jwt_version(self):
@@ -169,10 +169,10 @@ class JWTDecodeHandlerTests(TestCase):
         Verifies the function logs decode failures, and raises an
         InvalidTokenError if the token version is not supported.
         """
-        with mock.patch('edx_rest_framework_extensions.utils.logger') as patched_log:
+        with mock.patch('edx_rest_framework_extensions.jwt_decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
                 token = generate_jwt_token(self.payload)
-                utils.jwt_decode_handler(token)
+                jwt_decode_handler(token)
 
             # Verify that the proper entries were written to the log file
             msg = "Token decode failed due to unsupported JWT version number [%s]"
