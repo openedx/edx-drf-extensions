@@ -6,13 +6,14 @@ import ddt
 from mock import patch
 
 from django.test import TestCase, RequestFactory
+from rest_condition import C
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 
 from ..middleware import EnsureJWTAuthSettingsMiddleware
-from ..permissions import JwtHasScope
+from ..permissions import IsJwtAuthenticated, IsSuperuser, IsStaff, JwtHasScope
 
 
 class SomeIncludedPermissionClass(object):
@@ -131,3 +132,43 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         self.assertIsNone(
             self.middleware.process_view(self.request, some_simple_view, None, None)
         )
+
+    def test_conditional_permissions(self):
+        """
+        Make sure we handle ConditionalPermissions from rest_condition.
+        """
+        class HasCondPermView(APIView):
+            authentication_classes = (SomeJwtAuthenticationSubclass,)
+            original_permission_classes = (
+                C(IsJwtAuthenticated) & JwtHasScope,
+                C(IsSuperuser) | IsStaff,
+            )
+            permission_classes = original_permission_classes
+
+        class HasNoCondPermView(APIView):
+            authentication_classes = (SomeJwtAuthenticationSubclass,)
+            original_permission_classes = (
+                IsJwtAuthenticated,
+                C(IsSuperuser) | IsStaff,
+            )
+            permission_classes = original_permission_classes
+
+        # JwtHasScope exists (it's nested in a conditional), so the middleware
+        # shouldn't modify this class.
+        self.middleware.process_view(self.request, HasCondPermView, None, None)
+
+        # Note: ConditionalPermissions don't implement __eq__
+        self.assertIs(
+            HasCondPermView.original_permission_classes,
+            HasCondPermView.permission_classes
+        )
+
+        # JwtHasScope does not exist anywhere, so it should be appended
+        self.middleware.process_view(self.request, HasNoCondPermView, None, None)
+
+        # Note: ConditionalPermissions don't implement __eq__
+        self.assertIsNot(
+            HasNoCondPermView.original_permission_classes,
+            HasNoCondPermView.permission_classes
+        )
+        self.assertIn(JwtHasScope, HasNoCondPermView.permission_classes)

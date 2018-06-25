@@ -31,19 +31,33 @@ class EnsureJWTAuthSettingsMiddleware(object):
         Adds permissions classes that should exist for Jwt based authentication,
         if needed.
         """
-        view_permission_classes = getattr(view_class, 'permission_classes', tuple())
+        view_permissions = list(getattr(view_class, 'permission_classes', []))
+
+        # Not all permissions are classes, some will be ConditionalPermission
+        # objects from the rest_condition library. So we have to crawl all those
+        # and expand them to see if our target classes are inside the
+        # conditionals somewhere.
+        permission_classes = []
+        classes_to_add = []
+        while view_permissions:
+            permission = view_permissions.pop()
+            if not hasattr(permission, 'perms_or_conds'):
+                permission_classes.append(permission)
+            else:
+                for child in getattr(permission, 'perms_or_conds', []):
+                    view_permissions.append(child)
 
         for perm_class in self._required_permission_classes:
-
-            if not self._includes_base_class(view_permission_classes, perm_class):
+            if not self._includes_base_class(permission_classes, perm_class):
                 log.warning(
-                    u"The view %s allows Jwt Authentication but needs to include the %s permission class.",
+                    u"The view %s allows Jwt Authentication but needs to include the %s permission class (adding it for you)",
                     view_class.__name__,
                     perm_class.__name__,
                 )
+                classes_to_add.append(perm_class)
 
-        view_class.permission_classes = view_permission_classes
-        view_class.permission_classes += self._required_permission_classes
+        if classes_to_add:
+            view_class.permission_classes += tuple(classes_to_add)
 
     def _add_missing_jwt_scopes(self, view_class):
         """

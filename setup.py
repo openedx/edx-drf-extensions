@@ -39,6 +39,7 @@ setup(
         'semantic_version',
         'python-dateutil>=2.0',
         'requests>=2.7.0,<3.0.0',
+        'rest-condition>=1.0.3,<2.0',
         'six',
     ]
 )
