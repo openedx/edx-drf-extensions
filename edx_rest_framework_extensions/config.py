@@ -2,4 +2,6 @@
 Application configuration constants and code.
 """
 
-SWITCH_ENFORCE_JWT_SCOPES = 'oauth2.enforce_jwt_scopes'
+NAMESPACE_SWITCH = 'oauth2'
+SWITCH_ENFORCE_JWT_SCOPES = 'enforce_jwt_scopes'
+NAMESPACED_SWITCH_ENFORCE_JWT_SCOPES = '{}.{}'.format(NAMESPACE_SWITCH, SWITCH_ENFORCE_JWT_SCOPES)

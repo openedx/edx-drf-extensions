@@ -5,7 +5,7 @@ import logging
 
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
-from .permissions import JwtHasScope
+from .permissions import NotJwtRestrictedApplication
 
 log = logging.getLogger(__name__)
 
@@ -15,8 +15,7 @@ class EnsureJWTAuthSettingsMiddleware(object):
     Django middleware object that ensures the proper Permission classes
     are set on all endpoints that use JWTAuthentication.
     """
-    _required_permission_classes = (JwtHasScope,)
-    _view_does_not_support_scopes = 'VIEW_DOES_NOT_SUPPORT_SCOPES'
+    _required_permission_classes = (NotJwtRestrictedApplication,)
 
     def _includes_base_class(self, iter_classes, base_class):
         """
@@ -59,18 +58,9 @@ class EnsureJWTAuthSettingsMiddleware(object):
         if classes_to_add:
             view_class.permission_classes += tuple(classes_to_add)
 
-    def _add_missing_jwt_scopes(self, view_class):
-        """
-        Adds restricting scopes if none already exist for Jwt based authentication.
-        """
-        view_required_scopes = getattr(view_class, 'required_scopes', [])
-        if not view_required_scopes:
-            view_class.required_scopes = [self._view_does_not_support_scopes]
-
     def process_view(self, request, view_func, view_args, view_kwargs):  # pylint: disable=unused-argument
         view_class = getattr(view_func, 'view_class', view_func)
 
         view_authentication_classes = getattr(view_class, 'authentication_classes', tuple())
         if self._includes_base_class(view_authentication_classes, BaseJSONWebTokenAuthentication):
             self._add_missing_jwt_permission_classes(view_class)
-            self._add_missing_jwt_scopes(view_class)

@@ -13,7 +13,12 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 
 from ..middleware import EnsureJWTAuthSettingsMiddleware
-from ..permissions import IsJwtAuthenticated, IsSuperuser, IsStaff, JwtHasScope
+from ..permissions import (
+    IsSuperuser,
+    IsStaff,
+    JwtHasContentOrgFilterForRequestedCourse,
+    NotJwtRestrictedApplication,
+)
 
 
 class SomeIncludedPermissionClass(object):
@@ -24,19 +29,14 @@ class SomeJwtAuthenticationSubclass(BaseJSONWebTokenAuthentication):
     pass
 
 
-SOME_INCLUDED_SCOPE = 'some:scope'
-
-
-def some_auth_decorator(include_jwt_auth, include_required_perm, include_scopes):
+def some_auth_decorator(include_jwt_auth, include_required_perm):
     def _decorator(f):
         f.permission_classes = (SomeIncludedPermissionClass,)
         f.authentication_classes = (SessionAuthentication,)
         if include_jwt_auth:
             f.authentication_classes += (SomeJwtAuthenticationSubclass,)
         if include_required_perm:
-            f.permission_classes += (JwtHasScope,)
-        if include_scopes:
-            f.required_scopes = [SOME_INCLUDED_SCOPE]
+            f.permission_classes += (NotJwtRestrictedApplication,)
         return f
     return _decorator
 
@@ -59,17 +59,16 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             (True, False),
             (True, False),
             (True, False),
-            (True, False),
         )
     )
     @ddt.unpack
-    def test_api_views(self, use_function_view, include_jwt_auth, include_required_perm, include_scopes):
-        @some_auth_decorator(include_jwt_auth, include_required_perm, include_scopes)
+    def test_api_views(self, use_function_view, include_jwt_auth, include_required_perm):
+        @some_auth_decorator(include_jwt_auth, include_required_perm)
         class SomeClassView(APIView):
             pass
 
         @api_view(["GET"])
-        @some_auth_decorator(include_jwt_auth, include_required_perm, include_scopes)
+        @some_auth_decorator(include_jwt_auth, include_required_perm)
         def some_function_view(request):
             pass
 
@@ -83,15 +82,6 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             should_be_included=include_jwt_auth,
         )
 
-        # Not tested for function API views since the api_view
-        # decorator does not copy over the required_scopes field.
-        if not use_function_view:
-            self._assert_included(
-                SOME_INCLUDED_SCOPE,
-                getattr(view_class, 'required_scopes', []),
-                should_be_included=include_scopes,
-            )
-
         with patch('edx_rest_framework_extensions.middleware.log.warning') as mock_warning:
             self.assertIsNone(
                 self.middleware.process_view(self.request, view, None, None)
@@ -102,25 +92,10 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
 
         # verify permission class updates
         self._assert_included(
-            JwtHasScope,
+            NotJwtRestrictedApplication,
             view_class.permission_classes,
             should_be_included=include_required_perm or include_jwt_auth,
         )
-
-        # verify required_scopes updates
-        #  Not supported for function API views since the api_view
-        #  decorator does not copy over the required_scopes field.
-        if not use_function_view:
-            self._assert_included(
-                SOME_INCLUDED_SCOPE,
-                getattr(view_class, 'required_scopes', []),
-                should_be_included=include_scopes,
-            )
-            self._assert_included(
-                EnsureJWTAuthSettingsMiddleware._view_does_not_support_scopes,  # pylint: disable=protected-access
-                getattr(view_class, 'required_scopes', []),
-                should_be_included=include_jwt_auth and not include_scopes,
-            )
 
     def test_simple_view(self):
         """
@@ -140,7 +115,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         class HasCondPermView(APIView):
             authentication_classes = (SomeJwtAuthenticationSubclass,)
             original_permission_classes = (
-                C(IsJwtAuthenticated) & JwtHasScope,
+                C(JwtHasContentOrgFilterForRequestedCourse) & NotJwtRestrictedApplication,
                 C(IsSuperuser) | IsStaff,
             )
             permission_classes = original_permission_classes
@@ -148,12 +123,12 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         class HasNoCondPermView(APIView):
             authentication_classes = (SomeJwtAuthenticationSubclass,)
             original_permission_classes = (
-                IsJwtAuthenticated,
+                JwtHasContentOrgFilterForRequestedCourse,
                 C(IsSuperuser) | IsStaff,
             )
             permission_classes = original_permission_classes
 
-        # JwtHasScope exists (it's nested in a conditional), so the middleware
+        # NotJwtRestrictedApplication exists (it's nested in a conditional), so the middleware
         # shouldn't modify this class.
         self.middleware.process_view(self.request, HasCondPermView, None, None)
 
@@ -163,7 +138,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             HasCondPermView.permission_classes
         )
 
-        # JwtHasScope does not exist anywhere, so it should be appended
+        # NotJwtRestrictedApplication does not exist anywhere, so it should be appended
         self.middleware.process_view(self.request, HasNoCondPermView, None, None)
 
         # Note: ConditionalPermissions don't implement __eq__
@@ -171,4 +146,4 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             HasNoCondPermView.original_permission_classes,
             HasNoCondPermView.permission_classes
         )
-        self.assertIn(JwtHasScope, HasNoCondPermView.permission_classes)
+        self.assertIn(NotJwtRestrictedApplication, HasNoCondPermView.permission_classes)

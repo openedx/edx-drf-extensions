@@ -2,14 +2,22 @@
 import logging
 
 import jwt
-import semantic_version
+from semantic_version import Version
 from django.conf import settings
 from rest_framework_jwt.settings import api_settings
 
 from edx_rest_framework_extensions.settings import get_jwt_issuers
 
-DEFAULT_JWT_SUPPORTED_VERSION = '1.0.0'
 logger = logging.getLogger(__name__)
+
+
+class JwtTokenVersion(object):
+    latest_supported = '1.1.0'
+
+    starting_version = '1.0.0'
+    added_version = '1.1.0'
+    added_is_restricted = '1.1.0'
+    added_filters = '1.1.0'
 
 
 def jwt_decode_handler(token):
@@ -71,7 +79,7 @@ def jwt_decode_handler(token):
 
     for jwt_issuer in get_jwt_issuers():
         try:
-            decoded = jwt.decode(
+            decoded_token = jwt.decode(
                 token,
                 jwt_issuer['SECRET_KEY'],
                 api_settings.JWT_VERIFY,
@@ -81,8 +89,9 @@ def jwt_decode_handler(token):
                 issuer=jwt_issuer['ISSUER'],
                 algorithms=[api_settings.JWT_ALGORITHM]
             )
-            verify_jwt_version(decoded)
-            return decoded
+            token_version = decode_and_verify_version(decoded_token)
+            upgraded_token = _upgrade_token(decoded_token, token_version)
+            return upgraded_token
         except jwt.InvalidTokenError:
             msg = "Token decode failed for issuer '{issuer}'".format(issuer=jwt_issuer['ISSUER'])
             logger.info(msg, exc_info=True)
@@ -92,19 +101,21 @@ def jwt_decode_handler(token):
     raise jwt.InvalidTokenError(msg)
 
 
-def verify_jwt_version(decoded_token):
+def decode_and_verify_version(decoded_token):
     """
     Verify that the JWT version is supported.
     """
-    supported_version = semantic_version.Version(
-        settings.JWT_AUTH.get('JWT_SUPPORTED_VERSION', DEFAULT_JWT_SUPPORTED_VERSION)
+    supported_version = Version(
+        settings.JWT_AUTH.get('JWT_SUPPORTED_VERSION', JwtTokenVersion.latest_supported)
     )
-    jwt_version = semantic_version.Version(
-        decoded_token.get('version', str(supported_version))
+    jwt_version = Version(
+        decoded_token.get('version', JwtTokenVersion.starting_version)
     )
     if jwt_version.major > supported_version.major:
         logger.info('Token decode failed due to unsupported JWT version number [%s]', str(jwt_version))
         raise jwt.InvalidTokenError
+
+    return jwt_version
 
 
 def decode_jwt_scopes(token):
@@ -114,9 +125,54 @@ def decode_jwt_scopes(token):
     return jwt_decode_handler(token).get('scopes', [])
 
 
+def decode_jwt_is_restricted(token):
+    """
+    Decode the JWT and return the is_restricted claim.
+    """
+    return jwt_decode_handler(token)['is_restricted']
+
+
 def decode_jwt_filters(token):
     """
-    Decode the JWT, parse the filters clain, and return a
-    list of (provider_type, filter_value) tuples.
+    Decode the JWT, parse the filters claim, and return a
+    list of (filter_type, filter_value) tuples.
     """
-    return [jwt_filter.split(':') for jwt_filter in jwt_decode_handler(token).get('filters', [])]
+    return [jwt_filter.split(':') for jwt_filter in jwt_decode_handler(token)['filters']]
+
+
+def _upgrade_token(token, token_version):
+    """
+    Returns an updated token that includes default values for
+    fields that were introduced since the token was created
+    by checking its version number.
+    """
+    def _upgrade_version(token, token_version):
+        """
+        Tokens didn't always contain a version number so we
+        default to a nominal starting number.
+        """
+        token['version'] = token.get('version', str(token_version))
+
+    def _upgrade_is_restricted(token, token_version):
+        """
+        We can safely default to False since all "restricted" tokens
+        created prior to this version were always created as expired
+        tokens. Expired tokens would not validate and so would
+        not get as this far into the decoding process.
+        """
+        if token_version < Version(JwtTokenVersion.added_is_restricted):
+            token['is_restricted'] = token.get('is_restricted', False)
+
+    def _upgrade_filters(token, token_version):
+        """
+        We can safely default to an empty list of filters since
+        previously created tokens were either "restricted" (always 
+        expired) or had full access.
+        """
+        if token_version < Version(JwtTokenVersion.added_filters):
+            token['filters'] = token.get('filters', [])
+
+    _upgrade_version(token, token_version)
+    _upgrade_is_restricted(token, token_version)
+    _upgrade_filters(token, token_version)
+    return token

@@ -220,8 +220,9 @@ def is_jwt_authenticated(request):
         BaseJSONWebTokenAuthentication,
     )
     if is_jwt_authenticated:
-        assert(
-            getattr(request, 'auth', None),
-            'Unexpected error: Used JwtAuthentication, but the request auth attribute was not populated with the JWT.'
-        )
+        if not getattr(request, 'auth', None):
+            logger.error(
+                'Unexpected error: Used JwtAuthentication, but the request auth attribute was not populated with the JWT.'
+            )
+            return False
     return is_jwt_authenticated
