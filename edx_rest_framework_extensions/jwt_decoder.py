@@ -120,7 +120,7 @@ def _set_token_defaults(token):
     def _set_filters(token, token_version):
         """
         We can safely default to an empty list of filters since
-        previously created tokens were either "restricted" (always 
+        previously created tokens were either "restricted" (always
         expired) or had full access.
         """
         if token_version < Version(JwtTokenVersion.added_filters):

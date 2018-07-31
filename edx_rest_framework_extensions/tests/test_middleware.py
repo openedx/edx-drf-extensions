@@ -11,6 +11,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 
 from ..middleware import EnsureJWTAuthSettingsMiddleware
 from ..permissions import (
@@ -56,15 +57,19 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
 
     @ddt.data(
         *product(
-            (True, False),
+            ('view_set', 'class_view', 'function_view'),
             (True, False),
             (True, False),
         )
     )
     @ddt.unpack
-    def test_api_views(self, use_function_view, include_jwt_auth, include_required_perm):
+    def test_api_views(self, view_type, include_jwt_auth, include_required_perm):
         @some_auth_decorator(include_jwt_auth, include_required_perm)
         class SomeClassView(APIView):
+            pass
+
+        @some_auth_decorator(include_jwt_auth, include_required_perm)
+        class SomeClassViewSet(ViewSet):
             pass
 
         @api_view(["GET"])
@@ -72,8 +77,18 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         def some_function_view(request):
             pass
 
-        view = some_function_view if use_function_view else SomeClassView
-        view_class = view.view_class if use_function_view else view
+        views = dict(
+            class_view=SomeClassView,
+            view_set=SomeClassViewSet.as_view({'get': 'list'}),
+            function_view=some_function_view,
+        )
+        view_classes = dict(
+            class_view=SomeClassView,
+            view_set=views['view_set'].cls,
+            function_view=views['function_view'].view_class,
+        )
+        view = views[view_type]
+        view_class = view_classes[view_type]
 
         # verify pre-conditions
         self._assert_included(
