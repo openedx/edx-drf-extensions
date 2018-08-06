@@ -19,8 +19,6 @@ class JwtTokenVersion(object):
 
     starting_version = '1.0.0'
     added_version = '1.1.0'
-    added_is_restricted = '1.1.0'
-    added_filters = '1.1.0'
 
 
 def jwt_decode_handler(token):
@@ -107,29 +105,31 @@ def _set_token_defaults(token):
 
         return Version(token['version'])
 
-    def _set_is_restricted(token, token_version):
+    def _set_is_restricted(token):
         """
         We can safely default to False since all "restricted" tokens
-        created prior to this version were always created as expired
-        tokens. Expired tokens would not validate and so would
-        not get as this far into the decoding process.
+        created prior to the addition of the `is_restricted` flag were
+        always created as expired tokens. Expired tokens would not
+        validate and so would not get this far into the decoding process.
+        # TODO: ARCH-166
         """
-        if token_version < Version(JwtTokenVersion.added_is_restricted):
+        if 'is_restricted' not in token:
             token['is_restricted'] = False
 
-    def _set_filters(token, token_version):
+    def _set_filters(token):
         """
         We can safely default to an empty list of filters since
         previously created tokens were either "restricted" (always
         expired) or had full access.
+        # TODO: ARCH-166
         """
-        if token_version < Version(JwtTokenVersion.added_filters):
+        if 'filters' not in token:
             token['filters'] = []
 
     token_version = _get_and_set_version(token)
     _verify_version(token_version)
-    _set_is_restricted(token, token_version)
-    _set_filters(token, token_version)
+    _set_is_restricted(token)
+    _set_filters(token)
     return token
 
 
