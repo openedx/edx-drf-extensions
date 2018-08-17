@@ -1,5 +1,5 @@
 """
-Middleware to ensure best practices of DRF endpoints.
+Middleware to ensure best practices of DRF and other endpoints.
 """
 import logging
 
@@ -76,6 +76,25 @@ class EnsureJWTAuthSettingsMiddleware(object):
 class RequestMetricsMiddleware(object):
     """
     Adds various request related metrics.
+
+    Possible metrics include:
+        request_auth_type: Example values include: no-user, unauthenticated,
+            jwt, bearer, other-token-type, or session-or-unknown
+        request_user_agent: The user agent string from the request header.
+        request_client_name: The client name from edx-rest-api-client calls.
+        request_referer
+
+    This middleware is dependent on the RequestCacheMiddleware. You must
+    include this middleware later.  For example::
+
+        MIDDLEWARE_CLASSES = (
+            'edx_django_utils.cache.middleware.RequestCacheMiddleware',
+            'edx_rest_framework_extensions.middleware.RequestMetricsMiddleware',
+        )
+
+    TODO: Make edx-django-utils _check_middleware_dependencies public and use
+    it here. See https://github.com/edx/edx-django-utils/blob/e45137359c85f36f4f7495725c48e4af1146fe5a/edx_django_utils/private_utils.py#L12
+
     """
 
     def process_response(self, request, response):

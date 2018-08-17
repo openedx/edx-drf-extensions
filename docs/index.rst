@@ -30,5 +30,6 @@ Table of Contents
 
     settings
     authentication
+    middleware
     permissions
     utils
