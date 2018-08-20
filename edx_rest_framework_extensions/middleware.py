@@ -3,6 +3,7 @@ Middleware to ensure best practices of DRF and other endpoints.
 """
 import logging
 
+from django.conf import settings
 from edx_django_utils import monitoring
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
@@ -158,3 +159,41 @@ class RequestMetricsMiddleware(object):
         else:
             auth_type = 'session-or-unknown'
         monitoring.set_custom_metric('request_auth_type', auth_type)
+
+
+class JwtAuthCookieMiddleware(object):
+    """
+    Reconstitues JWT auth cookies for use by API views which use the JwtAuthentication
+    authentication class.
+
+    We split the JWT across two separate cookies in the browser for security reasons. This
+    middleware reconstitues the full JWT into a new cookie on the request object for use
+    by the JwtAuthentication class.
+    """
+    def _get_jwt_auth_cookie_setting(self, key):
+        """
+        Return the given JWT_AUTH setting value and warn if the setting does not exist.
+        """
+        value = settings.JWT_AUTH.get(key)
+        if not value:
+            log.warning('%s setting is missing. JWT auth cookies will not be reconstituted.', key)
+        return value
+
+    def process_request(self, request):
+        """
+        Reconstitute the full JWT and add a new cookie on the request object.
+        """
+        header_payload_cookie_name = self._get_jwt_auth_cookie_setting('JWT_AUTH_COOKIE_HEADER_PAYLOAD')
+        signature_cookie_name = self._get_jwt_auth_cookie_setting('JWT_AUTH_COOKIE_SIGNATURE')
+        if header_payload_cookie_name and signature_cookie_name:
+            header_payload_cookie = request.COOKIES.get(header_payload_cookie_name)
+            signature_cookie = request.COOKIES.get(signature_cookie_name)
+
+            # Reconstitute JWT auth cookie if split cookies are available.
+            if header_payload_cookie and signature_cookie:
+                jwt_auth_cookie_name = self._get_jwt_auth_cookie_setting('JWT_AUTH_COOKIE')
+                if jwt_auth_cookie_name:
+                    request.COOKIES[jwt_auth_cookie_name] = '{}.{}'.format(
+                        header_payload_cookie,
+                        signature_cookie,
+                    )

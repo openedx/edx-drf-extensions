@@ -3,10 +3,11 @@ Unit tests for middlewares.
 """
 from itertools import product
 import ddt
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from mock import call, patch
 
-from django.test import TestCase, RequestFactory
+from django.test import override_settings, TestCase, RequestFactory
 from rest_condition import C
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
@@ -15,7 +16,11 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
 from edx_rest_framework_extensions.tests.factories import UserFactory
-from ..middleware import EnsureJWTAuthSettingsMiddleware, RequestMetricsMiddleware
+from ..middleware import (
+    EnsureJWTAuthSettingsMiddleware,
+    JwtAuthCookieMiddleware,
+    RequestMetricsMiddleware,
+)
 from ..permissions import (
     IsSuperuser,
     IsStaff,
@@ -247,3 +252,45 @@ class TestRequestMetricsMiddleware(TestCase):
 
         self.middleware.process_response(self.request, None)
         mock_set_custom_metric.assert_called_once_with('request_auth_type', 'session-or-unknown')
+
+
+@ddt.ddt
+class TestJwtAuthCookieMiddleware(TestCase):
+    def setUp(self):
+        super(TestJwtAuthCookieMiddleware, self).setUp()
+        self.request = RequestFactory().get('/')
+        self.middleware = JwtAuthCookieMiddleware()
+
+    @ddt.data(
+        ({'JWT_AUTH_COOKIE_HEADER_PAYLOAD': 'header-payload'}, 'JWT_AUTH_COOKIE_SIGNATURE'),
+        ({'JWT_AUTH_COOKIE_SIGNATURE': 'signature'}, 'JWT_AUTH_COOKIE_HEADER_PAYLOAD'),
+    )
+    @ddt.unpack
+    @patch('edx_rest_framework_extensions.middleware.log')
+    def test_missing_split_cookie_settings(self, jwt_auth, missing_setting, mock_log):
+        with override_settings(JWT_AUTH=jwt_auth):
+            self.middleware.process_request(self.request)
+            mock_log.warning.assert_called_once_with(
+                '%s setting is missing. JWT auth cookies will not be reconstituted.',
+                missing_setting
+            )
+
+    @override_settings(JWT_AUTH={
+        'JWT_AUTH_COOKIE_HEADER_PAYLOAD': 'header-payload',
+        'JWT_AUTH_COOKIE_SIGNATURE': 'signature',
+    })
+    @patch('edx_rest_framework_extensions.middleware.log')
+    def test_missing_jwt_auth_cookie_setting(self, mock_log):
+        self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE_HEADER_PAYLOAD']] = 'header.payload'
+        self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE_SIGNATURE']] = 'signature'
+        self.middleware.process_request(self.request)
+        mock_log.warning.assert_called_once_with(
+            '%s setting is missing. JWT auth cookies will not be reconstituted.',
+            'JWT_AUTH_COOKIE',
+        )
+
+    def test_jwt_auth_cookie(self):
+        self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE_HEADER_PAYLOAD']] = 'header.payload'
+        self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE_SIGNATURE']] = 'signature'
+        self.middleware.process_request(self.request)
+        self.assertEqual(self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE']], 'header.payload.signature')
