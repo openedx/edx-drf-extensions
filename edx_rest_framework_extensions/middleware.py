@@ -170,30 +170,64 @@ class JwtAuthCookieMiddleware(object):
     middleware reconstitues the full JWT into a new cookie on the request object for use
     by the JwtAuthentication class.
     """
+    _JWT_DELIMITER = '.'
+
+    # The following are JWT_AUTH setting keys.
+    _JWT_AUTH_COOKIE_KEY = 'JWT_AUTH_COOKIE'
+    _JWT_AUTH_COOKIE_HEADER_PAYLOAD_KEY = 'JWT_AUTH_COOKIE_HEADER_PAYLOAD'
+    _JWT_AUTH_COOKIE_SIGNATURE_KEY = 'JWT_AUTH_COOKIE_SIGNATURE'
+
+    _JWT_COOKIE_NAME_DEFAULTS = {
+        _JWT_AUTH_COOKIE_KEY: 'edx-jwt-cookie',
+        _JWT_AUTH_COOKIE_HEADER_PAYLOAD_KEY: 'edx-jwt-cookie-header-payload',
+        _JWT_AUTH_COOKIE_SIGNATURE_KEY: 'edx-jwt-cookie-signature',
+    }
+
     def _get_jwt_auth_cookie_setting(self, key):
         """
-        Return the given JWT_AUTH setting value and warn if the setting does not exist.
+        Return the given JWT_AUTH setting value if set.  Otherwise, returns default.
         """
         value = settings.JWT_AUTH.get(key)
-        if not value:
-            log.warning('%s setting is missing. JWT auth cookies will not be reconstituted.', key)
-        return value
+        if value:
+            return value
+
+        return self._JWT_COOKIE_NAME_DEFAULTS[key]
+
+    def _get_missing_cookie_message_and_metric(self, cookie_name):
+        """ Returns tuple with missing cookie (log_message, metric_value) """
+        cookie_missing_message = '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
+                cookie_name
+        )
+        request_jwt_cookie = 'missing-{}'.format(cookie_name)
+        return cookie_missing_message, request_jwt_cookie
 
     def process_request(self, request):
         """
         Reconstitute the full JWT and add a new cookie on the request object.
         """
-        header_payload_cookie_name = self._get_jwt_auth_cookie_setting('JWT_AUTH_COOKIE_HEADER_PAYLOAD')
-        signature_cookie_name = self._get_jwt_auth_cookie_setting('JWT_AUTH_COOKIE_SIGNATURE')
-        if header_payload_cookie_name and signature_cookie_name:
-            header_payload_cookie = request.COOKIES.get(header_payload_cookie_name)
-            signature_cookie = request.COOKIES.get(signature_cookie_name)
+        header_payload_cookie_name = self._get_jwt_auth_cookie_setting(self._JWT_AUTH_COOKIE_HEADER_PAYLOAD_KEY)
+        signature_cookie_name = self._get_jwt_auth_cookie_setting(self._JWT_AUTH_COOKIE_SIGNATURE_KEY)
 
-            # Reconstitute JWT auth cookie if split cookies are available.
-            if header_payload_cookie and signature_cookie:
-                jwt_auth_cookie_name = self._get_jwt_auth_cookie_setting('JWT_AUTH_COOKIE')
-                if jwt_auth_cookie_name:
-                    request.COOKIES[jwt_auth_cookie_name] = '{}.{}'.format(
-                        header_payload_cookie,
-                        signature_cookie,
-                    )
+        header_payload_cookie = request.COOKIES.get(header_payload_cookie_name)
+        signature_cookie = request.COOKIES.get(signature_cookie_name)
+
+        # Reconstitute JWT auth cookie if split cookies are available.
+        if header_payload_cookie and signature_cookie:
+            jwt_auth_cookie_name = self._get_jwt_auth_cookie_setting(self._JWT_AUTH_COOKIE_KEY)
+            request.COOKIES[jwt_auth_cookie_name] = '{}{}{}'.format(
+                header_payload_cookie,
+                self._JWT_DELIMITER,
+                signature_cookie,
+            )
+            metric_value = 'yes'
+        elif header_payload_cookie or signature_cookie:
+            # Log unexpected case of only finding one cookie.
+            if not header_payload_cookie:
+                log_message, metric_value = self._get_missing_cookie_message_and_metric(header_payload_cookie_name)
+            if not signature_cookie:
+                log_message, metric_value = self._get_missing_cookie_message_and_metric(signature_cookie_name)
+            log.info(log_message)
+        else:
+            metric_value = 'no'
+
+        monitoring.set_custom_metric('request_jwt_cookie', metric_value)

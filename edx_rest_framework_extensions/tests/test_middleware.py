@@ -28,6 +28,10 @@ from ..permissions import (
     NotJwtRestrictedApplication,
 )
 
+DEFAULT_JWT_COOKIE_NAME = 'edx-jwt-cookie'
+DEFAULT_JWT_COOKIE_HEADER_PAYLOAD_NAME = 'edx-jwt-cookie-header-payload'
+DEFAULT_JWT_COOKIE_SIGNATURE_NAME = 'edx-jwt-cookie-signature'
+
 
 class SomeIncludedPermissionClass(object):
     pass
@@ -170,6 +174,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         )
         self.assertIn(NotJwtRestrictedApplication, HasNoCondPermView.permission_classes)
 
+
 @ddt.ddt
 class TestRequestMetricsMiddleware(TestCase):
     def setUp(self):
@@ -262,35 +267,47 @@ class TestJwtAuthCookieMiddleware(TestCase):
         self.middleware = JwtAuthCookieMiddleware()
 
     @ddt.data(
-        ({'JWT_AUTH_COOKIE_HEADER_PAYLOAD': 'header-payload'}, 'JWT_AUTH_COOKIE_SIGNATURE'),
-        ({'JWT_AUTH_COOKIE_SIGNATURE': 'signature'}, 'JWT_AUTH_COOKIE_HEADER_PAYLOAD'),
+        (DEFAULT_JWT_COOKIE_HEADER_PAYLOAD_NAME, DEFAULT_JWT_COOKIE_SIGNATURE_NAME),
+        (DEFAULT_JWT_COOKIE_SIGNATURE_NAME, DEFAULT_JWT_COOKIE_HEADER_PAYLOAD_NAME),
     )
     @ddt.unpack
     @patch('edx_rest_framework_extensions.middleware.log')
-    def test_missing_split_cookie_settings(self, jwt_auth, missing_setting, mock_log):
-        with override_settings(JWT_AUTH=jwt_auth):
-            self.middleware.process_request(self.request)
-            mock_log.warning.assert_called_once_with(
-                '%s setting is missing. JWT auth cookies will not be reconstituted.',
-                missing_setting
-            )
+    @patch('edx_django_utils.monitoring.set_custom_metric')
+    def test_missing_cookie_settings_default(
+            self, set_cookie_name, missing_cookie_name, mock_set_custom_metric, mock_log
+    ):
+        self.request.COOKIES[set_cookie_name] = 'test'
+        self.middleware.process_request(self.request)
+        self.assertIsNone(self.request.COOKIES.get(DEFAULT_JWT_COOKIE_NAME))
+        mock_log.info.assert_called_once_with(
+            '%s cookie is missing. JWT auth cookies will not be reconstituted.' %
+            missing_cookie_name
+        )
+        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'missing-{}'.format(missing_cookie_name))
+
+    @patch('edx_django_utils.monitoring.set_custom_metric')
+    def test_jwt_auth_cookie_no_cookies(self, mock_set_custom_metric):
+        self.middleware.process_request(self.request)
+        self.assertIsNone(self.request.COOKIES.get(DEFAULT_JWT_COOKIE_NAME))
+        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'no')
 
     @override_settings(JWT_AUTH={
+        'JWT_AUTH_COOKIE': 'jwt-cookie',
         'JWT_AUTH_COOKIE_HEADER_PAYLOAD': 'header-payload',
         'JWT_AUTH_COOKIE_SIGNATURE': 'signature',
     })
-    @patch('edx_rest_framework_extensions.middleware.log')
-    def test_missing_jwt_auth_cookie_setting(self, mock_log):
-        self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE_HEADER_PAYLOAD']] = 'header.payload'
-        self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE_SIGNATURE']] = 'signature'
-        self.middleware.process_request(self.request)
-        mock_log.warning.assert_called_once_with(
-            '%s setting is missing. JWT auth cookies will not be reconstituted.',
-            'JWT_AUTH_COOKIE',
-        )
-
-    def test_jwt_auth_cookie(self):
+    @patch('edx_django_utils.monitoring.set_custom_metric')
+    def test_jwt_auth_cookie_settings_success(self, mock_set_custom_metric):
         self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE_HEADER_PAYLOAD']] = 'header.payload'
         self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE_SIGNATURE']] = 'signature'
         self.middleware.process_request(self.request)
         self.assertEqual(self.request.COOKIES[settings.JWT_AUTH['JWT_AUTH_COOKIE']], 'header.payload.signature')
+        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'yes')
+
+    @patch('edx_django_utils.monitoring.set_custom_metric')
+    def test_jwt_auth_cookie_defaults_success(self, mock_set_custom_metric):
+        self.request.COOKIES[DEFAULT_JWT_COOKIE_HEADER_PAYLOAD_NAME] = 'header.payload'
+        self.request.COOKIES[DEFAULT_JWT_COOKIE_SIGNATURE_NAME] = 'signature'
+        self.middleware.process_request(self.request)
+        self.assertEqual(self.request.COOKIES[DEFAULT_JWT_COOKIE_NAME], 'header.payload.signature')
+        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'yes')
