@@ -163,12 +163,20 @@ class RequestMetricsMiddleware(object):
 
 class JwtAuthCookieMiddleware(object):
     """
-    Reconstitues JWT auth cookies for use by API views which use the JwtAuthentication
+    Reconstitutes JWT auth cookies for use by API views which use the JwtAuthentication
     authentication class.
 
     We split the JWT across two separate cookies in the browser for security reasons. This
-    middleware reconstitues the full JWT into a new cookie on the request object for use
+    middleware reconstitutes the full JWT into a new cookie on the request object for use
     by the JwtAuthentication class.
+
+    Also, sets the metric 'request_jwt_cookie' with one of the following values:
+        'yes': Value when reconstitution is successful.
+        'no': Value when both cookies are missing and reconstitution is not possible.
+        'missing-XXX': Value when one of the 2 required cookies is missing.  XXX will be
+            replaced by the cookie name, which may be set as a setting.  Defaults would
+            be 'missing-edx-jwt-cookie-header-payload' or 'missing-edx-jwt-cookie-signature'.
+
     """
     _JWT_DELIMITER = '.'
 
