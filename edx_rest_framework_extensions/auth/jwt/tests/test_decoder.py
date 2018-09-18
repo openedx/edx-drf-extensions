@@ -8,8 +8,8 @@ import mock
 from django.conf import settings
 from django.test import override_settings, TestCase
 
+from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.tests.factories import UserFactory
-from edx_rest_framework_extensions.jwt_decoder import jwt_decode_handler
 
 
 def generate_jwt(user, scopes=None, filters=None, is_restricted=None):
@@ -118,7 +118,7 @@ class JWTDecodeHandlerTests(TestCase):
 
         # Create tokens using each invalid issuer and attempt to decode them against
         # the valid issuers list, which won't work
-        with mock.patch('edx_rest_framework_extensions.jwt_decoder.logger') as patched_log:
+        with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
                 self.payload['iss'] = 'invalid-issuer'
                 signing_key = 'invalid-secret-key'
@@ -137,7 +137,7 @@ class JWTDecodeHandlerTests(TestCase):
 
         # Create tokens using each invalid issuer and attempt to decode them against
         # the valid issuers list, which won't work
-        with mock.patch('edx_rest_framework_extensions.jwt_decoder.logger') as patched_log:
+        with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
                 # Attempt to decode an invalid token, which will fail with an InvalidTokenError
                 jwt_decode_handler("invalid.token")
@@ -167,7 +167,7 @@ class JWTDecodeHandlerTests(TestCase):
         Verifies the function logs decode failures, and raises an
         InvalidTokenError if the token version is not supported.
         """
-        with mock.patch('edx_rest_framework_extensions.jwt_decoder.logger') as patched_log:
+        with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
                 token = _generate_jwt_token(self.payload)
                 jwt_decode_handler(token)

@@ -4,7 +4,6 @@ from collections import namedtuple
 
 import ddt
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import ImproperlyConfigured
 from django.test import RequestFactory, TestCase
 from itertools import product
 from mock import Mock, patch
@@ -14,10 +13,10 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
 from edx_rest_framework_extensions import permissions
-from edx_rest_framework_extensions.tests.factories import UserFactory
-from edx_rest_framework_extensions.authentication import JwtAuthentication
+from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
+from edx_rest_framework_extensions.auth.jwt.tests.test_decoder import generate_jwt
 from edx_rest_framework_extensions.tests import factories
-from edx_rest_framework_extensions.tests.test_jwt_decoder import generate_jwt
+from edx_rest_framework_extensions.tests.factories import UserFactory
 
 
 @ddt.ddt

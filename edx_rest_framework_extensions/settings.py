@@ -55,7 +55,7 @@ def _get_current_jwt_issuers():
 
 def _get_deprecated_jwt_issuers():
     """
-    Internal helper to retreive the deprecated set of JWT_ISSUER data from the JWT_AUTH configuration
+    Internal helper to retrieve the deprecated set of JWT_ISSUER data from the JWT_AUTH configuration
     Having this allows for easier testing/mocking
     """
     # If JWT_ISSUERS is not defined, attempt to return the deprecated settings.

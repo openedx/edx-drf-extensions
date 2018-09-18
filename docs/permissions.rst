@@ -5,3 +5,6 @@ below adhere to the Django `REST Framework's API for permission classes <http://
 
 .. automodule:: edx_rest_framework_extensions.permissions
     :members:
+
+.. automodule:: edx_rest_framework_extensions.auth.permissions
+    :members:
