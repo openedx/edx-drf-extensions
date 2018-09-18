@@ -1,16 +1,15 @@
 """ Permission classes. """
 import logging
-from django.core.exceptions import ImproperlyConfigured
 from opaque_keys.edx.keys import CourseKey
 from rest_condition import C
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import BasePermission, IsAuthenticated
 import waffle
 
-from edx_rest_framework_extensions.authentication import is_jwt_authenticated
+from edx_rest_framework_extensions.auth.jwt.authentication import is_jwt_authenticated
+from edx_rest_framework_extensions.auth.jwt.decoder import (
+    decode_jwt_filters, decode_jwt_scopes, decode_jwt_is_restricted
+)
 from edx_rest_framework_extensions.config import NAMESPACED_SWITCH_ENFORCE_JWT_SCOPES
-from edx_rest_framework_extensions.jwt_decoder import decode_jwt_filters, decode_jwt_scopes, decode_jwt_is_restricted
-
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +34,7 @@ class IsUserInUrl(BasePermission):
     Allows access if the requesting user matches the user in the URL.
     """
     def has_permission(self, request, view):
-        allowed = request.user.username.lower() == _get_username_param(request)
+        allowed = request.user.username.lower() == get_username_param(request)
         if not allowed:
             log.info(u"Permission IsUserInUrl: not satisfied for requesting user %s.", request.user.username)
         return allowed
@@ -125,7 +124,7 @@ class JwtHasUserFilterForRequestedUser(BasePermission):
             # no user filters are present in the token to limit access
             return True
 
-        username_param = _get_username_param(request)
+        username_param = get_username_param(request)
         allowed = user_filter == username_param
         if not allowed:
             log.warning(
@@ -155,7 +154,7 @@ _JWT_RESTRICTED_PERMISSIONS = (
 JWT_RESTRICTED_APPLICATION_OR_USER_ACCESS = C(IsAuthenticated) & (_NOT_JWT_RESTRICTED_PERMISSIONS | _JWT_RESTRICTED_PERMISSIONS)
 
 
-def _get_username_param(request):
+def get_username_param(request):
     user_parameter_name = 'username'
     url_username = (
         getattr(request, 'parser_context', {}).get('kwargs', {}).get(user_parameter_name, '') or

@@ -1,4 +1,4 @@
 """ Utility functions. """
 
-# for backward compatibility of old imports
-from .jwt_decoder import jwt_decode_handler  # pylint: disable=unused-import
+# for compatibility with rest_framework_jwt
+from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler  # pylint: disable=unused-import
