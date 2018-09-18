@@ -3,7 +3,6 @@ Middleware to ensure best practices of DRF and other endpoints.
 """
 import logging
 
-from django.conf import settings
 from edx_django_utils import monitoring
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
@@ -159,83 +158,3 @@ class RequestMetricsMiddleware(object):
         else:
             auth_type = 'session-or-unknown'
         monitoring.set_custom_metric('request_auth_type', auth_type)
-
-
-class JwtAuthCookieMiddleware(object):
-    """
-    Reconstitutes JWT auth cookies for use by API views which use the JwtAuthentication
-    authentication class.
-
-    We split the JWT across two separate cookies in the browser for security reasons. This
-    middleware reconstitutes the full JWT into a new cookie on the request object for use
-    by the JwtAuthentication class.
-
-    Also, sets the metric 'request_jwt_cookie' with one of the following values:
-        'yes': Value when reconstitution is successful.
-        'no': Value when both cookies are missing and reconstitution is not possible.
-        'missing-XXX': Value when one of the 2 required cookies is missing.  XXX will be
-            replaced by the cookie name, which may be set as a setting.  Defaults would
-            be 'missing-edx-jwt-cookie-header-payload' or 'missing-edx-jwt-cookie-signature'.
-
-    """
-    _JWT_DELIMITER = '.'
-
-    # The following are JWT_AUTH setting keys.
-    _JWT_AUTH_COOKIE_KEY = 'JWT_AUTH_COOKIE'
-    _JWT_AUTH_COOKIE_HEADER_PAYLOAD_KEY = 'JWT_AUTH_COOKIE_HEADER_PAYLOAD'
-    _JWT_AUTH_COOKIE_SIGNATURE_KEY = 'JWT_AUTH_COOKIE_SIGNATURE'
-
-    _JWT_COOKIE_NAME_DEFAULTS = {
-        _JWT_AUTH_COOKIE_KEY: 'edx-jwt-cookie',
-        _JWT_AUTH_COOKIE_HEADER_PAYLOAD_KEY: 'edx-jwt-cookie-header-payload',
-        _JWT_AUTH_COOKIE_SIGNATURE_KEY: 'edx-jwt-cookie-signature',
-    }
-
-    def _get_jwt_auth_cookie_setting(self, key):
-        """
-        Return the given JWT_AUTH setting value if set.  Otherwise, returns default.
-        """
-        value = settings.JWT_AUTH.get(key)
-        if value:
-            return value
-
-        return self._JWT_COOKIE_NAME_DEFAULTS[key]
-
-    def _get_missing_cookie_message_and_metric(self, cookie_name):
-        """ Returns tuple with missing cookie (log_message, metric_value) """
-        cookie_missing_message = '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
-                cookie_name
-        )
-        request_jwt_cookie = 'missing-{}'.format(cookie_name)
-        return cookie_missing_message, request_jwt_cookie
-
-    def process_request(self, request):
-        """
-        Reconstitute the full JWT and add a new cookie on the request object.
-        """
-        header_payload_cookie_name = self._get_jwt_auth_cookie_setting(self._JWT_AUTH_COOKIE_HEADER_PAYLOAD_KEY)
-        signature_cookie_name = self._get_jwt_auth_cookie_setting(self._JWT_AUTH_COOKIE_SIGNATURE_KEY)
-
-        header_payload_cookie = request.COOKIES.get(header_payload_cookie_name)
-        signature_cookie = request.COOKIES.get(signature_cookie_name)
-
-        # Reconstitute JWT auth cookie if split cookies are available.
-        if header_payload_cookie and signature_cookie:
-            jwt_auth_cookie_name = self._get_jwt_auth_cookie_setting(self._JWT_AUTH_COOKIE_KEY)
-            request.COOKIES[jwt_auth_cookie_name] = '{}{}{}'.format(
-                header_payload_cookie,
-                self._JWT_DELIMITER,
-                signature_cookie,
-            )
-            metric_value = 'yes'
-        elif header_payload_cookie or signature_cookie:
-            # Log unexpected case of only finding one cookie.
-            if not header_payload_cookie:
-                log_message, metric_value = self._get_missing_cookie_message_and_metric(header_payload_cookie_name)
-            if not signature_cookie:
-                log_message, metric_value = self._get_missing_cookie_message_and_metric(signature_cookie_name)
-            log.info(log_message)
-        else:
-            metric_value = 'no'
-
-        monitoring.set_custom_metric('request_jwt_cookie', metric_value)
