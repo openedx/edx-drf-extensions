@@ -36,7 +36,7 @@ def jwt_decode_handler(token):
         .. code-block:: python
 
             JWT_AUTH = {
-                'JWT_DECODE_HANDLER': 'edx_rest_framework_extensions.jwt_decoder.jwt_decode_handler',
+                'JWT_DECODE_HANDLER': 'edx_rest_framework_extensions.auth.jwt.decoder.jwt_decode_handler',
                 'JWT_ISSUER': 'https://the.jwt.issuer',
                 'JWT_SECRET_KEY': 'the-jwt-secret-key',  (defaults to settings.SECRET_KEY)
                 'JWT_AUDIENCE': 'the-jwt-audience',
