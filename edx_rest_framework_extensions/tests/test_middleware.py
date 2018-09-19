@@ -3,9 +3,8 @@ Unit tests for middlewares.
 """
 import ddt
 from django.contrib.auth.models import AnonymousUser
-from mock import call, patch
-
 from django.test import override_settings, TestCase, RequestFactory
+from mock import call, patch
 
 from edx_rest_framework_extensions.tests.factories import UserFactory
 from edx_rest_framework_extensions.middleware import RequestMetricsMiddleware

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import edx_rest_framework_extensions
 
@@ -29,7 +29,7 @@ setup(
         'Framework :: Django :: 1.10',
         'Framework :: Django :: 1.11',
     ],
-    packages=['edx_rest_framework_extensions'],
+    packages=find_packages(exclude=["tests"]),
     install_requires=[
         'django>=1.8.9,<2.0',
         'djangorestframework',
