@@ -14,7 +14,7 @@ from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
 from edx_rest_framework_extensions import permissions
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
-from edx_rest_framework_extensions.auth.jwt.tests.test_decoder import generate_jwt
+from edx_rest_framework_extensions.auth.jwt.tests.utils import generate_jwt
 from edx_rest_framework_extensions.tests import factories
 from edx_rest_framework_extensions.tests.factories import UserFactory
 

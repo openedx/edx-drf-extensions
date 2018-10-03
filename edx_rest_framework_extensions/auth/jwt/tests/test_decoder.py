@@ -1,6 +1,5 @@
 """ Tests for utility functions. """
 import copy
-from time import time
 
 import ddt
 import jwt
@@ -9,61 +8,12 @@ from django.conf import settings
 from django.test import override_settings, TestCase
 
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
+from edx_rest_framework_extensions.auth.jwt.tests.utils import (
+    generate_jwt_token,
+    generate_latest_version_payload,
+    generate_unversioned_payload,
+)
 from edx_rest_framework_extensions.tests.factories import UserFactory
-
-
-def generate_jwt(user, scopes=None, filters=None, is_restricted=None):
-    """
-    Generate a valid JWT for authenticated requests.
-    """
-    access_token = _generate_latest_version_payload(user, scopes=scopes, filters=filters, is_restricted=is_restricted)
-    return _generate_jwt_token(access_token)
-
-
-def _generate_jwt_token(payload, signing_key=None):
-    """
-    Generate a valid JWT token for authenticated requests.
-    """
-    signing_key = signing_key or settings.JWT_AUTH['JWT_ISSUERS'][0]['SECRET_KEY']
-    return jwt.encode(payload, signing_key).decode('utf-8')
-
-
-def _generate_latest_version_payload(user, scopes=None, filters=None, version=None, is_restricted=None):
-    """
-    Generate a valid JWT payload given a user and optionally scopes and filters.
-    """
-    payload = _generate_starting_version_payload(user)
-    payload.update({
-        # fix this version and add newly introduced fields as the version updates.
-        'version': '1.1.0',
-        'filters': [],
-        'is_restricted': False,
-    })
-    if scopes is not None:
-        payload['scopes'] = scopes
-    if version is not None:
-        payload['version'] = version
-    if filters is not None:
-        payload['filters'] = filters
-    if is_restricted is not None:
-        payload['is_restricted'] = is_restricted
-    return payload
-
-
-def _generate_starting_version_payload(user):
-    jwt_issuer_data = settings.JWT_AUTH['JWT_ISSUERS'][0]
-    now = int(time())
-    ttl = 600
-    payload = {
-        'iss': jwt_issuer_data['ISSUER'],
-        'aud': jwt_issuer_data['AUDIENCE'],
-        'username': user.username,
-        'email': user.email,
-        'iat': now,
-        'exp': now + ttl,
-        'scopes': [],
-    }
-    return payload
 
 
 def exclude_from_jwt_auth_setting(key):
@@ -90,8 +40,8 @@ class JWTDecodeHandlerTests(TestCase):
     def setUp(self):
         super(JWTDecodeHandlerTests, self).setUp()
         self.user = UserFactory()
-        self.payload = _generate_latest_version_payload(self.user)
-        self.jwt = _generate_jwt_token(self.payload)
+        self.payload = generate_latest_version_payload(self.user)
+        self.jwt = generate_jwt_token(self.payload)
 
     def test_success(self):
         """
@@ -108,7 +58,7 @@ class JWTDecodeHandlerTests(TestCase):
         # Verify that each valid issuer is properly matched against the valid issuers list
         # and used to decode the token that was generated using said valid issuer data
         self.payload['iss'] = jwt_issuer['ISSUER']
-        token = _generate_jwt_token(self.payload, jwt_issuer['SECRET_KEY'])
+        token = generate_jwt_token(self.payload, jwt_issuer['SECRET_KEY'])
         self.assertEqual(jwt_decode_handler(token), self.payload)
 
     def test_failure_invalid_issuer(self):
@@ -123,7 +73,7 @@ class JWTDecodeHandlerTests(TestCase):
                 self.payload['iss'] = 'invalid-issuer'
                 signing_key = 'invalid-secret-key'
                 # Generate a token using the invalid issuer data
-                token = _generate_jwt_token(self.payload, signing_key)
+                token = generate_jwt_token(self.payload, signing_key)
                 # Attempt to decode the token against the entries in the valid issuers list,
                 # which will fail with an InvalidTokenError
                 jwt_decode_handler(token)
@@ -149,7 +99,7 @@ class JWTDecodeHandlerTests(TestCase):
         """
         Verifies the JWT is decoded successfully when the JWT_SUPPORTED_VERSION setting is not specified.
         """
-        token = _generate_jwt_token(self.payload)
+        token = generate_jwt_token(self.payload)
         self.assertDictEqual(jwt_decode_handler(token), self.payload)
 
     @ddt.data(None, '0.5.0', '1.0.0', '1.0.5', '1.5.0', '1.5.5')
@@ -157,8 +107,8 @@ class JWTDecodeHandlerTests(TestCase):
         """
         Verifies the JWT is decoded successfully with different supported versions in the token.
         """
-        jwt_payload = _generate_latest_version_payload(self.user, version=jwt_version)
-        token = _generate_jwt_token(jwt_payload)
+        jwt_payload = generate_latest_version_payload(self.user, version=jwt_version)
+        token = generate_jwt_token(jwt_payload)
         self.assertDictEqual(jwt_decode_handler(token), jwt_payload)
 
     @override_settings(JWT_AUTH=update_jwt_auth_setting({'JWT_SUPPORTED_VERSION': '0.5.0'}))
@@ -169,7 +119,7 @@ class JWTDecodeHandlerTests(TestCase):
         """
         with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
-                token = _generate_jwt_token(self.payload)
+                token = generate_jwt_token(self.payload)
                 jwt_decode_handler(token)
 
             msg = "Token decode failed due to unsupported JWT version number [%s]"
@@ -179,10 +129,10 @@ class JWTDecodeHandlerTests(TestCase):
         """
         Verifies the JWT is upgraded when an old (starting) version is provided.
         """
-        jwt_payload = _generate_starting_version_payload(self.user)
-        token = _generate_jwt_token(jwt_payload)
+        jwt_payload = generate_unversioned_payload(self.user)
+        token = generate_jwt_token(jwt_payload)
 
-        upgraded_payload = _generate_latest_version_payload(self.user, version='1.0.0')
+        upgraded_payload = generate_latest_version_payload(self.user, version='1.0.0')
 
         # Keep time-related values constant for full-proof comparison.
         upgraded_payload['iat'], upgraded_payload['exp'] = jwt_payload['iat'], jwt_payload['exp']

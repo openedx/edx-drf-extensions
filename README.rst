@@ -13,6 +13,17 @@ edX Django REST Framework Extensions  |Travis|_ |Codecov|_
 This library includes extensions of `Django REST Framework <http://www.django-rest-framework.org/>`_
 useful for edX applications.
 
+CSRF API
+--------
+
+This library also includes a ``csrf`` app containing an API endpoint for retrieving CSRF tokens from
+the Django service in which it is installed. This is useful for frontend apps attempting to make POST,
+PUT, and DELETE requests to a Django service with Django's CSRF middleware enabled.
+
+To make use of this API endpoint:
+
+#. Install edx-drf-extensions in your Django project.
+#. Add ``csrf.apps.CsrfAppConfig`` to ``INSTALLED_APPS``.
 
 License
 -------

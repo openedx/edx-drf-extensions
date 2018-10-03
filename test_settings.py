@@ -7,7 +7,10 @@ Django applications, so these settings will not be used.
 
 SECRET_KEY = 'insecure-secret-key'
 
+ROOT_URLCONF = 'csrf.urls'
+
 INSTALLED_APPS = (
+    'csrf.apps.CsrfAppConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django_nose',
