@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from edx_rest_framework_extensions.authentication import JwtAuthentication
+from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 
 
 class CsrfTokenView(APIView):

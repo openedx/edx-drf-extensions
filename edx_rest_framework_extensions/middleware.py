@@ -3,16 +3,6 @@ Middleware to ensure best practices of DRF and other endpoints.
 """
 from edx_django_utils import monitoring
 
-# TODO: ARCH-244: Remove these backward compatible imports.
-
-from rest_framework_jwt.authentication import (
-    BaseJSONWebTokenAuthentication,
-)  # pylint: disable=unused-import
-from edx_rest_framework_extensions.auth.jwt.middleware import (
-    EnsureJWTAuthSettingsMiddleware,
-    JwtAuthCookieMiddleware,
-)  # pylint: disable=unused-import
-
 from .permissions import NotJwtRestrictedApplication   # pylint: disable=unused-import
 
 

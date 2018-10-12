@@ -2,7 +2,7 @@
 from django.test import RequestFactory, TestCase
 
 from edx_rest_framework_extensions.tests import factories
-from edx_rest_framework_extensions.authentication import SessionAuthenticationAllowInactiveUser
+from edx_rest_framework_extensions.auth.session.authentication import SessionAuthenticationAllowInactiveUser
 
 
 class SessionAuthenticationAllowInactiveUserTests(TestCase):
