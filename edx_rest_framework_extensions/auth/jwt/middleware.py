@@ -15,6 +15,7 @@ from edx_rest_framework_extensions.auth.jwt.constants import JWT_DELIMITER
 from edx_rest_framework_extensions.permissions import NotJwtRestrictedApplication
 
 log = logging.getLogger(__name__)
+USE_JWT_COOKIE_HEADER = 'HTTP_USE_JWT_COOKIE'
 
 
 class EnsureJWTAuthSettingsMiddleware(object):
@@ -92,8 +93,9 @@ class JwtAuthCookieMiddleware(object):
         https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions/0009-jwt-in-session-cookie.rst
 
     Also, sets the metric 'request_jwt_cookie' with one of the following values:
-        'yes': Value when reconstitution is successful.
-        'no': Value when both cookies are missing and reconstitution is not possible.
+        'success': Value when reconstitution is successful.
+        'not-requested': Value when jwt cookie authentication was not requested by the client.
+        'missing-both': Value when both cookies are missing and reconstitution is not possible.
         'missing-XXX': Value when one of the 2 required cookies is missing.  XXX will be
             replaced by the cookie name, which may be set as a setting.  Defaults would
             be 'missing-edx-jwt-cookie-header-payload' or 'missing-edx-jwt-cookie-signature'.
@@ -112,17 +114,21 @@ class JwtAuthCookieMiddleware(object):
         """
         Reconstitute the full JWT and add a new cookie on the request object.
         """
+        use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
-        # Reconstitute JWT auth cookie if split cookies are available.
-        if header_payload_cookie and signature_cookie:
+        if not use_jwt_cookie_requested:
+            metric_value = 'not-requested'
+        elif header_payload_cookie and signature_cookie:
+            # Reconstitute JWT auth cookie if split cookies are available and jwt cookie
+            # authentication was requested by the client.
             request.COOKIES[jwt_cookie_name()] = '{}{}{}'.format(
                 header_payload_cookie,
                 JWT_DELIMITER,
                 signature_cookie,
             )
-            metric_value = 'yes'
+            metric_value = 'success'
         elif header_payload_cookie or signature_cookie:
             # Log unexpected case of only finding one cookie.
             if not header_payload_cookie:
@@ -135,6 +141,6 @@ class JwtAuthCookieMiddleware(object):
                 )
             log.warning(log_message)
         else:
-            metric_value = 'no'
+            metric_value = 'missing-both'
 
         monitoring.set_custom_metric('request_jwt_cookie', metric_value)

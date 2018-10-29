@@ -27,6 +27,7 @@ from edx_rest_framework_extensions.auth.jwt.cookies import (
 from edx_rest_framework_extensions.auth.jwt.middleware import (
     EnsureJWTAuthSettingsMiddleware,
     JwtAuthCookieMiddleware,
+    USE_JWT_COOKIE_HEADER,
 )
 
 
@@ -179,6 +180,12 @@ class TestJwtAuthCookieMiddleware(TestCase):
         self.request = RequestFactory().get('/')
         self.middleware = JwtAuthCookieMiddleware()
 
+    @patch('edx_django_utils.monitoring.set_custom_metric')
+    def test_do_not_use_jwt_cookies(self, mock_set_custom_metric):
+        self.middleware.process_request(self.request)
+        self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
+        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'not-requested')
+
     @ddt.data(
         (jwt_cookie_header_payload_name(), jwt_cookie_signature_name()),
         (jwt_cookie_signature_name(), jwt_cookie_header_payload_name()),
@@ -189,6 +196,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
     def test_missing_cookies(
             self, set_cookie_name, missing_cookie_name, mock_set_custom_metric, mock_log
     ):
+        self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.request.COOKIES[set_cookie_name] = 'test'
         self.middleware.process_request(self.request)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
@@ -200,14 +208,16 @@ class TestJwtAuthCookieMiddleware(TestCase):
 
     @patch('edx_django_utils.monitoring.set_custom_metric')
     def test_no_cookies(self, mock_set_custom_metric):
+        self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.middleware.process_request(self.request)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
-        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'no')
+        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'missing-both')
 
     @patch('edx_django_utils.monitoring.set_custom_metric')
     def test_success(self, mock_set_custom_metric):
+        self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.request.COOKIES[jwt_cookie_header_payload_name()] = 'header.payload'
         self.request.COOKIES[jwt_cookie_signature_name()] = 'signature'
         self.middleware.process_request(self.request)
         self.assertEqual(self.request.COOKIES[jwt_cookie_name()], 'header.payload.signature')
-        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'yes')
+        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'success')
