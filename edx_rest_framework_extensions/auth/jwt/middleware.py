@@ -100,6 +100,13 @@ class JwtAuthCookieMiddleware(object):
             replaced by the cookie name, which may be set as a setting.  Defaults would
             be 'missing-edx-jwt-cookie-header-payload' or 'missing-edx-jwt-cookie-signature'.
 
+    This middleware must appear before any AuthenticationMiddleware.  For example::
+
+        MIDDLEWARE_CLASSES = (
+            'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+        )
+
     """
 
     def _get_missing_cookie_message_and_metric(self, cookie_name):

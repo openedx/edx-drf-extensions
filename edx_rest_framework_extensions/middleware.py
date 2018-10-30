@@ -3,8 +3,6 @@ Middleware to ensure best practices of DRF and other endpoints.
 """
 from edx_django_utils import monitoring
 
-from .permissions import NotJwtRestrictedApplication   # pylint: disable=unused-import
-
 
 class RequestMetricsMiddleware(object):
     """
