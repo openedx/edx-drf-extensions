@@ -91,4 +91,11 @@ class TestRequestMetricsMiddleware(TestCase):
         self.request.user = UserFactory()
 
         self.middleware.process_response(self.request, None)
-        mock_set_custom_metric.assert_called_once_with('request_auth_type', 'session-or-unknown')
+        mock_set_custom_metric.assert_any_call('request_auth_type', 'session-or-unknown')
+
+    @patch('edx_django_utils.monitoring.set_custom_metric')
+    def test_request_user_id_metric(self, mock_set_custom_metric):
+        self.request.user = UserFactory()
+
+        self.middleware.process_response(self.request, None)
+        mock_set_custom_metric.assert_any_call('request_user_id', self.request.user.id)

@@ -12,6 +12,7 @@ edX Django REST Framework Extensions  |Travis|_ |Codecov|_
 
 This library includes extensions of `Django REST Framework <http://www.django-rest-framework.org/>`_
 useful for edX applications.
+This library is also used for api extensions that do not use DRF.
 
 CSRF API
 --------

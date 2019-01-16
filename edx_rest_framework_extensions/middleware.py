@@ -11,9 +11,10 @@ class RequestMetricsMiddleware(object):
     Possible metrics include:
         request_auth_type: Example values include: no-user, unauthenticated,
             jwt, bearer, other-token-type, or session-or-unknown
-        request_user_agent: The user agent string from the request header.
         request_client_name: The client name from edx-rest-api-client calls.
         request_referer
+        request_user_agent: The user agent string from the request header.
+        request_user_id: The user id of the request user.
 
     This middleware is dependent on the RequestCacheMiddleware. You must
     include this middleware later.  For example::
@@ -23,8 +24,7 @@ class RequestMetricsMiddleware(object):
             'edx_rest_framework_extensions.middleware.RequestMetricsMiddleware',
         )
 
-    TODO: Make edx-django-utils _check_middleware_dependencies public and use
-    it here. See https://github.com/edx/edx-django-utils/blob/e45137359c85f36f4f7495725c48e4af1146fe5a/edx_django_utils/private_utils.py#L12
+    This middleware should also appear after any authentication middleware.
 
     """
 
@@ -35,8 +35,19 @@ class RequestMetricsMiddleware(object):
         self._set_request_auth_type_metric(request)
         self._set_request_user_agent_metrics(request)
         self._set_request_referer_metric(request)
+        self._set_request_user_id_metric(request)
 
         return response
+
+    def _set_request_user_id_metric(self, request):
+        """
+        Add request_user_id metric
+
+        Metrics:
+             request_user_id
+        """
+        if hasattr(request, 'user') and hasattr(request.user, 'id') and request.user.id:
+            monitoring.set_custom_metric('request_user_id', request.user.id)
 
     def _set_request_referer_metric(self, request):
         """
