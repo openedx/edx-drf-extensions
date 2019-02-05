@@ -94,37 +94,6 @@ class JWTDecodeHandlerTests(TestCase):
 
             patched_log.exception.assert_any_call("Token verification failed.")
 
-    @override_settings(JWT_AUTH=exclude_from_jwt_auth_setting('JWT_SUPPORTED_VERSION'))
-    def test_supported_jwt_version_not_specified(self):
-        """
-        Verifies the JWT is decoded successfully when the JWT_SUPPORTED_VERSION setting is not specified.
-        """
-        token = generate_jwt_token(self.payload)
-        self.assertDictEqual(jwt_decode_handler(token), self.payload)
-
-    @ddt.data(None, '0.5.0', '1.0.0', '1.0.5', '1.5.0', '1.5.5')
-    def test_supported_jwt_version(self, jwt_version):
-        """
-        Verifies the JWT is decoded successfully with different supported versions in the token.
-        """
-        jwt_payload = generate_latest_version_payload(self.user, version=jwt_version)
-        token = generate_jwt_token(jwt_payload)
-        self.assertDictEqual(jwt_decode_handler(token), jwt_payload)
-
-    @override_settings(JWT_AUTH=update_jwt_auth_setting({'JWT_SUPPORTED_VERSION': '0.5.0'}))
-    def test_unsupported_jwt_version(self):
-        """
-        Verifies the function logs decode failures, and raises an
-        InvalidTokenError if the token version is not supported.
-        """
-        with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
-            with self.assertRaises(jwt.InvalidTokenError):
-                token = generate_jwt_token(self.payload)
-                jwt_decode_handler(token)
-
-            msg = "Token decode failed due to unsupported JWT version number [%s]"
-            patched_log.info.assert_any_call(msg, '1.1.0')
-
     def test_upgrade(self):
         """
         Verifies the JWT is upgraded when an old (starting) version is provided.

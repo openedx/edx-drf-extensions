@@ -47,8 +47,6 @@ JWT_AUTH = {
 
     'JWT_SECRET_KEY': 'test-key',
 
-    'JWT_SUPPORTED_VERSION': '1.0.0',
-
     'JWT_VERIFY_AUDIENCE': False,
 
     'JWT_VERIFY_EXPIRATION': True,

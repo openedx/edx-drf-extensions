@@ -15,10 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class JwtTokenVersion(object):
-    latest_supported = '1.1.0'
-
-    starting_version = '1.0.0'
-    added_version = '1.1.0'
+    # 1.1.0: The first version that was included directly in the token.
+    starting_version = '1.0.0'  # version used for tokens created before version was introduced.
 
 
 def jwt_decode_handler(token):
@@ -84,17 +82,8 @@ def decode_jwt_filters(token):
 def _set_token_defaults(token):
     """
     Returns an updated token that includes default values for
-    fields that were introduced since the token was created
-    by checking its version number.
+    certain fields that were introduced since the token was created.
     """
-    def _verify_version(jwt_version):
-        supported_version = Version(
-            settings.JWT_AUTH.get('JWT_SUPPORTED_VERSION', JwtTokenVersion.latest_supported)
-        )
-        if jwt_version.major > supported_version.major:
-            logger.info('Token decode failed due to unsupported JWT version number [%s]', str(jwt_version))
-            raise jwt.InvalidTokenError('JWT version number [%s] is unsupported', str(jwt_version))
-
     def _get_and_set_version(token):
         """
         Tokens didn't always contain a version number so we
@@ -126,8 +115,7 @@ def _set_token_defaults(token):
         if 'filters' not in token:
             token['filters'] = []
 
-    token_version = _get_and_set_version(token)
-    _verify_version(token_version)
+    _get_and_set_version(token)
     _set_is_restricted(token)
     _set_filters(token)
     return token
