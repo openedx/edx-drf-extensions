@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class JwtTokenVersion(object):
-    latest_supported = '1.1.0'
+    default_latest_supported = '1.2.0'
 
     starting_version = '1.0.0'
     added_version = '1.1.0'
@@ -89,7 +89,7 @@ def _set_token_defaults(token):
     """
     def _verify_version(jwt_version):
         supported_version = Version(
-            settings.JWT_AUTH.get('JWT_SUPPORTED_VERSION', JwtTokenVersion.latest_supported)
+            settings.JWT_AUTH.get('JWT_SUPPORTED_VERSION', JwtTokenVersion.default_latest_supported)
         )
         if jwt_version.major > supported_version.major:
             logger.info('Token decode failed due to unsupported JWT version number [%s]', str(jwt_version))
