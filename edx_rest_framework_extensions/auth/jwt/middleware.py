@@ -12,10 +12,13 @@ from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_signature_name,
 )
 from edx_rest_framework_extensions.auth.jwt.constants import JWT_DELIMITER
+from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.permissions import NotJwtRestrictedApplication
+from edx_rest_framework_extensions.utils import REQUEST_CACHE
 
 log = logging.getLogger(__name__)
 USE_JWT_COOKIE_HEADER = 'HTTP_USE_JWT_COOKIE'
+JWT_USER_ID_CACHE_KEY = 'jwt_user_id'
 
 
 class EnsureJWTAuthSettingsMiddleware(object):
@@ -117,6 +120,43 @@ class JwtAuthCookieMiddleware(object):
         request_jwt_cookie = 'missing-{}'.format(cookie_name)
         return cookie_missing_message, request_jwt_cookie
 
+    def _get_jwt_token(self, header_payload_cookie, signature_cookie):
+        """
+        Returns the complete jwt token, or None if the header_payload or signature is missing.
+        """
+        if not (header_payload_cookie and signature_cookie):
+            return None
+
+        return '{}{}{}'.format(
+            header_payload_cookie,
+            JWT_DELIMITER,
+            signature_cookie,
+        )
+
+    def _cache_jwt_user_id(self, jwt_token):
+        """
+        When possible, caches the user_id from the JWT.
+        """
+        if not jwt_token:
+            return
+
+        try:
+            # import pdb;  pdb.set_trace();
+            decoded_jwt = jwt_decode_handler(jwt_token)
+            if 'user_id' in decoded_jwt:
+                REQUEST_CACHE.set(JWT_USER_ID_CACHE_KEY, decoded_jwt['user_id'])
+        except:
+            # If the JWT can't be decoded, assume that problem will be dealt with elsewhere.
+            pass
+
+    @classmethod
+    def get_jwt_user_id(cls):
+        """
+        Returns the user_id stored in the JWT, or None if not found.
+        """
+        cached_response = REQUEST_CACHE.get_cached_response(JWT_USER_ID_CACHE_KEY)
+        return None if not cached_response.is_found else cached_response.value
+
     def process_request(self, request):
         """
         Reconstitute the full JWT and add a new cookie on the request object.
@@ -126,15 +166,15 @@ class JwtAuthCookieMiddleware(object):
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
         if not use_jwt_cookie_requested:
+            jwt_token = self._get_jwt_token(header_payload_cookie, signature_cookie)
+            self._cache_jwt_user_id(jwt_token)
             metric_value = 'not-requested'
         elif header_payload_cookie and signature_cookie:
             # Reconstitute JWT auth cookie if split cookies are available and jwt cookie
             # authentication was requested by the client.
-            request.COOKIES[jwt_cookie_name()] = '{}{}{}'.format(
-                header_payload_cookie,
-                JWT_DELIMITER,
-                signature_cookie,
-            )
+            jwt_token = self._get_jwt_token(header_payload_cookie, signature_cookie)
+            self._cache_jwt_user_id(jwt_token)
+            request.COOKIES[jwt_cookie_name()] = jwt_token
             metric_value = 'success'
         elif header_payload_cookie or signature_cookie:
             # Log unexpected case of only finding one cookie.
