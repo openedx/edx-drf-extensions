@@ -3,6 +3,7 @@ JWT Authentication cookie utilities.
 """
 
 from django.conf import settings
+from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 
 
 def jwt_cookie_name():
@@ -19,3 +20,17 @@ def jwt_cookie_signature_name():
 
 def jwt_refresh_cookie_name():
     return settings.JWT_AUTH.get('JWT_AUTH_REFRESH_COOKIE') or 'edx-jwt-refresh-cookie'
+
+
+def get_decoded_jwt(request):
+    """
+    Grab jwt from jwt cookie in request if possible.
+
+    Returns a decoded jwt dict if it can be found.
+    Returns None if the jwt is not found.
+    """
+    jwt_cookie = request.COOKIES.get(jwt_cookie_name(), None)
+
+    if not jwt_cookie:
+        return None
+    return jwt_decode_handler(jwt_cookie)
