@@ -46,17 +46,6 @@ class TestJwtAuthCookies(TestCase):
         self.assertEquals(expected_decoded_jwt, decoded_jwt)
 
     def test_get_decoded_jwt_when_no_cookie(self):
-        mock_request = mock.Mock(COOKIES={}, auth=None)
+        mock_request = mock.Mock(COOKIES={})
 
         self.assertIsNone(cookies.get_decoded_jwt(mock_request))
-
-    def test_get_decoded_jwt_from_auth(self):
-        user = UserFactory()
-        payload = generate_latest_version_payload(user)
-        jwt = generate_jwt_token(payload)
-        expected_decoded_jwt = jwt_decode_handler(jwt)
-
-        mock_request_with_cookie = mock.Mock(COOKIES={}, auth=jwt)
-
-        decoded_jwt = cookies.get_decoded_jwt(mock_request_with_cookie)
-        self.assertEquals(expected_decoded_jwt, decoded_jwt)
