@@ -9,7 +9,11 @@ from django.test import override_settings, RequestFactory, TestCase
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
+
+from edx_rest_framework_extensions.auth.jwt import authentication
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
+from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
+from edx_rest_framework_extensions.auth.jwt.tests.utils import generate_latest_version_payload, generate_jwt_token
 from edx_rest_framework_extensions.tests import factories
 
 User = get_user_model()
@@ -103,3 +107,20 @@ class JwtAuthenticationTests(TestCase):
                     request
                 )
                 self.assertTrue(logger.called)
+
+    @ddt.data(True, False)
+    def test_get_decoded_jwt_from_auth(self, is_jwt_authentication):
+        """ Verify get_decoded_jwt_from_auth returns the appropriate value. """
+
+        # Mock out the `is_jwt_authenticated` method
+        authentication.is_jwt_authenticated = lambda request: is_jwt_authentication
+
+        user = factories.UserFactory()
+        payload = generate_latest_version_payload(user)
+        jwt = generate_jwt_token(payload)
+        mock_request_with_cookie = mock.Mock(COOKIES={}, auth=jwt)
+
+        expected_decoded_jwt = jwt_decode_handler(jwt) if is_jwt_authentication else None
+
+        decoded_jwt = authentication.get_decoded_jwt_from_auth(mock_request_with_cookie)
+        self.assertEquals(expected_decoded_jwt, decoded_jwt)

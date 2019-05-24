@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication, BaseJSONWebTokenAuthentication
 
+from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.settings import get_setting
 
 logger = logging.getLogger(__name__)
@@ -87,3 +88,16 @@ def is_jwt_authenticated(request):
             )
             return False
     return is_jwt_authenticated
+
+
+def get_decoded_jwt_from_auth(request):
+    """
+    Grab jwt from request.auth in request if possible.
+
+    Returns a decoded jwt dict if it can be found.
+    Returns None if the jwt is not found.
+    """
+    if not is_jwt_authenticated(request):
+        return None
+
+    return jwt_decode_handler(request.auth)
