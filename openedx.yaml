@@ -2,6 +2,10 @@
 # http://open-edx-proposals.readthedocs.io/en/latest/oep-0002-bp-repo-metadata.html#specification
 
 nick: drfx
-oeps: {}
 owner: edx/platform-team
-track-pulls: true
+oeps:
+    oep-7: true
+    oep-18: false
+
+tags:
+    - library
