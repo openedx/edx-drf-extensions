@@ -77,10 +77,13 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
 
 def is_jwt_authenticated(request):
-    is_jwt_authenticated = issubclass(
-        type(request.successful_authenticator),
-        BaseJSONWebTokenAuthentication,
-    )
+    is_jwt_authenticated = False
+    successful_authenticator = getattr(request, 'successful_authenticator', None)
+    if successful_authenticator:
+        is_jwt_authenticated = issubclass(
+            type(successful_authenticator),
+            BaseJSONWebTokenAuthentication
+        )
     if is_jwt_authenticated:
         if not getattr(request, 'auth', None):
             logger.error(
