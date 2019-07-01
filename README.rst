@@ -25,6 +25,9 @@ To make use of this API endpoint:
 
 #. Install edx-drf-extensions in your Django project.
 #. Add ``csrf.apps.CsrfAppConfig`` to ``INSTALLED_APPS``.
+#. Add ``'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware'`` to ``MIDDLEWARE``.
+   This class requires that you specify your middleware configuration with ``MIDDLEWARE`` and not
+   ``MIDDLEWARE_CLASSESS`` as in newer Django versions.
 
 License
 -------
