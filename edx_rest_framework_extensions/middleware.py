@@ -1,10 +1,10 @@
 """
 Middleware to ensure best practices of DRF and other endpoints.
 """
+from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils import monitoring
 
-
-class RequestMetricsMiddleware(object):
+class RequestMetricsMiddleware(MiddlewareMixin):
     """
     Adds various request related metrics.
 

@@ -3,6 +3,7 @@ Middleware supporting JWT Authentication.
 """
 import logging
 
+from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils import monitoring
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
@@ -18,7 +19,7 @@ log = logging.getLogger(__name__)
 USE_JWT_COOKIE_HEADER = 'HTTP_USE_JWT_COOKIE'
 
 
-class EnsureJWTAuthSettingsMiddleware(object):
+class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):
     """
     Django middleware object that ensures the proper Permission classes
     are set on all endpoints that use JWTAuthentication.
@@ -80,7 +81,7 @@ class EnsureJWTAuthSettingsMiddleware(object):
             self._add_missing_jwt_permission_classes(view_class)
 
 
-class JwtAuthCookieMiddleware(object):
+class JwtAuthCookieMiddleware(MiddlewareMixin):
     """
     Reconstitutes JWT auth cookies for use by API views which use the JwtAuthentication
     authentication class.
