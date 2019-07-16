@@ -63,6 +63,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
                     payload_value = payload.get(claim)
 
                     if getattr(user, attr) != payload_value and payload_value is not None:
+                        logger.info('Updating attribute %s for user %s with value %s', attr, user.id, payload_value)
                         setattr(user, attr, payload_value)
                         attributes_updated = True
 
