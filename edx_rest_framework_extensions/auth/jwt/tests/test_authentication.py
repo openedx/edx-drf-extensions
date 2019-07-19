@@ -78,6 +78,65 @@ class JwtAuthenticationTests(TestCase):
         self.assertEqual(user.email, new_email)
         self.assertTrue(user.is_staff)
 
+    @override_settings(
+        EDX_DRF_EXTENSIONS={
+            'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {'email': 'email', 'is_staff': 'is_staff', 'tags': 'tags'},
+            'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': ['tags']
+        }
+    )
+    def test_authenticate_credentials_user_attributes_merge_attributes(self):
+        """ Test whether the user model is being assigned all custom fields from the payload. """
+
+        username = 'ckramer'
+        email = 'ckramer@hotmail.com'
+        old_tags = {'country': 'USA', 'browser': 'Firefox'}
+        new_tags = {'browser': 'Chrome'}
+        expected_tags = {'country': 'USA', 'browser': 'Chrome'}
+
+        user = factories.UserFactory(email=email, username=username, is_staff=False)
+        setattr(user, 'tags', old_tags)
+        self.assertEqual(user.email, email)
+        self.assertFalse(user.is_staff)
+
+        payload = {'username': username, 'email': email, 'is_staff': True, 'tags': new_tags}
+
+        # Patch get_or_create so that our tags attribute is on the user object
+        with mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.get_user_model') as mock_get_user_model:
+            mock_get_user_model().objects.get_or_create.return_value = (user, False)
+
+            user = JwtAuthentication().authenticate_credentials(payload)
+        self.assertEqual(user.tags, expected_tags)
+        self.assertEqual(user.email, email)
+        self.assertTrue(user.is_staff)
+
+    @override_settings(
+        EDX_DRF_EXTENSIONS={
+            'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {'email': 'email', 'is_staff': 'is_staff', 'tags': 'tags'},
+            'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': ['tags']
+        }
+    )
+    def test_authenticate_credentials_user_attributes_new_mergeable_attributes(self):
+        """ Test whether the user model is being assigned all custom fields from the payload. """
+
+        username = 'ckramer'
+        email = 'ckramer@hotmail.com'
+        new_tags = {'browser': 'Chrome'}
+
+        user = factories.UserFactory(email=email, username=username, is_staff=False)
+        self.assertEqual(user.email, email)
+        self.assertFalse(user.is_staff)
+
+        payload = {'username': username, 'email': email, 'is_staff': True, 'tags': new_tags}
+
+        # Patch get_or_create so that our tags attribute is on the user object
+        with mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.get_user_model') as mock_get_user_model:
+            mock_get_user_model().objects.get_or_create.return_value = (user, False)
+
+            user = JwtAuthentication().authenticate_credentials(payload)
+        self.assertEqual(user.tags, new_tags)
+        self.assertEqual(user.email, email)
+        self.assertTrue(user.is_staff)
+
     def test_authenticate_credentials_user_retrieval_failed(self):
         """ Verify exceptions raised during user retrieval are properly logged. """
 

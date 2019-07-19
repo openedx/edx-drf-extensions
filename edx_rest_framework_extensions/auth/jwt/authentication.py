@@ -40,6 +40,14 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         """
         return get_setting('JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING')
 
+    def get_jwt_claim_mergeable_attributes(self):
+        """ Returns a list of user model attributes that should be merged into from the JWT.
+
+        Returns
+            list
+        """
+        return get_setting('JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES')
+
     def authenticate(self, request):
         try:
             return super(JwtAuthentication, self).authenticate(request)
@@ -59,12 +67,30 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             try:
                 user, __ = get_user_model().objects.get_or_create(username=username)
                 attributes_updated = False
-                for claim, attr in self.get_jwt_claim_attribute_map().items():
+                attribute_map = self.get_jwt_claim_attribute_map()
+                attributes_to_merge = self.get_jwt_claim_mergeable_attributes()
+                for claim, attr in attribute_map.items():
                     payload_value = payload.get(claim)
 
-                    if getattr(user, attr) != payload_value and payload_value is not None:
-                        setattr(user, attr, payload_value)
-                        attributes_updated = True
+                    if attr in attributes_to_merge:
+                        # Merge new values that aren't already set in the user dictionary
+                        if not payload_value:
+                            continue
+
+                        current_value = getattr(user, attr, None)
+
+                        if current_value:
+                            for (key, value) in payload_value.items():
+                                if current_value[key] != value:
+                                    current_value[key] = value
+                                    attributes_updated = True
+                        else:
+                            setattr(user, attr, payload_value)
+                            attributes_updated = True
+                    else:
+                        if getattr(user, attr) != payload_value and payload_value is not None:
+                            setattr(user, attr, payload_value)
+                            attributes_updated = True
 
                 if attributes_updated:
                     user.save()

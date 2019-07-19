@@ -26,6 +26,7 @@ DEFAULT_SETTINGS = {
         'administrator': 'is_staff',
         'email': 'email',
     },
+    'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': ()
 }
 
 
@@ -89,7 +90,7 @@ def get_jwt_issuers():
 def get_first_jwt_issuer():
     """
     Retrieves the first issuer in the JWT_ISSUERS list.
-    
+
     As mentioned above, support for multiple JWT_ISSUERS is deprecated. They
     are currently used only to distinguish the "ISSUER" field across sites.
     So in many cases, we just need the first issuer value.
