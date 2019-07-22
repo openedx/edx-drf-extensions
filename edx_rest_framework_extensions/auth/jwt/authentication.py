@@ -68,11 +68,11 @@ class JwtAuthentication(JSONWebTokenAuthentication):
                 user, __ = get_user_model().objects.get_or_create(username=username)
                 attributes_updated = False
                 attribute_map = self.get_jwt_claim_attribute_map()
-                my_attributes_to_merge = self.get_jwt_claim_mergeable_attributes()
+                attributes_to_merge = self.get_jwt_claim_mergeable_attributes()
                 for claim, attr in attribute_map.items():
                     payload_value = payload.get(claim)
 
-                    if attr in my_attributes_to_merge:
+                    if attr in attributes_to_merge:
                         # Merge new values that aren't already set in the user dictionary
                         if not payload_value:
                             continue
