@@ -112,7 +112,7 @@ class JwtAuthenticationTests(TestCase):
     @override_settings(
         EDX_DRF_EXTENSIONS={
             'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {'email': 'email', 'is_staff': 'is_staff', 'tags': 'tags'},
-            'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': ['tags']
+            'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': ['not_here', 'tags']
         }
     )
     def test_authenticate_credentials_user_attributes_new_mergeable_attributes(self):
