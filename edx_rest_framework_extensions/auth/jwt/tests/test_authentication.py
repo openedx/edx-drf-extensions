@@ -139,11 +139,13 @@ class JwtAuthenticationTests(TestCase):
 
     @override_settings(
         EDX_DRF_EXTENSIONS={
-            'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {'email': 'email', 'is_staff': 'is_staff', 'tags': 'tags'}
+            'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {'email': 'email', 'is_staff': 'is_staff',
+                                                   'tracking_context': 'tracking_context'}
         }
     )
     def test_authenticate_credentials_user_attributes_new_mergeable_attributes_none(self):
-        """ Test whether the user model is being assigned all custom fields from the payload. """
+        """ Test whether the user model is being assigned all custom fields from the payload when
+        JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES has the default value. """
 
         username = 'ckramer'
         email = 'ckramer@hotmail.com'
