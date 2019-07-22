@@ -80,8 +80,16 @@ class JwtAuthenticationTests(TestCase):
 
     @override_settings(
         EDX_DRF_EXTENSIONS={
-            'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {'email': 'email', 'is_staff': 'is_staff', 'tags': 'tags'},
-            'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': ['tags']
+            'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {
+                'email': 'email',
+                'is_staff': 'is_staff',
+                'tags': 'tags',
+                'fun_attr': 'fun_attr'
+            },
+            'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': [
+                'tags',
+                'fun_attr'
+            ]
         }
     )
     def test_authenticate_credentials_user_attributes_merge_attributes(self):
@@ -90,15 +98,17 @@ class JwtAuthenticationTests(TestCase):
         username = 'ckramer'
         email = 'ckramer@hotmail.com'
         old_tags = {'country': 'USA', 'browser': 'Firefox'}
-        new_tags = {'browser': 'Chrome'}
-        expected_tags = {'country': 'USA', 'browser': 'Chrome'}
+        new_tags = {'browser': 'Chrome', 'new_attr': 'here!'}
+        new_fun_attr = {'shiny': 'object'}
+        expected_tags = {'country': 'USA', 'browser': 'Chrome', 'new_attr': 'here!'}
 
         user = factories.UserFactory(email=email, username=username, is_staff=False)
         setattr(user, 'tags', old_tags)
         self.assertEqual(user.email, email)
         self.assertFalse(user.is_staff)
+        self.assertEqual(user.tags, old_tags)
 
-        payload = {'username': username, 'email': email, 'is_staff': True, 'tags': new_tags}
+        payload = {'username': username, 'email': email, 'is_staff': True, 'tags': new_tags, 'fun_attr': new_fun_attr}
 
         # Patch get_or_create so that our tags attribute is on the user object
         with mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.get_user_model') as mock_get_user_model:
@@ -108,6 +118,7 @@ class JwtAuthenticationTests(TestCase):
         self.assertEqual(user.tags, expected_tags)
         self.assertEqual(user.email, email)
         self.assertTrue(user.is_staff)
+        self.assertEqual(user.fun_attr, new_fun_attr)
 
     @override_settings(
         EDX_DRF_EXTENSIONS={
