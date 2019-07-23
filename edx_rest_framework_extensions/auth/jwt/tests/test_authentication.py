@@ -84,11 +84,13 @@ class JwtAuthenticationTests(TestCase):
                 'email': 'email',
                 'is_staff': 'is_staff',
                 'tags': 'tags',
-                'fun_attr': 'fun_attr'
+                'fun_attr': 'fun_attr',
+                'fruit': 'fruit'
             },
             'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': [
                 'tags',
-                'fun_attr'
+                'fun_attr',
+                'fruit'
             ]
         }
     )
@@ -101,12 +103,15 @@ class JwtAuthenticationTests(TestCase):
         new_tags = {'browser': 'Chrome', 'new_attr': 'here!'}
         new_fun_attr = {'shiny': 'object'}
         expected_tags = {'country': 'USA', 'browser': 'Chrome', 'new_attr': 'here!'}
+        old_fruit = {'fruit': 'apple'}
 
         user = factories.UserFactory(email=email, username=username, is_staff=False)
         setattr(user, 'tags', old_tags)
+        setattr(user, 'fruit', old_fruit)
         self.assertEqual(user.email, email)
         self.assertFalse(user.is_staff)
         self.assertEqual(user.tags, old_tags)
+        self.assertEqual(user.fruit, old_fruit)
 
         payload = {'username': username, 'email': email, 'is_staff': True, 'tags': new_tags, 'fun_attr': new_fun_attr}
 
@@ -119,6 +124,7 @@ class JwtAuthenticationTests(TestCase):
         self.assertEqual(user.email, email)
         self.assertTrue(user.is_staff)
         self.assertEqual(user.fun_attr, new_fun_attr)
+        self.assertEqual(user.fruit, old_fruit)
 
     @override_settings(
         EDX_DRF_EXTENSIONS={
