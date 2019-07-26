@@ -106,11 +106,11 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             should_be_included=include_jwt_auth,
         )
 
-        with patch('edx_rest_framework_extensions.auth.jwt.middleware.log.warning') as mock_warning:
+        with patch('edx_rest_framework_extensions.auth.jwt.middleware.log.info') as mock_info:
             self.assertIsNone(
                 self.middleware.process_view(self.request, view, None, None)
             )
-            self.assertEqual(mock_warning.called, include_jwt_auth and not include_required_perm)
+            self.assertEqual(mock_info.called, include_jwt_auth and not include_required_perm)
 
         # verify post-conditions
 

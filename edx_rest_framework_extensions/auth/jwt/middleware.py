@@ -57,8 +57,12 @@ class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):
 
         for perm_class in self._required_permission_classes:
             if not self._includes_base_class(permission_classes, perm_class):
-                log.warning(
-                    u"The view %s allows Jwt Authentication but needs to include the %s permission class (adding it for you)",
+                message = (
+                    u"The view %s allows Jwt Authentication. The required permission class, %s,",
+                    u" was automatically added."
+                )
+                log.info(
+                    message,
                     view_class.__name__,
                     perm_class.__name__,
                 )
