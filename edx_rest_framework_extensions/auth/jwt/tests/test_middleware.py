@@ -2,23 +2,21 @@
 Unit tests for jwt authentication middlewares.
 """
 import ddt
+from django.conf.urls import url
+from django.http.cookie import SimpleCookie
+from django.test import Client, RequestFactory, TestCase, override_settings
+from edx_django_utils.cache import RequestCache
 from itertools import product
-from mock import call, patch
-
-from django.test import TestCase, RequestFactory
+from mock import patch
 from rest_condition import C
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import BaseAuthentication, SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
-from edx_rest_framework_extensions.permissions import (
-    IsStaff,
-    IsSuperuser,
-    JwtHasContentOrgFilterForRequestedCourse,
-    NotJwtRestrictedApplication,
-)
 from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_name,
     jwt_cookie_header_payload_name,
@@ -27,8 +25,17 @@ from edx_rest_framework_extensions.auth.jwt.cookies import (
 from edx_rest_framework_extensions.auth.jwt.middleware import (
     EnsureJWTAuthSettingsMiddleware,
     JwtAuthCookieMiddleware,
-    USE_JWT_COOKIE_HEADER,
+    JwtRedirectToLoginIfUnauthenticatedMiddleware,
+    USE_JWT_COOKIE_HEADER
 )
+from edx_rest_framework_extensions.permissions import (
+    IsStaff,
+    IsSuperuser,
+    JwtHasContentOrgFilterForRequestedCourse,
+    LoginRedirectIfUnauthenticated,
+    NotJwtRestrictedApplication
+)
+from edx_rest_framework_extensions.tests.factories import UserFactory
 
 
 class SomeIncludedPermissionClass(object):
@@ -173,6 +180,136 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         self.assertIn(NotJwtRestrictedApplication, HasNoCondPermView.permission_classes)
 
 
+class MockJwtAuthentication(BaseAuthentication):
+    """
+    Authenticates a user if the reconstituted jwt cookie contains the expected value.
+
+    The reconstituted value would only be available if JwtAuthCookieMiddleware can
+    correctly reconstitute it.
+    """
+    def authenticate(self, request):
+        if request.COOKIES.get(jwt_cookie_name(), None) == 'header.payload.signature':
+            user = UserFactory()
+            return (user, None)
+        else:
+            return None
+
+
+class MockJwtAuthenticationView(APIView):
+    authentication_classes = (MockJwtAuthentication,)
+
+    def get(self, request):  # pylint: disable=unused-argument
+        return Response({'success': True})
+
+
+class LoginRedirectIfUnauthenticatedView(MockJwtAuthenticationView):
+    permission_classes = (LoginRedirectIfUnauthenticated,)
+
+
+class IsAuthenticatedAndLoginRedirectIfUnauthenticatedView(MockJwtAuthenticationView):
+    """ If unnecessary IsAuthenticated is added, LoginRedirectIfUnauthenticated should still work. """
+    permission_classes = (IsAuthenticated, LoginRedirectIfUnauthenticated,)
+
+
+class IsAuthenticatedView(MockJwtAuthenticationView):
+    permission_classes = (IsAuthenticated,)
+
+
+class NoPermissionsRequiredView(MockJwtAuthenticationView):
+    pass
+
+
+urlpatterns = [
+    url(r'^loginredirectifunauthenticated/$', LoginRedirectIfUnauthenticatedView.as_view(), name='payment'),
+    url(r'^isauthenticatedandloginredirect/$', IsAuthenticatedAndLoginRedirectIfUnauthenticatedView.as_view(), name='payment'),  # noqa E501 line too long
+    url(r'^isauthenticated/$', IsAuthenticatedView.as_view(), name='payment'),
+    url(r'^nopermissionsrequired/$', NoPermissionsRequiredView.as_view(), name='payment'),
+]
+
+
+class OverriddenJwtRedirectToLoginIfUnauthenticatedMiddleware(JwtRedirectToLoginIfUnauthenticatedMiddleware):
+    def get_login_url(self, request):  # pylint: disable=unused-argument
+        return '/overridden/login/'
+
+    def is_jwt_auth_enabled_with_login_required(self, request, view_func):  # pylint: disable=unused-argument
+        # force disable jwt cookie reconstitution in all cases
+        return False
+
+
+@ddt.ddt
+class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
+    """
+    Tests integration of JwtRedirectToLoginIfUnauthenticatedMiddleware with JwtAuthCookieMiddleware.
+
+    Note: using an integration test over a unit test, because initial integration was broken.
+    """
+
+    def setUp(self):
+        super(TestJwtRedirectToLoginIfUnauthenticatedMiddleware, self).setUp()
+        RequestCache.clear_all_namespaces()
+        self.client = Client()
+
+    @ddt.data(
+        ('/loginredirectifunauthenticated/', False, 302),
+        ('/loginredirectifunauthenticated/', True, 200),
+        ('/isauthenticatedandloginredirect/', False, 302),
+        ('/isauthenticatedandloginredirect/', True, 200),
+        ('/isauthenticated/', False, 403),
+        ('/isauthenticated/', True, 403),
+        ('/nopermissionsrequired/', False, 200),
+        ('/nopermissionsrequired/', True, 200),
+    )
+    @ddt.unpack
+    @override_settings(
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_middleware',
+        MIDDLEWARE_CLASSES=(
+            'edx_rest_framework_extensions.auth.jwt.middleware.JwtRedirectToLoginIfUnauthenticatedMiddleware',
+            'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
+        ),
+        LOGIN_URL='/test/login/',
+    )
+    def test_login_required_middleware(self, url, has_jwt_cookies, expected_status):
+        if has_jwt_cookies:
+            self.client.cookies = SimpleCookie({
+                jwt_cookie_header_payload_name(): 'header.payload',
+                jwt_cookie_signature_name(): 'signature',
+            })
+        response = self.client.get(url)
+        self.assertEqual(expected_status, response.status_code)
+        if response.status_code == 302:
+            self.assertEqual('/test/login/?next=' + url, response.url)
+
+    @ddt.data(
+        ('/loginredirectifunauthenticated/', False, 302),
+        ('/loginredirectifunauthenticated/', True, 302),
+        ('/isauthenticatedandloginredirect/', False, 302),
+        ('/isauthenticatedandloginredirect/', True, 302),
+        ('/isauthenticated/', False, 403),
+        ('/isauthenticated/', True, 403),
+        ('/nopermissionsrequired/', False, 200),
+        ('/nopermissionsrequired/', True, 200),
+    )
+    @ddt.unpack
+    @override_settings(
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_middleware',
+        MIDDLEWARE_CLASSES=(
+            'edx_rest_framework_extensions.auth.jwt.tests.test_middleware.OverriddenJwtRedirectToLoginIfUnauthenticatedMiddleware',  # noqa E501 line too long
+            'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
+        ),
+        LOGIN_URL='/test/login/',
+    )
+    def test_login_required_overridden_middleware(self, url, has_jwt_cookies, expected_status):
+        if has_jwt_cookies:
+            self.client.cookies = SimpleCookie({
+                jwt_cookie_header_payload_name(): 'header.payload',
+                jwt_cookie_signature_name(): 'signature',
+            })
+        response = self.client.get(url)
+        self.assertEqual(expected_status, response.status_code)
+        if response.status_code == 302:
+            self.assertEqual('/overridden/login/?next=' + url, response.url)
+
+
 @ddt.ddt
 class TestJwtAuthCookieMiddleware(TestCase):
     def setUp(self):
@@ -182,7 +319,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
 
     @patch('edx_django_utils.monitoring.set_custom_metric')
     def test_do_not_use_jwt_cookies(self, mock_set_custom_metric):
-        self.middleware.process_request(self.request)
+        self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
         mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'not-requested')
 
@@ -198,7 +335,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
     ):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.request.COOKIES[set_cookie_name] = 'test'
-        self.middleware.process_request(self.request)
+        self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
         mock_log.warning.assert_called_once_with(
             '%s cookie is missing. JWT auth cookies will not be reconstituted.' %
@@ -209,7 +346,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
     @patch('edx_django_utils.monitoring.set_custom_metric')
     def test_no_cookies(self, mock_set_custom_metric):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
-        self.middleware.process_request(self.request)
+        self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
         mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'missing-both')
 
@@ -218,6 +355,6 @@ class TestJwtAuthCookieMiddleware(TestCase):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.request.COOKIES[jwt_cookie_header_payload_name()] = 'header.payload'
         self.request.COOKIES[jwt_cookie_signature_name()] = 'signature'
-        self.middleware.process_request(self.request)
+        self.middleware.process_view(self.request, None, None, None)
         self.assertEqual(self.request.COOKIES[jwt_cookie_name()], 'header.payload.signature')
         mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'success')

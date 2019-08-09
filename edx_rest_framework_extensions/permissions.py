@@ -144,6 +144,19 @@ class JwtHasUserFilterForRequestedUser(BasePermission):
         return None
 
 
+class LoginRedirectIfUnauthenticated(IsAuthenticated):
+    """
+    A DRF permission class that will login redirect unauthorized users.
+
+    It can be used to convert a plain Django view that was using @login_required
+    into a DRF APIView, which is useful to enable our DRF JwtAuthentication class.
+
+    Requires JwtRedirectToLoginIfUnauthenticatedMiddleware to work.
+
+    """
+    pass
+
+
 _NOT_JWT_RESTRICTED_PERMISSIONS = C(NotJwtRestrictedApplication) & (C(IsStaff) | IsUserInUrl)
 _JWT_RESTRICTED_PERMISSIONS = (
     C(JwtRestrictedApplication) &
