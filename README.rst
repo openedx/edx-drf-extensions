@@ -30,7 +30,7 @@ To make use of this API endpoint:
 License
 -------
 
-The code in this repository is licensed under AGPL unless otherwise noted.
+The code in this repository is licensed under Apache 2.0 unless otherwise noted.
 
 Please see ``LICENSE.txt`` for details.
 
