@@ -4,9 +4,12 @@ Middleware supporting JWT Authentication.
 import logging
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.middleware import get_user
 from django.utils.deprecation import MiddlewareMixin
+from django.utils.functional import SimpleLazyObject
 from edx_django_utils import monitoring
 from edx_django_utils.cache import RequestCache
+from rest_framework.request import Request
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt.cookies import (
@@ -153,6 +156,9 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
     Reconstitutes JWT auth cookies for use by API views which use the JwtAuthentication
     authentication class.
 
+    Has side effect of setting request.user to be available for Jwt Authentication
+    to Middleware using process_view, but not process_request.
+
     We split the JWT across two separate cookies in the browser for security reasons. This
     middleware reconstitutes the full JWT into a new cookie on the request object for use
     by the JwtAuthentication class.
@@ -191,9 +197,16 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         """
         Reconstitute the full JWT and add a new cookie on the request object.
         """
+        assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
+
         use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
+
+        if use_jwt_cookie_requested:
+            # DRF does not set request.user until process_response. This makes it available in process_view.
+            # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
+            request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
 
         if not use_jwt_cookie_requested:
             metric_value = 'not-requested'
@@ -219,8 +232,44 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
             log.warning(log_message)
         else:
             metric_value = 'missing-both'
+            log.warning('Both JWT auth cookies missing. JWT auth cookies will not be reconstituted.')
 
         monitoring.set_custom_metric('request_jwt_cookie', metric_value)
+
+
+def _get_user_from_jwt(request, view_func):
+    user = get_user(request)
+    if user.is_authenticated():
+        return user
+
+    try:
+        jwt_authentication_class = _get_jwt_authentication_class(view_func)
+        if jwt_authentication_class:
+            user_jwt = jwt_authentication_class().authenticate(Request(request))
+            if user_jwt is not None:
+                return user_jwt[0]
+            else:
+                log.warn('Jwt Authentication failed and request.user could not be set.')
+        else:
+            log.warn('Jwt Authentication expected, but view %s is not using a JwtAuthentication class.', view_func)
+    except Exception as e:
+        log.exception('Unknown error attempting to complete Jwt Authentication.')  # pragma: no cover
+
+    return user
+
+
+def _get_jwt_authentication_class(view_func):
+    """
+    Returns the first DRF Authentication class that is a subclass of BaseJSONWebTokenAuthentication
+    """
+    view_class = _get_view_class(view_func)
+    view_authentication_classes = getattr(view_class, 'authentication_classes', tuple())
+    if _includes_base_class(view_authentication_classes, BaseJSONWebTokenAuthentication):
+        return next(
+            current_class for current_class in view_authentication_classes
+            if issubclass(current_class, BaseJSONWebTokenAuthentication)
+        )
+    return None
 
 
 def _includes_base_class(iter_classes, base_class):
