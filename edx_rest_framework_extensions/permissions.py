@@ -9,7 +9,7 @@ from edx_rest_framework_extensions.auth.jwt.authentication import is_jwt_authent
 from edx_rest_framework_extensions.auth.jwt.decoder import (
     decode_jwt_filters, decode_jwt_scopes, decode_jwt_is_restricted
 )
-from edx_rest_framework_extensions.config import NAMESPACED_SWITCH_ENFORCE_JWT_SCOPES
+from edx_rest_framework_extensions.config import SWITCH_ENFORCE_JWT_SCOPES
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class JwtRestrictedApplication(BasePermission):
 
     @classmethod
     def is_enforced_and_jwt_restricted_app(cls, request):
-        is_enforcement_enabled = waffle.switch_is_active(NAMESPACED_SWITCH_ENFORCE_JWT_SCOPES)
+        is_enforcement_enabled = waffle.switch_is_active(SWITCH_ENFORCE_JWT_SCOPES)
         ret_val = is_enforcement_enabled and is_jwt_authenticated(request) and decode_jwt_is_restricted(request.auth)
         log.debug(u"Permission JwtRestrictedApplication: returns %s.", ret_val)
         return ret_val

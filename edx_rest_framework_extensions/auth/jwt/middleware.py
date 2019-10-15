@@ -12,6 +12,7 @@ from edx_django_utils.cache import RequestCache
 from rest_framework.request import Request
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
+from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_name,
     jwt_cookie_header_payload_name,
@@ -19,6 +20,7 @@ from edx_rest_framework_extensions.auth.jwt.cookies import (
 )
 from edx_rest_framework_extensions.auth.jwt.constants import JWT_DELIMITER
 from edx_rest_framework_extensions.permissions import LoginRedirectIfUnauthenticated, NotJwtRestrictedApplication
+from edx_rest_framework_extensions.settings import get_setting
 
 log = logging.getLogger(__name__)
 USE_JWT_COOKIE_HEADER = 'HTTP_USE_JWT_COOKIE'
@@ -203,7 +205,8 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
-        if use_jwt_cookie_requested:
+        is_set_request_user_for_jwt_cookie_enabled = get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE)
+        if use_jwt_cookie_requested and is_set_request_user_for_jwt_cookie_enabled:
             # DRF does not set request.user until process_response. This makes it available in process_view.
             # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
             request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
