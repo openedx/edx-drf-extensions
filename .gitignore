@@ -62,3 +62,6 @@ target/
 .ipynb_checkpoints
 
 .idea/
+
+# A common place to put virtual envs
+.venv
