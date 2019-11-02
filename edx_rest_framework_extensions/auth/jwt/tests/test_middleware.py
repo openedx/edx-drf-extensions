@@ -19,13 +19,13 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
+from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_header_payload_name,
     jwt_cookie_name,
     jwt_cookie_signature_name,
 )
 from edx_rest_framework_extensions.auth.jwt.middleware import (
-    USE_JWT_COOKIE_HEADER,
     EnsureJWTAuthSettingsMiddleware,
     JwtAuthCookieMiddleware,
     JwtRedirectToLoginIfUnauthenticatedMiddleware,

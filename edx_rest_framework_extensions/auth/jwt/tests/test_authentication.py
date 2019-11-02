@@ -6,16 +6,18 @@ import ddt
 import mock
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase, override_settings
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt import authentication
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
+from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
     generate_latest_version_payload,
 )
+from edx_rest_framework_extensions.config import ENABLE_ANONYMOUS_ACCESS_ROLLOUT
 from edx_rest_framework_extensions.tests import factories
 
 
@@ -174,18 +176,51 @@ class JwtAuthenticationTests(TestCase):
         with self.assertRaises(AuthenticationFailed):
             JwtAuthentication().authenticate_credentials({'email': 'test@example.com'})
 
-    def test_authenticate(self):
-        """ Verify exceptions raised during authentication are properly logged. """
-        request = RequestFactory().get('/')
+    _MOCK_ANONYMOUS_RETURN = None
+    _MOCK_USER_AUTH_RETURN = ('mock-user', "mock-auth")
 
-        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', side_effect=Exception):
-            with mock.patch.object(Logger, 'debug') as logger:
-                self.assertRaises(
-                    Exception,
-                    JwtAuthentication().authenticate,
-                    request
-                )
-                self.assertTrue(logger.called)
+    @ddt.data(
+        # CSRF exempt because roll-out is not enabled
+        (False, False, _MOCK_USER_AUTH_RETURN),
+        # CSRF exempt because roll-out is not enabled (even though JWT cookies are used)
+        (False, True, _MOCK_USER_AUTH_RETURN),
+        # CSRF exempt because of anonymous access (similar to SessionAuthentication)
+        (True, True, _MOCK_ANONYMOUS_RETURN),
+        # CSRF exempt because request uses JWT authentication without JWT cookies
+        (True, False, _MOCK_USER_AUTH_RETURN),
+    )
+    @ddt.unpack
+    def test_authenticate_csrf_exempt(self, enable_rollout, use_jwt_cookies, mocked_return_value_user_and_auth):
+        """ Verify authenticate success for cases that are CSRF exempt. """
+        request = RequestFactory().post('/')
+        if use_jwt_cookies:
+            request.META[USE_JWT_COOKIE_HEADER] = 'true'
+
+        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=mocked_return_value_user_and_auth):  # noqa E501 line too long
+            with override_settings(EDX_DRF_EXTENSIONS={ENABLE_ANONYMOUS_ACCESS_ROLLOUT: enable_rollout}):
+                actual_user_and_auth = JwtAuthentication().authenticate(request)
+
+        self.assertEqual(mocked_return_value_user_and_auth, actual_user_and_auth)
+
+    @ddt.data(
+        # CSRF protected because using JWT cookies to successfully authenticate (similar to SessionAuthentication)
+        (True, True, _MOCK_USER_AUTH_RETURN),
+    )
+    @ddt.unpack
+    def test_authenticate_csrf_protected(self, enable_rollout, use_jwt_cookies, mocked_return_value_user_and_auth):
+        """ Verify authenticate exception for CSRF protected cases. """
+        request = RequestFactory().post('/')
+        if use_jwt_cookies:
+            request.META[USE_JWT_COOKIE_HEADER] = 'true'
+
+        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=mocked_return_value_user_and_auth):  # noqa E501 line too long
+            with override_settings(EDX_DRF_EXTENSIONS={ENABLE_ANONYMOUS_ACCESS_ROLLOUT: enable_rollout}):
+                with mock.patch.object(Logger, 'debug') as debug_logger:
+                    with self.assertRaises(PermissionDenied) as context_manager:
+                        JwtAuthentication().authenticate(request)
+
+        self.assertEqual(context_manager.exception.detail, 'CSRF Failed: CSRF cookie not set.')
+        self.assertTrue(debug_logger.called)
 
     @ddt.data(True, False)
     def test_get_decoded_jwt_from_auth(self, is_jwt_authentication):

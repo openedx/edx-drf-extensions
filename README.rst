@@ -10,16 +10,14 @@ edX Django REST Framework Extensions  |Travis|_ |Codecov|_
 .. |Codecov| image:: http://codecov.io/github/edx/edx-drf-extensions/coverage.svg?branch=master
 .. _Codecov: http://codecov.io/github/edx/edx-drf-extensions?branch=master
 
-This library includes extensions of `Django REST Framework <http://www.django-rest-framework.org/>`_
-useful for edX applications.
-This library is also used for api extensions that do not use DRF.
+This library includes various cross-cutting concerns related to APIs. API functionality added to this library must be required for multiple Open edX applications or multiple repositories.
+
+Some of these concerns include extensions of `Django REST Framework <http://www.django-rest-framework.org/>`_ (DRF), which is how the repository initially got its name.
 
 CSRF API
 --------
 
-This library also includes a ``csrf`` app containing an API endpoint for retrieving CSRF tokens from
-the Django service in which it is installed. This is useful for frontend apps attempting to make POST,
-PUT, and DELETE requests to a Django service with Django's CSRF middleware enabled.
+One feature of this library is a ``csrf`` app containing an API endpoint for retrieving CSRF tokens from the Django service in which it is installed. This is useful for frontend apps attempting to make POST, PUT, and DELETE requests to a Django service with Django's CSRF middleware enabled.
 
 To make use of this API endpoint:
 
@@ -41,8 +39,7 @@ Contributions are very welcome.
 
 Please read `How To Contribute <https://github.com/edx/edx-platform/blob/master/CONTRIBUTING.rst>`_ for details.
 
-Even though they were written with ``edx-platform`` in mind, the guidelines
-should be followed for Open edX code in general.
+Even though they were written with ``edx-platform`` in mind, the guidelines should be followed for Open edX code in general.
 
 Reporting Security Issues
 -------------------------

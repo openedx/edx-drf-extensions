@@ -12,7 +12,10 @@ from edx_django_utils.cache import RequestCache
 from rest_framework.request import Request
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
-from edx_rest_framework_extensions.auth.jwt.constants import JWT_DELIMITER
+from edx_rest_framework_extensions.auth.jwt.constants import (
+    JWT_DELIMITER,
+    USE_JWT_COOKIE_HEADER,
+)
 from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_header_payload_name,
     jwt_cookie_name,
@@ -27,7 +30,6 @@ from edx_rest_framework_extensions.settings import get_setting
 
 
 log = logging.getLogger(__name__)
-USE_JWT_COOKIE_HEADER = 'HTTP_USE_JWT_COOKIE'
 
 
 class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):

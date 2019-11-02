@@ -3,17 +3,26 @@
 import logging
 
 from django.contrib.auth import get_user_model
+from django.middleware.csrf import CsrfViewMiddleware
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import (
     BaseJSONWebTokenAuthentication,
     JSONWebTokenAuthentication,
 )
 
+from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
+from edx_rest_framework_extensions.config import ENABLE_ANONYMOUS_ACCESS_ROLLOUT
 from edx_rest_framework_extensions.settings import get_setting
 
 
 logger = logging.getLogger(__name__)
+
+
+class CSRFCheck(CsrfViewMiddleware):
+    def _reject(self, request, reason):
+        # Return the failure reason instead of an HttpResponse
+        return reason
 
 
 class JwtAuthentication(JSONWebTokenAuthentication):
@@ -54,7 +63,28 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
     def authenticate(self, request):
         try:
-            return super(JwtAuthentication, self).authenticate(request)
+            user_and_auth = super(JwtAuthentication, self).authenticate(request)
+
+            is_anonymous_access_rollout_enabled = get_setting(ENABLE_ANONYMOUS_ACCESS_ROLLOUT)
+            # Use Django Setting for rollout to coordinate with frontend-auth changes for
+            # anonymous access being available across MFEs.
+            if not is_anonymous_access_rollout_enabled:
+                return user_and_auth
+
+            # Unauthenticated, CSRF validation not required
+            if not user_and_auth:
+                return user_and_auth
+
+            # Not using JWT cookies, CSRF validation not required
+            use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
+            if not use_jwt_cookie_requested:
+                return user_and_auth
+
+            self.enforce_csrf(request)
+
+            # CSRF passed validation with authenticated user
+            return user_and_auth
+
         except Exception as ex:
             # Errors in production do not need to be logged (as they may be noisy),
             # but debug logging can help quickly resolve issues during development.
@@ -124,6 +154,21 @@ class JwtAuthentication(JSONWebTokenAuthentication):
                 raise exceptions.AuthenticationFailed(msg)
 
         return user
+
+    def enforce_csrf(self, request):
+        """
+        Enforce CSRF validation for Jwt cookie authentication.
+
+        Copied from SessionAuthentication.
+        See https://github.com/encode/django-rest-framework/blob/3f19e66d9f2569895af6e91455e5cf53b8ce5640/rest_framework/authentication.py#L131-L141  # noqa E501 line too long
+        """
+        check = CSRFCheck()
+        # populates request.META['CSRF_COOKIE'], which is used in process_view()
+        check.process_request(request)
+        reason = check.process_view(request, None, (), {})
+        if reason:
+            # CSRF failed, bail with explicit error message
+            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
 
 
 def is_jwt_authenticated(request):
