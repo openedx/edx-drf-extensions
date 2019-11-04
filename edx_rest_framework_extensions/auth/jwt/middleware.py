@@ -252,10 +252,12 @@ def _get_user_from_jwt(request, view_func):
             if user_jwt is not None:
                 return user_jwt[0]
             else:
-                log.warn('Jwt Authentication failed and request.user could not be set.')
+                log.warning('Jwt Authentication failed and request.user could not be set.')
         else:
-            log.warn('Jwt Authentication expected, but view %s is not using a JwtAuthentication class.', view_func)
-    except Exception as e:
+            log.warning(
+                'Jwt Authentication expected, but view %s is not using a JwtAuthentication class.', view_func
+            )
+    except Exception:  # pylint: disable=broad-except
         log.exception('Unknown error attempting to complete Jwt Authentication.')  # pragma: no cover
 
     return user

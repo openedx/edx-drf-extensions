@@ -138,7 +138,7 @@ def _verify_jwt_signature(token, jwt_issuer):
 
     try:
         _ = JWS().verify_compact(token, key_set)
-    except Exception as exc:
+    except Exception:
         logger.exception('Token verification failed.')
         exc_info = sys.exc_info()
         raise jwt.InvalidTokenError(exc_info[2])

@@ -199,4 +199,4 @@ class JwtAuthenticationTests(TestCase):
         expected_decoded_jwt = jwt_decode_handler(jwt) if is_jwt_authentication else None
 
         decoded_jwt = authentication.get_decoded_jwt_from_auth(mock_request_with_cookie)
-        self.assertEquals(expected_decoded_jwt, decoded_jwt)
+        self.assertEqual(expected_decoded_jwt, decoded_jwt)

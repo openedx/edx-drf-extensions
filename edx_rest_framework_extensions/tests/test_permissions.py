@@ -233,7 +233,7 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
         permission_classes = (permissions.JWT_RESTRICTED_APPLICATION_OR_USER_ACCESS,)
         required_scopes = ['required_scope']
 
-        def get(self, request, course_id=None):
+        def get(self, request, course_id=None):  # pylint: disable=unused-argument
             return Response(data="Success")
 
     def _create_user(self, is_staff=False):
