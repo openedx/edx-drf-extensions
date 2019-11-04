@@ -278,7 +278,7 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
         user = self._create_user()
         request = self._create_request()
         self._create_session(request, user)
-        
+
         response = self.SomeClassView().dispatch(request)
         self.assertEqual(response.status_code, 403)
         self._assert_log(mock_log, self.IsUserInUrlLog)
@@ -294,24 +294,79 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
     @ddt.data(
         # **** Unenforced ****
         # unrestricted
-        dict(is_enforced=False, is_restricted=False, is_user_in_url=True, expected_response=200, expected_log=JwtIsUnrestrictedDebugLog),
-        dict(is_enforced=False, is_restricted=False, is_user_in_url=False, expected_response=403, expected_log=IsUserInUrlLog),
+        dict(
+            is_enforced=False,
+            is_restricted=False,
+            is_user_in_url=True,
+            expected_response=200,
+            expected_log=JwtIsUnrestrictedDebugLog
+        ),
+        dict(
+            is_enforced=False,
+            is_restricted=False,
+            is_user_in_url=False,
+            expected_response=403,
+            expected_log=IsUserInUrlLog
+        ),
 
         # restricted
-        dict(is_enforced=False, is_restricted=True, is_user_in_url=True, expected_response=200, expected_log=JwtIsUnrestrictedDebugLog),
-        dict(is_enforced=False, is_restricted=True, is_user_in_url=False, expected_response=403, expected_log=IsUserInUrlLog),
+        dict(
+            is_enforced=False,
+            is_restricted=True,
+            is_user_in_url=True,
+            expected_response=200,
+            expected_log=JwtIsUnrestrictedDebugLog
+        ),
+        dict(
+            is_enforced=False,
+            is_restricted=True,
+            is_user_in_url=False,
+            expected_response=403,
+            expected_log=IsUserInUrlLog
+        ),
 
         # **** Enforced ****
         # unrestricted
-        dict(is_enforced=True, is_restricted=False, is_user_in_url=True, expected_response=200, expected_log=JwtIsUnrestrictedDebugLog),
-        dict(is_enforced=True, is_restricted=False, is_user_in_url=False, expected_response=403, expected_log=IsUserInUrlLog),
+        dict(
+            is_enforced=True,
+            is_restricted=False,
+            is_user_in_url=True,
+            expected_response=200,
+            expected_log=JwtIsUnrestrictedDebugLog
+        ),
+        dict(
+            is_enforced=True,
+            is_restricted=False,
+            is_user_in_url=False,
+            expected_response=403,
+            expected_log=IsUserInUrlLog
+        ),
 
         # restricted (note: further test cases for scopes and filters are in tests below)
-        dict(is_enforced=True, is_restricted=True, is_user_in_url=True, expected_response=403, expected_log=JwtScopesErrorLog),
-        dict(is_enforced=True, is_restricted=True, is_user_in_url=False, expected_response=403, expected_log=JwtScopesErrorLog),
+        dict(
+            is_enforced=True,
+            is_restricted=True,
+            is_user_in_url=True,
+            expected_response=403,
+            expected_log=JwtScopesErrorLog
+        ),
+        dict(
+            is_enforced=True,
+            is_restricted=True,
+            is_user_in_url=False,
+            expected_response=403,
+            expected_log=JwtScopesErrorLog
+        ),
     )
     @ddt.unpack
-    def test_jwt_without_scopes_and_filters(self, is_enforced, is_restricted, is_user_in_url, expected_response, expected_log):
+    def test_jwt_without_scopes_and_filters(
+            self,
+            is_enforced,
+            is_restricted,
+            is_user_in_url,
+            expected_response,
+            expected_log
+    ):
         with patch('edx_rest_framework_extensions.permissions.waffle.switch_is_active') as mock_toggle:
             with patch('edx_rest_framework_extensions.permissions.log') as mock_log:
                 mock_toggle.return_value = is_enforced
@@ -348,11 +403,23 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
 
     @ddt.data(
         # valid org filters
-        dict(filters=['content_org:some_org', 'content_org:another_org'], expected_response=200, expected_log=JwtIsRestrictedDebugLog),
+        dict(
+            filters=['content_org:some_org', 'content_org:another_org'],
+            expected_response=200,
+            expected_log=JwtIsRestrictedDebugLog
+        ),
 
         # invalid org filters
-        dict(filters=['content_org:another_org'], expected_response=403, expected_log=JwtOrgFilterErrorLog),
-        dict(filters=[], expected_response=403, expected_log=JwtOrgFilterErrorLog),
+        dict(
+            filters=['content_org:another_org'],
+            expected_response=403,
+            expected_log=JwtOrgFilterErrorLog
+        ),
+        dict(
+            filters=[],
+            expected_response=403,
+            expected_log=JwtOrgFilterErrorLog
+        ),
     )
     @ddt.unpack
     def test_jwt_org_filters(self, filters, expected_response, expected_log):
@@ -366,11 +433,23 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
 
     @ddt.data(
         # valid user filters
-        dict(user_filters=['user:me'], is_user_in_url=True, expected_response=200, expected_log=JwtIsRestrictedDebugLog),
+        dict(
+            user_filters=['user:me'], is_user_in_url=True,
+            expected_response=200,
+            expected_log=JwtIsRestrictedDebugLog,
+        ),
 
         # invalid user filters
-        dict(user_filters=['user:me'], is_user_in_url=False, expected_response=403, expected_log=JwtUserFilterErrorLog),
-        dict(user_filters=['user:another'], is_user_in_url=True, expected_response=403, expected_log=JwtUserFilterErrorLog),
+        dict(
+            user_filters=['user:me'], is_user_in_url=False,
+            expected_response=403,
+            expected_log=JwtUserFilterErrorLog,
+        ),
+        dict(
+            user_filters=['user:another'], is_user_in_url=True,
+            expected_response=403,
+            expected_log=JwtUserFilterErrorLog,
+        ),
     )
     @ddt.unpack
     def test_jwt_user_filters(self, user_filters, is_user_in_url, expected_response, expected_log):

@@ -401,14 +401,20 @@ class TestJwtAuthCookieMiddleware(TestCase):
     ):
         header = {USE_JWT_COOKIE_HEADER: 'true'}
         self.client.cookies = _get_test_cookie(is_cookie_valid=is_cookie_valid)
-        check_user_middleware_assertion_class = 'CheckRequestUserForJwtAuthMiddleware' if is_request_user_set else 'CheckRequestUserAnonymousForJwtAuthMiddleware'
+        check_user_middleware_assertion_class = (
+            'CheckRequestUserForJwtAuthMiddleware'
+            if is_request_user_set else
+            'CheckRequestUserAnonymousForJwtAuthMiddleware'
+        )
         with override_settings(
             ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_middleware',
             MIDDLEWARE_CLASSES=(
                     'django.contrib.sessions.middleware.SessionMiddleware',
                     'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
                     'django.contrib.auth.middleware.AuthenticationMiddleware',
-                    'edx_rest_framework_extensions.auth.jwt.tests.test_middleware.{}'.format(check_user_middleware_assertion_class),
+                    'edx_rest_framework_extensions.auth.jwt.tests.test_middleware.{}'.format(
+                        check_user_middleware_assertion_class
+                    ),
             ),
             EDX_DRF_EXTENSIONS={
                 ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: is_toggle_enabled,
