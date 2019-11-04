@@ -2,7 +2,7 @@
 Unit tests for jwt authentication middlewares.
 """
 import ddt
-from django.conf.urls import url
+from django.conf.urls import url as url_pattern
 from django.http.cookie import SimpleCookie
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.utils.deprecation import MiddlewareMixin
@@ -10,7 +10,7 @@ from edx_django_utils.cache import RequestCache
 from itertools import product
 from mock import patch, ANY
 from rest_condition import C
-from rest_framework.authentication import BaseAuthentication, SessionAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
@@ -92,7 +92,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
 
         @api_view(["GET"])
         @some_auth_decorator(include_jwt_auth, include_required_perm)
-        def some_function_view(request):
+        def some_function_view(request):  # pylint: disable=unused-argument
             pass
 
         views = dict(
@@ -134,7 +134,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         """
         Verify middleware works for views that don't have an api_view decorator.
         """
-        def some_simple_view(request):
+        def some_simple_view(request):  # pylint: disable=unused-argument
             pass
 
         self.assertIsNone(
@@ -227,11 +227,25 @@ class NoPermissionsRequiredView(MockJwtAuthenticationView):
 
 
 urlpatterns = [
-    url(r'^loginredirectifunauthenticated/$', LoginRedirectIfUnauthenticatedView.as_view()),
-    url(r'^isauthenticatedandloginredirect/$', IsAuthenticatedAndLoginRedirectIfUnauthenticatedView.as_view()),  # noqa E501 line too long
-    url(r'^isauthenticated/$', IsAuthenticatedView.as_view()),
-    url(r'^nopermissionsrequired/$', NoPermissionsRequiredView.as_view()),
-    url(r'^unauthenticated/$', MockUnauthenticatedView.as_view()),
+    url_pattern(
+        r'^loginredirectifunauthenticated/$',
+        LoginRedirectIfUnauthenticatedView.as_view(),
+    ),
+    url_pattern(
+        r'^isauthenticatedandloginredirect/$',
+        IsAuthenticatedAndLoginRedirectIfUnauthenticatedView.as_view()),
+    url_pattern(
+        r'^isauthenticated/$',
+        IsAuthenticatedView.as_view(),
+    ),
+    url_pattern(
+        r'^nopermissionsrequired/$',
+        NoPermissionsRequiredView.as_view(),
+    ),
+    url_pattern(
+        r'^unauthenticated/$',
+        MockUnauthenticatedView.as_view(),
+    ),
 ]
 
 
@@ -424,9 +438,9 @@ class TestJwtAuthCookieMiddleware(TestCase):
             self.assertEqual(200, response.status_code)
 
             if log_warning == self._LOG_WARN_AUTHENTICATION_FAILED:
-                mock_log.warn.assert_called_once_with('Jwt Authentication failed and request.user could not be set.')
+                mock_log.warning.assert_called_once_with('Jwt Authentication failed and request.user could not be set.')
             elif log_warning == self._LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS:
-                mock_log.warn.assert_called_once_with(
+                mock_log.warning.assert_called_once_with(
                     'Jwt Authentication expected, but view %s is not using a JwtAuthentication class.', ANY
                 )
             else:

@@ -123,21 +123,16 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
 
 def is_jwt_authenticated(request):
-    is_jwt_authenticated = False
     successful_authenticator = getattr(request, 'successful_authenticator', None)
-    if successful_authenticator:
-        is_jwt_authenticated = issubclass(
-            type(successful_authenticator),
-            BaseJSONWebTokenAuthentication
+    if not isinstance(successful_authenticator, BaseJSONWebTokenAuthentication):
+        return False
+    if not getattr(request, 'auth', None):
+        logger.error(
+            'Unexpected error: Used JwtAuthentication, '
+            'but the request auth attribute was not populated with the JWT.'
         )
-    if is_jwt_authenticated:
-        if not getattr(request, 'auth', None):
-            logger.error(
-                'Unexpected error: Used JwtAuthentication, '
-                'but the request auth attribute was not populated with the JWT.'
-            )
-            return False
-    return is_jwt_authenticated
+        return False
+    return True
 
 
 def get_decoded_jwt_from_auth(request):

@@ -43,7 +43,7 @@ class TestJwtAuthCookies(TestCase):
         mock_request_with_cookie = mock.Mock(COOKIES={'edx-jwt-cookie': jwt})
 
         decoded_jwt = cookies.get_decoded_jwt(mock_request_with_cookie)
-        self.assertEquals(expected_decoded_jwt, decoded_jwt)
+        self.assertEqual(expected_decoded_jwt, decoded_jwt)
 
     def test_get_decoded_jwt_when_no_cookie(self):
         mock_request = mock.Mock(COOKIES={})

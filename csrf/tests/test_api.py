@@ -18,7 +18,7 @@ class CsrfTokenTests(APITestCase):
         url = reverse('csrf_token')
         user = UserFactory()
         jwt = generate_jwt(user)
-        self.client.credentials(HTTP_AUTHORIZATION='JWT {}'.format(jwt))
+        self.client.credentials(HTTP_AUTHORIZATION='JWT {}'.format(jwt))  # pylint: disable=no-member
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('csrfToken', response.data)

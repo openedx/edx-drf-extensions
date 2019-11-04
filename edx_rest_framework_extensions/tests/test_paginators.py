@@ -97,9 +97,9 @@ class PaginateSearchResultsTestCase(TestCase):
         page = paginate_search_results(self.mock_model, self.search_results, page_size, page_number)
 
         self.mock_model.objects.filter.assert_called_with(pk__in=id_range)
-        self.assertEquals(db_objects, page.object_list)
+        self.assertEqual(db_objects, page.object_list)
         self.assertTrue(page.number, page_number)
-        self.assertEquals(page.has_next(), has_next)
+        self.assertEqual(page.has_next(), has_next)
 
     def test_paginated_results_last_keyword(self):
         """ Test the page returned has the expected db objects and acts
@@ -113,7 +113,7 @@ class PaginateSearchResultsTestCase(TestCase):
         page = paginate_search_results(self.mock_model, self.search_results, page_size, 'last')
 
         self.mock_model.objects.filter.assert_called_with(pk__in=id_range)
-        self.assertEquals(db_objects, page.object_list)
+        self.assertEqual(db_objects, page.object_list)
         self.assertTrue(page.number, page_number)
         self.assertFalse(page.has_next())
 
