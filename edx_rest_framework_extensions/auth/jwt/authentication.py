@@ -114,7 +114,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
                 if attributes_updated:
                     user.save()
-            except:
+            except Exception:
                 msg = 'User retrieval failed.'
                 logger.exception(msg)
                 raise exceptions.AuthenticationFailed(msg)
