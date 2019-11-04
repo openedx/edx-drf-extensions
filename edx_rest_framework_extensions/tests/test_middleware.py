@@ -73,7 +73,12 @@ class TestRequestMetricsMiddleware(TestCase):
     )
     @ddt.unpack
     @patch('edx_django_utils.monitoring.set_custom_metric')
-    def test_request_auth_type_token_metric(self, token, expected_token_type, mock_set_custom_metric):
+    def test_request_auth_type_token_metric(
+            self,
+            token,
+            expected_token_type,
+            mock_set_custom_metric,
+    ):
         self.request.META['HTTP_AUTHORIZATION'] = token
 
         self.middleware.process_response(self.request, None)
@@ -91,7 +96,9 @@ class TestRequestMetricsMiddleware(TestCase):
         self.request.user = UserFactory()
 
         self.middleware.process_response(self.request, None)
-        mock_set_custom_metric.assert_any_call('request_auth_type', 'session-or-unknown')
+        mock_set_custom_metric.assert_any_call(
+            'request_auth_type', 'session-or-unknown'
+        )
 
     @patch('edx_django_utils.monitoring.set_custom_metric')
     def test_request_user_id_metric(self, mock_set_custom_metric):

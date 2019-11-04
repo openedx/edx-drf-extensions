@@ -83,11 +83,23 @@ class JwtAuthentication(JSONWebTokenAuthentication):
                             for (key, value) in payload_value.items():
                                 if key in current_value:
                                     if current_value[key] != value:
-                                        logger.info('Updating attribute %s[%s] for user %s with value %s', attr, key, user.id, value)
+                                        logger.info(
+                                            'Updating attribute %s[%s] for user %s with value %s',
+                                            attr,
+                                            key,
+                                            user.id,
+                                            value,
+                                        )
                                         current_value[key] = value
                                         attributes_updated = True
                                 else:
-                                    logger.info('Adding attribute %s[%s] for user %s with value %s', attr, key, user.id, value)
+                                    logger.info(
+                                        'Adding attribute %s[%s] for user %s with value %s',
+                                        attr,
+                                        key,
+                                        user.id,
+                                        value,
+                                    )
                                     current_value[key] = value
                                     attributes_updated = True
                         else:
@@ -121,7 +133,8 @@ def is_jwt_authenticated(request):
     if is_jwt_authenticated:
         if not getattr(request, 'auth', None):
             logger.error(
-                'Unexpected error: Used JwtAuthentication, but the request auth attribute was not populated with the JWT.'
+                'Unexpected error: Used JwtAuthentication, '
+                'but the request auth attribute was not populated with the JWT.'
             )
             return False
     return is_jwt_authenticated
