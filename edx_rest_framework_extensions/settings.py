@@ -17,6 +17,7 @@ from rest_framework_jwt.settings import api_settings
 
 from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 
+
 logger = logging.getLogger(__name__)
 
 

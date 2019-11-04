@@ -5,12 +5,15 @@ import json
 import httpretty
 import mock
 from django.contrib.auth import get_user_model
-from django.test import override_settings, RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from requests import RequestException
 from rest_framework.exceptions import AuthenticationFailed
 
-from edx_rest_framework_extensions.auth.bearer.authentication import BearerAuthentication
+from edx_rest_framework_extensions.auth.bearer.authentication import (
+    BearerAuthentication,
+)
 from edx_rest_framework_extensions.tests import factories
+
 
 OAUTH2_USER_INFO_URL = 'http://example.com/oauth2/user_info/'
 USER_INFO = {

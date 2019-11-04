@@ -5,10 +5,11 @@ import logging
 import requests
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions
-from rest_framework.authentication import get_authorization_header, BaseAuthentication
+from rest_framework.authentication import BaseAuthentication, get_authorization_header
 
 from edx_rest_framework_extensions.exceptions import UserInfoRetrievalFailed
 from edx_rest_framework_extensions.settings import get_setting
+
 
 logger = logging.getLogger(__name__)
 

@@ -1,15 +1,19 @@
 """ Permission classes. """
 import logging
+
+import waffle
 from opaque_keys.edx.keys import CourseKey
 from rest_condition import C
 from rest_framework.permissions import BasePermission, IsAuthenticated
-import waffle
 
 from edx_rest_framework_extensions.auth.jwt.authentication import is_jwt_authenticated
 from edx_rest_framework_extensions.auth.jwt.decoder import (
-    decode_jwt_filters, decode_jwt_scopes, decode_jwt_is_restricted
+    decode_jwt_filters,
+    decode_jwt_is_restricted,
+    decode_jwt_scopes,
 )
 from edx_rest_framework_extensions.config import SWITCH_ENFORCE_JWT_SCOPES
+
 
 log = logging.getLogger(__name__)
 

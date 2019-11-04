@@ -1,15 +1,15 @@
 """ Tests for permission classes. """
 
 from collections import namedtuple
+from itertools import product
 
 import ddt
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
-from itertools import product
 from mock import Mock, patch
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
 from edx_rest_framework_extensions import permissions

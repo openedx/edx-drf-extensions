@@ -5,7 +5,7 @@ import mock
 from django.conf import settings
 from django.test import TestCase, override_settings
 
-from edx_rest_framework_extensions.settings import get_setting, get_jwt_issuers
+from edx_rest_framework_extensions.settings import get_jwt_issuers, get_setting
 
 
 class SettingsTests(TestCase):

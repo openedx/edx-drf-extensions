@@ -31,7 +31,7 @@ httpretty==0.9.7
 idna==2.8                 # via requests
 importlib-metadata==0.23  # via pluggy
 ipaddress==1.0.23         # via faker
-isort==4.3.21             # via pylint
+isort==4.3.21
 lazy-object-proxy==1.4.3  # via astroid
 mccabe==0.6.1             # via pylint
 mock==1.3.0
