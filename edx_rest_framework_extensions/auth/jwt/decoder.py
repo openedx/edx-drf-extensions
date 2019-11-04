@@ -2,14 +2,15 @@
 import logging
 import sys
 
+import jwt
+from django.conf import settings
 from jwkest.jwk import KEYS
 from jwkest.jws import JWS
-import jwt
-from semantic_version import Version
-from django.conf import settings
 from rest_framework_jwt.settings import api_settings
+from semantic_version import Version
 
-from edx_rest_framework_extensions.settings import get_jwt_issuers, get_first_jwt_issuer
+from edx_rest_framework_extensions.settings import get_first_jwt_issuer, get_jwt_issuers
+
 
 logger = logging.getLogger(__name__)
 

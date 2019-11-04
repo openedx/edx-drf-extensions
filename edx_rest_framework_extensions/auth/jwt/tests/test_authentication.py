@@ -5,16 +5,19 @@ from logging import Logger
 import ddt
 import mock
 from django.contrib.auth import get_user_model
-from django.test import override_settings, RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-
 
 from edx_rest_framework_extensions.auth.jwt import authentication
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
-from edx_rest_framework_extensions.auth.jwt.tests.utils import generate_latest_version_payload, generate_jwt_token
+from edx_rest_framework_extensions.auth.jwt.tests.utils import (
+    generate_jwt_token,
+    generate_latest_version_payload,
+)
 from edx_rest_framework_extensions.tests import factories
+
 
 User = get_user_model()
 

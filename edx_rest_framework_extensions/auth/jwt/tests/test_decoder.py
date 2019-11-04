@@ -5,7 +5,7 @@ import ddt
 import jwt
 import mock
 from django.conf import settings
-from django.test import override_settings, TestCase
+from django.test import TestCase, override_settings
 
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (

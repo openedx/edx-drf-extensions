@@ -1,41 +1,42 @@
 """
 Unit tests for jwt authentication middlewares.
 """
+from itertools import product
+
 import ddt
 from django.conf.urls import url as url_pattern
 from django.http.cookie import SimpleCookie
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils.cache import RequestCache
-from itertools import product
-from mock import patch, ANY
+from mock import ANY, patch
 from rest_condition import C
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
-from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
+from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
 
-from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 from edx_rest_framework_extensions.auth.jwt.cookies import (
-    jwt_cookie_name,
     jwt_cookie_header_payload_name,
+    jwt_cookie_name,
     jwt_cookie_signature_name,
 )
 from edx_rest_framework_extensions.auth.jwt.middleware import (
+    USE_JWT_COOKIE_HEADER,
     EnsureJWTAuthSettingsMiddleware,
     JwtAuthCookieMiddleware,
     JwtRedirectToLoginIfUnauthenticatedMiddleware,
-    USE_JWT_COOKIE_HEADER
 )
+from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 from edx_rest_framework_extensions.permissions import (
     IsStaff,
     IsSuperuser,
     JwtHasContentOrgFilterForRequestedCourse,
     LoginRedirectIfUnauthenticated,
-    NotJwtRestrictedApplication
+    NotJwtRestrictedApplication,
 )
 from edx_rest_framework_extensions.tests.factories import UserFactory
 

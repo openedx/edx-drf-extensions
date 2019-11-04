@@ -3,6 +3,7 @@ JWT Authentication cookie utilities.
 """
 
 from django.conf import settings
+
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 
 
