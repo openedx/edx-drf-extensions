@@ -1,5 +1,6 @@
 """ Tests for the CSRF API """
 
+from django.test.utils import override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -8,9 +9,15 @@ from rest_framework.test import APITestCase
 class CsrfTokenTests(APITestCase):
     """ Tests for the CSRF token endpoint. """
 
+    @override_settings(REST_FRAMEWORK={
+        'DEFAULT_PERMISSION_CLASSES': (
+            # Ensure this default permission does not interfere with the CSRF endpoint.
+            'rest_framework.permissions.DjangoModelPermissions',
+        ),
+    })
     def test_get_token(self):
         """
-        Ensure we can get a CSRF token.
+        Ensure we can get a CSRF token for an anonymous user.
         """
         url = reverse('csrf_token')
         response = self.client.get(url, format='json')
