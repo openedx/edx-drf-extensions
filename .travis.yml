@@ -5,17 +5,27 @@ language: python
 python:
   - 2.7
   - 3.5
-  - 3.6
 
 env:
   - TOXENV=django111 AFTER_SUCCESS=codecov INSTALL_EXTRAS=codecov
+  - TOXENV=django20
+  - TOXENV=django21
+  - TOXENV=django22
 
 matrix:
  include:
-  - python: 3.6
+  - python: 3.5
     env: TOXENV=quality
-  - python: 3.6
+  - python: 3.5
     env: TOXENV=docs
+ exclude:
+  - python: 2.7
+    env: TOXENV=django20
+  - python: 2.7
+    env: TOXENV=django21
+  - python: 2.7
+    env: TOXENV=django22
+
 
 cache:
   - pip
@@ -39,5 +49,5 @@ deploy:
   distributions: sdist bdist_wheel
   on:
     tags: true
-    python: 3.6
+    python: 3.5
     condition: '$TOXENV = django111'

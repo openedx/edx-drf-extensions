@@ -17,34 +17,34 @@ quality: ## run quality checks using tox
 	tox -e quality
 
 piptools:
-	pip install -r pip-tools.txt
+	pip install -r requirements/pip-tools.txt
 
 _upgrade: piptools
-	# Generate pins for test requirements.
-	pip-compile test_requirements.in --upgrade -o test_requirements.txt
-
-	# Delete django pin from test_requirements.txt so that tox can control
+	pip-compile requirements/base.in --rebuild --upgrade -o requirements/base.txt
+	pip-compile requirements/test.in --rebuild --upgrade -o requirements/test.txt
+	pip-compile requirements/docs.in --rebuild --upgrade -o requirements/docs.txt
+	pip-compile requirements/dev.in --rebuild --upgrade -o requirements/dev.txt
+	
+	# Delete django pin from test.txt so that tox can control
 	# Django version.
-	sed '/^[dD]jango==/d' test_requirements.txt > test_requirements.tmp
-	mv test_requirements.tmp test_requirements.txt
+	sed '/^[dD]jango==/d' requirements/test.txt > requirements/test.tmp
+	mv requirements/test.tmp requirements/test.txt
 
 	# Delete line "-e file:///local/path/to/edx-drf-extensions", which
-	# is a result of the "-e ." hack in test_requirements.in.
-	sed '/^-e /d' test_requirements.txt > test_requirements.tmp
-	mv test_requirements.tmp test_requirements.txt
+	# is a result of the "-e ." hack in test.in.
+	sed '/^-e /d' requirements/test.txt > requirements/test.tmp
+	sed '/^-e /d' requirements/dev.txt > requirements/dev.tmp
+	mv requirements/test.tmp requirements/test.txt
+	mv requirements/dev.tmp requirements/dev.txt
 
 	# Generate pins for pip-tools itself.
-	pip-compile pip-tools.in --upgrade
+	pip-compile requirements/pip-tools.in --rebuild --upgrade -o requirements/pip-tools.txt
 
 upgrade: ## upgrade test requirement pins
 	CUSTOM_COMPILE_COMMAND="make upgrade" make _upgrade
 
-requirements: piptools ## install test requirements into current env
-	pip-sync test_requirements.txt
-	# `make upgrade` removes Django from test_requirements.txt,
-	# so we manually install it here.
-	pip install django~=1.11
-	pip install -r docs/requirements.txt
+requirements: piptools ## install dev requirements into current env
+	pip-sync requirements/dev.txt
 
 test: ## run unit tests using tox
 	tox

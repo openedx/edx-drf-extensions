@@ -67,4 +67,4 @@ target/
 .venv
 
 # Temp file used by `make upgrade`
-test_requirements.tmp
+test.tmp
