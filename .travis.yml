@@ -12,6 +12,12 @@ env:
 
 matrix:
  include:
+  - python: 3.5
+    env: TOXENV=django20
+  - python: 3.5
+    env: TOXENV=django21
+  - python: 3.5
+    env: TOXENV=django22
   - python: 3.6
     env: TOXENV=quality
   - python: 3.6

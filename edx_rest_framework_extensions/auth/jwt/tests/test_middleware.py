@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
-from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import (
@@ -45,7 +45,7 @@ class SomeIncludedPermissionClass(object):
     pass
 
 
-class SomeJwtAuthenticationSubclass(BaseJSONWebTokenAuthentication):
+class SomeJwtAuthenticationSubclass(JSONWebTokenAuthentication):
     pass
 
 
@@ -183,7 +183,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         self.assertIn(NotJwtRestrictedApplication, HasNoCondPermView.permission_classes)
 
 
-class MockJwtAuthentication(BaseJSONWebTokenAuthentication):
+class MockJwtAuthentication(JSONWebTokenAuthentication):
     """
     Authenticates a user if the reconstituted jwt cookie contains the expected value.
 

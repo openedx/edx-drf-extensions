@@ -10,7 +10,7 @@ from django.utils.functional import SimpleLazyObject
 from edx_django_utils import monitoring
 from edx_django_utils.cache import RequestCache
 from rest_framework.request import Request
-from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt.constants import (
     JWT_DELIMITER,
@@ -80,7 +80,7 @@ class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):
         view_class = _get_view_class(view_func)
 
         view_authentication_classes = getattr(view_class, 'authentication_classes', tuple())
-        if _includes_base_class(view_authentication_classes, BaseJSONWebTokenAuthentication):
+        if _includes_base_class(view_authentication_classes, JSONWebTokenAuthentication):
             self._add_missing_jwt_permission_classes(view_class)
 
 
@@ -271,14 +271,14 @@ def _get_user_from_jwt(request, view_func):
 
 def _get_jwt_authentication_class(view_func):
     """
-    Returns the first DRF Authentication class that is a subclass of BaseJSONWebTokenAuthentication
+    Returns the first DRF Authentication class that is a subclass of JSONWebTokenAuthentication
     """
     view_class = _get_view_class(view_func)
     view_authentication_classes = getattr(view_class, 'authentication_classes', tuple())
-    if _includes_base_class(view_authentication_classes, BaseJSONWebTokenAuthentication):
+    if _includes_base_class(view_authentication_classes, JSONWebTokenAuthentication):
         return next(
             current_class for current_class in view_authentication_classes
-            if issubclass(current_class, BaseJSONWebTokenAuthentication)
+            if issubclass(current_class, JSONWebTokenAuthentication)
         )
     return None
 

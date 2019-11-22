@@ -10,7 +10,7 @@ from mock import Mock, patch
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions import permissions
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
@@ -106,7 +106,7 @@ class JwtApplicationPermissionsTests(TestCase):
     @ddt.data(
         *product(
             (permissions.JwtRestrictedApplication, permissions.NotJwtRestrictedApplication),
-            (JwtAuthentication, BaseJSONWebTokenAuthentication, SessionAuthentication, None),
+            (JwtAuthentication, JSONWebTokenAuthentication, SessionAuthentication, None),
             (True, False),
             (True, False),
         )
@@ -119,7 +119,7 @@ class JwtApplicationPermissionsTests(TestCase):
         request.user = factories.UserFactory()
         request.auth = generate_jwt(request.user, is_restricted=is_restricted)
 
-        is_jwt_auth_subclass = issubclass(type(request.successful_authenticator), BaseJSONWebTokenAuthentication)
+        is_jwt_auth_subclass = issubclass(type(request.successful_authenticator), JSONWebTokenAuthentication)
 
         has_permission = permission_class().has_permission(request, view=None)
         expected_restricted_permission = enforce_scopes and is_restricted and is_jwt_auth_subclass
