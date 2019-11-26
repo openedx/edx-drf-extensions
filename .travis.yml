@@ -34,11 +34,13 @@ install:
   - pip install -U pip wheel
   - make requirements
   - pip install pip ${INSTALL_EXTRAS}  # Installing just pip is a no-op
+  - pip install coveralls
 
 script:
   - make test
 
 after_success:
+  - codecov
   - true; ${AFTER_SUCCESS}  # "true; " on its own is no-op
 
 deploy:
