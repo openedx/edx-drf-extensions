@@ -6,6 +6,8 @@
 #
 alabaster==0.7.12
 astroid==1.5.3
+atomicwrites==1.3.0
+attrs==19.3.0
 babel==2.7.0
 backports.functools-lru-cache==1.6.1
 certifi==2019.9.11
@@ -47,8 +49,8 @@ newrelic==5.2.3.131
 nose==1.3.7
 packaging==19.2
 pathlib2==2.3.5
-pbr==5.4.3
-pluggy==0.13.0
+pbr==5.4.4
+pluggy==0.13.1
 psutil==1.2.1
 py==1.8.0
 pycodestyle==2.5.0
@@ -62,6 +64,9 @@ pylint-plugin-utils==0.6
 pylint==1.7.6
 pymongo==3.9.0
 pyparsing==2.4.5
+pytest-cov==2.8.1
+pytest-django==3.7.0
+pytest==4.6.6
 python-dateutil==2.8.1
 pytz==2019.3
 requests==2.22.0
@@ -79,9 +84,10 @@ text-unidecode==1.3
 tox==2.9.1
 typing==3.7.4.1
 urllib3==1.25.7
-virtualenv==16.7.7
+virtualenv==16.7.8
+wcwidth==0.1.7
 wrapt==1.11.2
 zipp==0.6.0
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.6.0        # via sphinx
+# setuptools==42.0.1        # via sphinx
