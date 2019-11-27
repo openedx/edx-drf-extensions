@@ -17,14 +17,14 @@ contextlib2==0.6.0.post1  # via importlib-metadata
 coverage==4.5.4
 ddt==1.2.2
 django-waffle==0.18.0
-djangorestframework-jwt==1.11.0
 djangorestframework==3.9.4
+drf-jwt==1.13.3
 edx-django-utils==2.0.2
 edx-lint==1.4.1
 edx-opaque-keys==2.0.1
 enum34==1.1.6             # via astroid
 factory-boy==2.12.0
-faker==2.0.4              # via factory-boy
+faker==2.0.5              # via factory-boy
 funcsigs==1.0.2           # via mock, pytest
 future==0.18.2
 futures==3.1.1 ; python_version == "2.7"

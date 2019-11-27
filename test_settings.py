@@ -50,6 +50,7 @@ JWT_AUTH = {
 
     'JWT_VERIFY_EXPIRATION': True,
 
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
     # JWT_ISSUERS enables token decoding for multiple issuers (Note: This is not a native DRF-JWT field)
     # We use it to allow different values for the 'ISSUER' field, but keep the same SECRET_KEY and
     # AUDIENCE values across all issuers.

@@ -5,10 +5,7 @@ import logging
 from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from rest_framework import exceptions
-from rest_framework_jwt.authentication import (
-    BaseJSONWebTokenAuthentication,
-    JSONWebTokenAuthentication,
-)
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
@@ -173,7 +170,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
 def is_jwt_authenticated(request):
     successful_authenticator = getattr(request, 'successful_authenticator', None)
-    if not isinstance(successful_authenticator, BaseJSONWebTokenAuthentication):
+    if not isinstance(successful_authenticator, JSONWebTokenAuthentication):
         return False
     if not getattr(request, 'auth', None):
         logger.error(

@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
-from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import (
@@ -45,7 +45,7 @@ class SomeIncludedPermissionClass(object):
     pass
 
 
-class SomeJwtAuthenticationSubclass(BaseJSONWebTokenAuthentication):
+class SomeJwtAuthenticationSubclass(JSONWebTokenAuthentication):
     pass
 
 
@@ -183,7 +183,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         self.assertIn(NotJwtRestrictedApplication, HasNoCondPermView.permission_classes)
 
 
-class MockJwtAuthentication(BaseJSONWebTokenAuthentication):
+class MockJwtAuthentication(JSONWebTokenAuthentication):
     """
     Authenticates a user if the reconstituted jwt cookie contains the expected value.
 
@@ -276,15 +276,15 @@ class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
         ('/loginredirectifunauthenticated/', True, 200),
         ('/isauthenticatedandloginredirect/', False, 302),
         ('/isauthenticatedandloginredirect/', True, 200),
-        ('/isauthenticated/', False, 403),
-        ('/isauthenticated/', True, 403),
+        ('/isauthenticated/', False, 401),
+        ('/isauthenticated/', True, 401),
         ('/nopermissionsrequired/', False, 200),
         ('/nopermissionsrequired/', True, 200),
     )
     @ddt.unpack
     @override_settings(
         ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_middleware',
-        MIDDLEWARE_CLASSES=(
+        MIDDLEWARE=(
             'django.contrib.sessions.middleware.SessionMiddleware',
             'edx_rest_framework_extensions.auth.jwt.middleware.JwtRedirectToLoginIfUnauthenticatedMiddleware',
             'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
@@ -304,15 +304,15 @@ class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
         ('/loginredirectifunauthenticated/', True, 302),
         ('/isauthenticatedandloginredirect/', False, 302),
         ('/isauthenticatedandloginredirect/', True, 302),
-        ('/isauthenticated/', False, 403),
-        ('/isauthenticated/', True, 403),
+        ('/isauthenticated/', False, 401),
+        ('/isauthenticated/', True, 401),
         ('/nopermissionsrequired/', False, 200),
         ('/nopermissionsrequired/', True, 200),
     )
     @ddt.unpack
     @override_settings(
         ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_middleware',
-        MIDDLEWARE_CLASSES=(
+        MIDDLEWARE=(
             'django.contrib.sessions.middleware.SessionMiddleware',
             'edx_rest_framework_extensions.auth.jwt.tests.test_middleware.OverriddenJwtRedirectToLoginIfUnauthenticatedMiddleware',  # noqa E501 line too long
             'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
@@ -334,7 +334,7 @@ class CheckRequestUserForJwtAuthMiddleware(MiddlewareMixin):
     set the request.user.
     """
     def process_view(self, request, view_func, view_args, view_kwargs):  # pylint: disable=unused-argument
-        assert request.user.is_authenticated(), 'Request.user was expected to be authenticated.'
+        assert request.user.is_authenticated, 'Request.user was expected to be authenticated.'
 
 
 class CheckRequestUserAnonymousForJwtAuthMiddleware(MiddlewareMixin):
@@ -343,7 +343,7 @@ class CheckRequestUserAnonymousForJwtAuthMiddleware(MiddlewareMixin):
     the user (e.g. a failed cookie).
     """
     def process_view(self, request, view_func, view_args, view_kwargs):  # pylint: disable=unused-argument
-        assert not request.user.is_authenticated(), 'Request.user was expected to be anonymous.'
+        assert not request.user.is_authenticated, 'Request.user was expected to be anonymous.'
 
 
 @ddt.ddt
@@ -422,7 +422,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
         )
         with override_settings(
             ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_middleware',
-            MIDDLEWARE_CLASSES=(
+            MIDDLEWARE=(
                     'django.contrib.sessions.middleware.SessionMiddleware',
                     'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
                     'django.contrib.auth.middleware.AuthenticationMiddleware',

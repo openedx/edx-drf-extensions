@@ -1,6 +1,14 @@
 -c constraints.txt
 
-# Grab base requirements from setup.py.
-# This is a hack, and generates a line in base.txt
-# that needs to be deleted by `make upgrade`.
--e .
+Django>=1.11,<2.3
+djangorestframework>=3.2.0,<3.10
+drf-jwt
+django-waffle
+edx-django-utils
+edx-opaque-keys
+pyjwkest==1.3.2
+python-dateutil>=2.0
+requests>=2.7.0
+rest-condition>=1.0.3
+semantic_version
+six

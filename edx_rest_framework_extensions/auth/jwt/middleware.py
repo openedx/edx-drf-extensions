@@ -10,7 +10,7 @@ from django.utils.functional import SimpleLazyObject
 from edx_django_utils import monitoring
 from edx_django_utils.cache import RequestCache
 from rest_framework.request import Request
-from rest_framework_jwt.authentication import BaseJSONWebTokenAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt.constants import (
     JWT_DELIMITER,
@@ -80,7 +80,7 @@ class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):
         view_class = _get_view_class(view_func)
 
         view_authentication_classes = getattr(view_class, 'authentication_classes', tuple())
-        if _includes_base_class(view_authentication_classes, BaseJSONWebTokenAuthentication):
+        if _includes_base_class(view_authentication_classes, JSONWebTokenAuthentication):
             self._add_missing_jwt_permission_classes(view_class)
 
 
@@ -184,7 +184,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
 
     This middleware must appear before any AuthenticationMiddleware.  For example::
 
-        MIDDLEWARE_CLASSES = (
+        MIDDLEWARE = (
             'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
             'django.contrib.auth.middleware.AuthenticationMiddleware',
         )
@@ -205,7 +205,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         """
         Reconstitute the full JWT and add a new cookie on the request object.
         """
-        assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
+        assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
 
         use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
@@ -248,7 +248,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
 
 def _get_user_from_jwt(request, view_func):
     user = get_user(request)
-    if user.is_authenticated():
+    if user.is_authenticated:
         return user
 
     try:
@@ -271,14 +271,14 @@ def _get_user_from_jwt(request, view_func):
 
 def _get_jwt_authentication_class(view_func):
     """
-    Returns the first DRF Authentication class that is a subclass of BaseJSONWebTokenAuthentication
+    Returns the first DRF Authentication class that is a subclass of JSONWebTokenAuthentication
     """
     view_class = _get_view_class(view_func)
     view_authentication_classes = getattr(view_class, 'authentication_classes', tuple())
-    if _includes_base_class(view_authentication_classes, BaseJSONWebTokenAuthentication):
+    if _includes_base_class(view_authentication_classes, JSONWebTokenAuthentication):
         return next(
             current_class for current_class in view_authentication_classes
-            if issubclass(current_class, BaseJSONWebTokenAuthentication)
+            if issubclass(current_class, JSONWebTokenAuthentication)
         )
     return None
 

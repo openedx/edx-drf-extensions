@@ -6,10 +6,10 @@
 #
 certifi==2019.11.28       # via requests
 chardet==3.0.4            # via requests
-django-waffle==0.18.0     # via edx-django-utils
-django==1.11.26           # via edx-django-utils, rest-condition
-djangorestframework-jwt==1.11.0
-djangorestframework==3.9.4  # via rest-condition
+django-waffle==0.18.0
+django==1.11.26
+djangorestframework==3.9.4
+drf-jwt==1.13.3
 edx-django-utils==2.0.2
 edx-opaque-keys==2.0.1
 future==0.18.2            # via pyjwkest
@@ -19,13 +19,13 @@ pbr==5.4.4                # via stevedore
 psutil==1.2.1             # via edx-django-utils
 pycryptodomex==3.9.4      # via pyjwkest
 pyjwkest==1.3.2
-pyjwt==1.7.1              # via djangorestframework-jwt
+pyjwt==1.7.1              # via drf-jwt
 pymongo==3.9.0            # via edx-opaque-keys
 python-dateutil==2.8.1
 pytz==2019.3              # via django
-requests==2.22.0          # via pyjwkest
+requests==2.22.0
 rest-condition==1.0.3
 semantic-version==2.8.3
-six==1.13.0               # via edx-opaque-keys, pyjwkest, python-dateutil, stevedore
+six==1.13.0
 stevedore==1.31.0         # via edx-opaque-keys
 urllib3==1.25.7           # via requests
