@@ -4,88 +4,92 @@
 #
 #    make upgrade
 #
-alabaster==0.7.12
-astroid==1.5.3
-atomicwrites==1.3.0
-attrs==19.3.0
-babel==2.7.0
-backports.functools-lru-cache==1.6.1
-certifi==2019.9.11
-chardet==3.0.4
-click-log==0.3.2
-click==7.0
-configparser==4.0.2
-contextlib2==0.6.0.post1
-coverage==4.5.4
-ddt==1.2.2
-django-waffle==0.18.0
-django==1.11.26
-djangorestframework==3.9.4
-docutils==0.15.2
-drf-jwt==1.13.3
-edx-django-utils==2.0.2
-edx-lint==1.4.1
-edx-opaque-keys==2.0.1
-enum34==1.1.6
-factory-boy==2.12.0
-faker==2.0.4
-funcsigs==1.0.2
-future==0.18.2
-futures==3.1.1 ; python_version == "2.7"
-httpretty==0.9.7
-idna==2.8
-imagesize==1.1.0
-importlib-metadata==0.23
-ipaddress==1.0.23
-isort==4.3.21
-jinja2==2.10.3
-lazy-object-proxy==1.4.3
-markupsafe==1.1.1
-mccabe==0.6.1
-mock==1.3.0
-more-itertools==5.0.0
-newrelic==5.4.0.132
-packaging==19.2
-pathlib2==2.3.5
-pbr==5.4.4
-pluggy==0.13.1
-psutil==1.2.1
-py==1.8.0
-pycodestyle==2.5.0
-pycryptodomex==3.9.4
-pygments==2.5.2
-pyjwkest==1.3.2
-pyjwt==1.7.1
-pylint-celery==0.3
-pylint-django==0.11.1
-pylint-plugin-utils==0.6
-pylint==1.9.4
-pymongo==3.9.0
-pyparsing==2.4.5
-pytest-cov==2.8.1
-pytest-django==3.7.0
-pytest==4.6.6
-python-dateutil==2.8.1
-pytz==2019.3
-requests==2.22.0
-rest-condition==1.0.3
-scandir==1.10.0
-semantic-version==2.8.3
-singledispatch==3.4.0.3
-six==1.13.0
-snowballstemmer==2.0.0
-sphinx-rtd-theme==0.4.3
-sphinx==1.8.5
-sphinxcontrib-websupport==1.1.2
-stevedore==1.31.0
-text-unidecode==1.3
-tox==2.9.1
-typing==3.7.4.1
-urllib3==1.25.7
-virtualenv==16.7.8
-wcwidth==0.1.7
-wrapt==1.11.2
-zipp==0.6.0
+alabaster==0.7.12         # via -r requirements/docs.txt, sphinx
+appdirs==1.4.3            # via -r requirements/test.txt, virtualenv
+astroid==1.6.6            # via -r requirements/test.txt, pylint, pylint-celery
+atomicwrites==1.3.0       # via -r requirements/test.txt, pytest
+attrs==19.3.0             # via -r requirements/test.txt, pytest
+babel==2.8.0              # via -r requirements/docs.txt, sphinx
+backports.functools-lru-cache==1.6.1  # via -r requirements/test.txt, astroid, isort, pylint
+certifi==2019.11.28       # via -r requirements/base.txt, -r requirements/docs.txt, -r requirements/test.txt, requests
+chardet==3.0.4            # via -r requirements/base.txt, -r requirements/docs.txt, -r requirements/test.txt, requests
+click-log==0.3.2          # via -r requirements/test.txt, edx-lint
+click==7.0                # via -r requirements/test.txt, click-log, edx-lint
+configparser==4.0.2       # via -r requirements/test.txt, importlib-metadata, pylint
+contextlib2==0.6.0.post1  # via -r requirements/test.txt, importlib-metadata, virtualenv, zipp
+coverage==4.5.4           # via -r requirements/test.txt, pytest-cov
+ddt==1.2.2                # via -r requirements/test.txt
+distlib==0.3.0            # via -r requirements/test.txt, virtualenv
+django-waffle==0.20.0     # via -r requirements/base.txt, -r requirements/test.txt, edx-django-utils
+django==1.11.28           # via -r requirements/base.txt, -r requirements/test.txt, drf-jwt, edx-django-utils, rest-condition
+djangorestframework==3.9.4  # via -r requirements/base.txt, -r requirements/test.txt, drf-jwt, rest-condition
+docutils==0.16            # via -r requirements/docs.txt, sphinx
+drf-jwt==1.14.0           # via -r requirements/base.txt, -r requirements/test.txt
+edx-django-utils==3.0     # via -r requirements/base.txt, -r requirements/test.txt
+edx-lint==1.4.1           # via -r requirements/test.txt
+edx-opaque-keys==2.0.1    # via -r requirements/base.txt, -r requirements/test.txt
+enum34==1.1.9             # via -r requirements/test.txt, astroid
+factory-boy==2.12.0       # via -r requirements/test.txt
+faker==3.0.1              # via -r requirements/test.txt, factory-boy
+filelock==3.0.12          # via -r requirements/test.txt, virtualenv
+funcsigs==1.0.2           # via -r requirements/test.txt, mock, pytest
+future==0.18.2            # via -r requirements/base.txt, -r requirements/test.txt, pyjwkest
+futures==3.1.1 ; python_version == "2.7"  # via -c requirements/constraints.txt, -r requirements/test.txt, isort
+httpretty==0.9.7          # via -r requirements/test.txt
+idna==2.9                 # via -r requirements/base.txt, -r requirements/docs.txt, -r requirements/test.txt, requests
+imagesize==1.2.0          # via -r requirements/docs.txt, sphinx
+importlib-metadata==1.5.0  # via -r requirements/test.txt, importlib-resources, pluggy, pytest, virtualenv
+importlib-resources==1.2.0  # via -r requirements/test.txt, virtualenv
+ipaddress==1.0.23         # via -r requirements/test.txt, faker
+isort==4.3.21             # via -r requirements/test.txt, pylint
+jinja2==2.11.1            # via -r requirements/docs.txt, sphinx
+lazy-object-proxy==1.4.3  # via -r requirements/test.txt, astroid
+markupsafe==1.1.1         # via -r requirements/docs.txt, jinja2
+mccabe==0.6.1             # via -r requirements/test.txt, pylint
+mock==1.3.0               # via -r requirements/test.txt
+more-itertools==5.0.0     # via -r requirements/test.txt, pytest
+newrelic==5.8.0.136       # via -r requirements/base.txt, -r requirements/test.txt, edx-django-utils
+packaging==20.1           # via -r requirements/docs.txt, -r requirements/test.txt, pytest, sphinx
+pathlib2==2.3.5           # via -r requirements/test.txt, importlib-metadata, importlib-resources, pytest, pytest-django, virtualenv
+pbr==5.4.4                # via -r requirements/base.txt, -r requirements/test.txt, mock, stevedore
+pluggy==0.13.1            # via -r requirements/test.txt, pytest, tox
+psutil==1.2.1             # via -r requirements/base.txt, -r requirements/test.txt, edx-django-utils
+py==1.8.1                 # via -r requirements/test.txt, pytest, tox
+pycodestyle==2.5.0        # via -r requirements/test.txt
+pycryptodomex==3.9.7      # via -r requirements/base.txt, -r requirements/test.txt, pyjwkest
+pygments==2.5.2           # via -r requirements/docs.txt, sphinx
+pyjwkest==1.3.2           # via -r requirements/base.txt, -r requirements/test.txt
+pyjwt==1.7.1              # via -r requirements/base.txt, -r requirements/test.txt, drf-jwt
+pylint-celery==0.3        # via -r requirements/test.txt, edx-lint
+pylint-django==0.11.1     # via -r requirements/test.txt, edx-lint
+pylint-plugin-utils==0.6  # via -r requirements/test.txt, pylint-celery, pylint-django
+pylint==1.9.5             # via -r requirements/test.txt, edx-lint, pylint-celery, pylint-django, pylint-plugin-utils
+pymongo==3.10.1           # via -r requirements/base.txt, -r requirements/test.txt, edx-opaque-keys
+pyparsing==2.4.6          # via -r requirements/docs.txt, -r requirements/test.txt, packaging
+pytest-cov==2.8.1         # via -r requirements/test.txt
+pytest-django==3.8.0      # via -r requirements/test.txt
+pytest==4.6.9             # via -r requirements/test.txt, pytest-cov, pytest-django
+python-dateutil==2.8.1    # via -r requirements/base.txt, -r requirements/test.txt, faker
+pytz==2019.3              # via -r requirements/base.txt, -r requirements/docs.txt, -r requirements/test.txt, babel, django
+requests==2.23.0          # via -r requirements/base.txt, -r requirements/docs.txt, -r requirements/test.txt, pyjwkest, sphinx
+rest-condition==1.0.3     # via -r requirements/base.txt, -r requirements/test.txt
+scandir==1.10.0           # via -r requirements/test.txt, pathlib2
+semantic-version==2.8.4   # via -r requirements/base.txt, -r requirements/test.txt
+singledispatch==3.4.0.3   # via -r requirements/test.txt, astroid, importlib-resources, pylint
+six==1.14.0               # via -r requirements/base.txt, -r requirements/docs.txt, -r requirements/test.txt, astroid, django-waffle, edx-lint, edx-opaque-keys, faker, httpretty, mock, more-itertools, packaging, pathlib2, pyjwkest, pylint, pytest, python-dateutil, singledispatch, sphinx, stevedore, tox, virtualenv
+snowballstemmer==2.0.0    # via -r requirements/docs.txt, sphinx
+sphinx-rtd-theme==0.4.3   # via -r requirements/docs.txt
+sphinx==1.8.5             # via -r requirements/docs.txt, sphinx-rtd-theme
+sphinxcontrib-websupport==1.1.2  # via -r requirements/docs.txt, sphinx
+stevedore==1.32.0         # via -r requirements/base.txt, -r requirements/test.txt, edx-opaque-keys
+text-unidecode==1.3       # via -r requirements/test.txt, faker
+tox==2.9.1                # via -r requirements/test.txt
+typing==3.7.4.1           # via -r requirements/docs.txt, -r requirements/test.txt, importlib-resources, sphinx
+urllib3==1.25.8           # via -r requirements/base.txt, -r requirements/docs.txt, -r requirements/test.txt, requests
+virtualenv==20.0.7        # via -r requirements/test.txt, tox
+wcwidth==0.1.8            # via -r requirements/test.txt, pytest
+wrapt==1.12.0             # via -r requirements/test.txt, astroid
+zipp==1.2.0               # via -r requirements/test.txt, importlib-metadata, importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

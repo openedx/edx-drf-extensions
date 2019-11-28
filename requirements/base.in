@@ -1,8 +1,8 @@
 -c constraints.txt
 
-Django>=1.11,<2.3
+Django>=1.11
 djangorestframework>=3.2.0,<3.10
-drf-jwt
+drf-jwt<1.15.0
 django-waffle
 edx-django-utils
 edx-opaque-keys
