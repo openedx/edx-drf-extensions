@@ -8,5 +8,8 @@
 # pin when possible.  Writing an issue against the offending project and
 # linking to it here is good.
 
-# This package is a backport from python 3 that can only be installed in python 2.7
+# These packages are backports from python 3 that can only be installed in python 2.7
+backports.functools-lru-cache ; python_version == "2.7"
+functools32 ; python_version == "2.7"
 futures ; python_version == "2.7"
+ruamel.ordereddict ; python_version == "2.7"
