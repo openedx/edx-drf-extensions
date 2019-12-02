@@ -17,7 +17,7 @@ clean: ## remove intermediate files
 piptools: ## install pip-compile and pip-sync.
 	pip install -r requirements/pip-tools.txt
 
-upgrade-piptools: piptools ## upgrade pip-tools using pip-tools.
+upgrade-piptools: piptools # upgrade pip-tools using pip-tools.
 	pip-compile requirements/pip-tools.in --rebuild --upgrade -o requirements/pip-tools.txt
 
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
@@ -35,7 +35,6 @@ upgrade: upgrade-piptools piptools ## upgrade requirement pins.
 	# Delete django pin from test.txt so that tox can control Django version.
 	sed '/^[dD]jango==/d' requirements/test.txt > requirements/test.tmp
 	mv requirements/test.tmp requirements/test.txt
-	# Generate pins for pip-tools itself.
 
 requirements: piptools ## install dev requirements into current env
 	pip-sync requirements/dev.txt
