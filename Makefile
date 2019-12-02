@@ -48,7 +48,8 @@ requirements: piptools ## install dev requirements into current env
 test: ## run unit tests in all supported environments using tox
 	tox
 
-CHECK_DIRS=csrf edx_rest_framework_extensions
+STRICT_CHECK_DIRS=csrf edx_api_doc_tools
+CHECK_DIRS=$(STRICT_CHECK_DIRS) edx_rest_framework_extensions
 
 style: ## check that code is PEP-8 compliant.
 	pycodestyle *.py $(CHECK_DIRS)
@@ -60,7 +61,7 @@ isort_check: ## check that imports are correctly sorted
 	isort *.py $(CHECK_DIRS) --recursive  --check-only --diff
 
 linting: ## check code quality with pylint
-	pylint *.py csrf
+	pylint *.py $(STRICT_CHECK_DIRS)
 	# Disable "C" (convention) messages in `edx_rest_framework_extensions`
 	# because there are so many violations (TODO: fix them).
 	pylint --disable=C edx_rest_framework_extensions

@@ -64,8 +64,7 @@ target/
 .idea/
 
 # A common place to put virtual envs
-.venv
-.venv3
+.venv*
 
 # Temp file used by `make upgrade`
 test.tmp

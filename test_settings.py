@@ -13,6 +13,8 @@ INSTALLED_APPS = (
     'csrf.apps.CsrfAppConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'drf_yasg',
+    'edx_api_doc_tools.apps.EdxApiDocToolsConfig',
     'edx_rest_framework_extensions',
     'waffle',
 )
@@ -27,6 +29,14 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+TEMPLATES = [
+    {
+        'NAME': 'django',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+    }
+]
 
 EDX_DRF_EXTENSIONS = {}
 

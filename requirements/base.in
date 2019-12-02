@@ -3,4 +3,4 @@
 # Grab base requirements from setup.py.
 # This is a hack, and generates a line in base.txt
 # that needs to be deleted by `make upgrade`.
--e .
+-e .[api-doc-generation]

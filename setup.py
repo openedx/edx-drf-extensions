@@ -40,6 +40,7 @@ setup(
         'djangorestframework',
         'djangorestframework-jwt>=1.7.2,<2.0.0',
         'django-waffle',
+        'drf-yasg',
         'psutil==1.2.1',  # dependency of edx-django-utils
         'edx-django-utils',
         'edx-opaque-keys',
@@ -49,5 +50,8 @@ setup(
         'requests>=2.7.0,<3.0.0',
         'rest-condition>=1.0.3,<2.0',
         'six',
-    ]
+    ],
+    extras_require={
+        "api-doc-generation": ["sphinxcontrib-openapi[markdown]"],
+    },
 )

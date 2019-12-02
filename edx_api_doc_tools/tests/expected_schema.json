@@ -1,0 +1,258 @@
+{
+    "info": {
+        "contact": {
+            "email": "hedgehog-support@example.com"
+        }, 
+        "description": "A REST API for interacting with the edX hedgehog service.", 
+        "version": "v0", 
+        "title": "edX Hedgehog Service API"
+    }, 
+    "paths": {
+        "/hedgehog/v0/hogs/": {
+            "post": {
+                "responses": {
+                    "201": {
+                        "description": "", 
+                        "schema": {
+                            "$ref": "#/definitions/Hedgehog"
+                        }
+                    }
+                }, 
+                "tags": [
+                    "hedgehog"
+                ], 
+                "description": "", 
+                "parameters": [
+                    {
+                        "schema": {
+                            "$ref": "#/definitions/Hedgehog"
+                        }, 
+                        "required": true, 
+                        "name": "data", 
+                        "in": "body"
+                    }
+                ], 
+                "operationId": "hedgehog_v0_hogs_create"
+            }, 
+            "parameters": [], 
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "", 
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/Hedgehog"
+                            }, 
+                            "type": "array"
+                        }
+                    }
+                }, 
+                "parameters": [
+                    {
+                        "description": "Filter on whether minimum weight (grams).", 
+                        "type": "integer", 
+                        "name": "min-grams", 
+                        "in": "query"
+                    }, 
+                    {
+                        "description": "Filter hogs by minimum weight (ounces).", 
+                        "type": "number", 
+                        "name": "min-ounces", 
+                        "in": "query"
+                    }, 
+                    {
+                        "description": "Filter hogs by favorite food.", 
+                        "type": "string", 
+                        "name": "fav-food", 
+                        "in": "query"
+                    }, 
+                    {
+                        "description": "Filter hogs by whether they graudated.", 
+                        "type": "boolean", 
+                        "name": "graduated", 
+                        "in": "query"
+                    }
+                ], 
+                "tags": [
+                    "hedgehog"
+                ], 
+                "summary": "Fetch the list of edX hedgehogs.", 
+                "operationId": "hedgehog_v0_hogs_list", 
+                "description": "Hedgehogs can be filtered by minimum weight (grams or ounces),\ntheir favorite food, whether they graduated college,\nor any combination of those criterion."
+            }
+        }, 
+        "/hedgehog/v0/hogs/{hedgehog_key}/": {
+            "put": {
+                "responses": {
+                    "200": {
+                        "description": "", 
+                        "schema": {
+                            "$ref": "#/definitions/Hedgehog"
+                        }
+                    }
+                }, 
+                "tags": [
+                    "hedgehog"
+                ], 
+                "description": "TODO this is the hedgehog viewset", 
+                "parameters": [
+                    {
+                        "schema": {
+                            "$ref": "#/definitions/Hedgehog"
+                        }, 
+                        "required": true, 
+                        "name": "data", 
+                        "in": "body"
+                    }
+                ], 
+                "operationId": "hedgehog_v0_hogs_update"
+            }, 
+            "delete": {
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }, 
+                "tags": [
+                    "hedgehog"
+                ], 
+                "description": "TODO this is the hedgehog viewset", 
+                "parameters": [], 
+                "operationId": "hedgehog_v0_hogs_delete"
+            }, 
+            "patch": {
+                "responses": {
+                    "200": {
+                        "description": "", 
+                        "schema": {
+                            "$ref": "#/definitions/Hedgehog"
+                        }
+                    }
+                }, 
+                "tags": [
+                    "hedgehog"
+                ], 
+                "description": "TODO this is the hedgehog viewset", 
+                "parameters": [
+                    {
+                        "schema": {
+                            "$ref": "#/definitions/Hedgehog"
+                        }, 
+                        "required": true, 
+                        "name": "data", 
+                        "in": "body"
+                    }
+                ], 
+                "operationId": "hedgehog_v0_hogs_partial_update"
+            }, 
+            "parameters": [
+                {
+                    "required": true, 
+                    "type": "string", 
+                    "name": "hedgehog_key", 
+                    "in": "path"
+                }
+            ], 
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "", 
+                        "schema": {
+                            "$ref": "#/definitions/Hedgehog"
+                        }
+                    }
+                }, 
+                "tags": [
+                    "hedgehog"
+                ], 
+                "description": "Fetch details for a _single_ hedgehog by key.", 
+                "parameters": [
+                    {
+                        "description": "Key identifying the a hog. Lowercase, letters only.", 
+                        "required": true, 
+                        "type": "string", 
+                        "name": "hedgehog_key", 
+                        "in": "path"
+                    }
+                ], 
+                "operationId": "hedgehog_v0_hogs_read"
+            }
+        }
+    }, 
+    "schemes": [
+        "http"
+    ], 
+    "produces": [
+        "application/json"
+    ], 
+    "basePath": "/api", 
+    "securityDefinitions": {
+        "Basic": {
+            "type": "basic"
+        }
+    }, 
+    "host": "testserver", 
+    "definitions": {
+        "Hedgehog": {
+            "required": [
+                "uuid", 
+                "key", 
+                "name", 
+                "weight_grams", 
+                "fav_food"
+            ], 
+            "type": "object", 
+            "properties": {
+                "is_college_graduate": {
+                    "default": false, 
+                    "type": "boolean", 
+                    "title": "Is college graduate"
+                }, 
+                "uuid": {
+                    "format": "uuid", 
+                    "type": "string", 
+                    "title": "Uuid"
+                }, 
+                "weight_grams": {
+                    "type": "integer", 
+                    "title": "Weight grams"
+                }, 
+                "weight_ounces": {
+                    "readOnly": true, 
+                    "type": "string", 
+                    "title": "Weight ounces"
+                }, 
+                "key": {
+                    "pattern": "^[-a-zA-Z0-9_]+$", 
+                    "format": "slug", 
+                    "type": "string", 
+                    "minLength": 1, 
+                    "title": "Key"
+                }, 
+                "fav_food": {
+                    "enum": [
+                        "critters", 
+                        "crawlies", 
+                        "strawberries"
+                    ], 
+                    "type": "string", 
+                    "title": "Fav food"
+                }, 
+                "name": {
+                    "minLength": 1, 
+                    "type": "string", 
+                    "title": "Name"
+                }
+            }
+        }
+    }, 
+    "security": [
+        {
+            "Basic": []
+        }
+    ], 
+    "swagger": "2.0", 
+    "consumes": [
+        "application/json"
+    ]
+}
