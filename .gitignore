@@ -65,6 +65,7 @@ target/
 
 # A common place to put virtual envs
 .venv
+.venv3
 
 # Temp file used by `make upgrade`
 test.tmp

@@ -94,7 +94,7 @@ def _set_token_defaults(token):
         )
         if jwt_version.major > supported_version.major:
             logger.info('Token decode failed due to unsupported JWT version number [%s]', str(jwt_version))
-            raise jwt.InvalidTokenError('JWT version number [%s] is unsupported', str(jwt_version))
+            raise jwt.InvalidTokenError('JWT version number [%s] is unsupported' % str(jwt_version))
 
     def _get_and_set_version(token):
         """
@@ -172,7 +172,7 @@ def _decode_and_verify_token(token, jwt_issuer):
     issuer_matched = any(issuer['ISSUER'] == token_issuer for issuer in get_jwt_issuers())
     if not issuer_matched:
         logger.info('Token decode failed due to mismatched issuer [%s]', token_issuer)
-        raise jwt.InvalidTokenError('%s is not a valid issuer.', token_issuer)
+        raise jwt.InvalidTokenError('%s is not a valid issuer.' % token_issuer)
 
     return decoded_token
 

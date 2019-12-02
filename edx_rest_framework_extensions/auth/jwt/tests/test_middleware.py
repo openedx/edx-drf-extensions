@@ -191,11 +191,10 @@ class MockJwtAuthentication(BaseJSONWebTokenAuthentication):
     correctly reconstitute it.
     """
     def authenticate(self, request):
-        if request.COOKIES.get(jwt_cookie_name(), None) == 'header.payload.signature':
-            user = UserFactory()
-            return (user, None)
-        else:
+        if request.COOKIES.get(jwt_cookie_name(), None) != 'header.payload.signature':
             return None
+        user = UserFactory()
+        return (user, None)
 
 
 class MockUnauthenticatedView(APIView):

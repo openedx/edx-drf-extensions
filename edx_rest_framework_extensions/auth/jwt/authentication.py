@@ -93,42 +93,32 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
     def authenticate_credentials(self, payload):
         """Get or create an active user with the username contained in the payload."""
+        # TODO it would be good to refactor this heavily-nested function.
+        # pylint: disable=too-many-nested-blocks
         username = payload.get('preferred_username') or payload.get('username')
-
         if username is None:
             raise exceptions.AuthenticationFailed('JWT must include a preferred_username or username claim!')
-        else:
-            try:
-                user, __ = get_user_model().objects.get_or_create(username=username)
-                attributes_updated = False
-                attribute_map = self.get_jwt_claim_attribute_map()
-                attributes_to_merge = self.get_jwt_claim_mergeable_attributes()
-                for claim, attr in attribute_map.items():
-                    payload_value = payload.get(claim)
+        try:
+            user, __ = get_user_model().objects.get_or_create(username=username)
+            attributes_updated = False
+            attribute_map = self.get_jwt_claim_attribute_map()
+            attributes_to_merge = self.get_jwt_claim_mergeable_attributes()
+            for claim, attr in attribute_map.items():
+                payload_value = payload.get(claim)
 
-                    if attr in attributes_to_merge:
-                        # Merge new values that aren't already set in the user dictionary
-                        if not payload_value:
-                            continue
+                if attr in attributes_to_merge:
+                    # Merge new values that aren't already set in the user dictionary
+                    if not payload_value:
+                        continue
 
-                        current_value = getattr(user, attr, None)
+                    current_value = getattr(user, attr, None)
 
-                        if current_value:
-                            for (key, value) in payload_value.items():
-                                if key in current_value:
-                                    if current_value[key] != value:
-                                        logger.info(
-                                            'Updating attribute %s[%s] for user %s with value %s',
-                                            attr,
-                                            key,
-                                            user.id,
-                                            value,
-                                        )
-                                        current_value[key] = value
-                                        attributes_updated = True
-                                else:
+                    if current_value:
+                        for (key, value) in payload_value.items():
+                            if key in current_value:
+                                if current_value[key] != value:
                                     logger.info(
-                                        'Adding attribute %s[%s] for user %s with value %s',
+                                        'Updating attribute %s[%s] for user %s with value %s',
                                         attr,
                                         key,
                                         user.id,
@@ -136,22 +126,32 @@ class JwtAuthentication(JSONWebTokenAuthentication):
                                     )
                                     current_value[key] = value
                                     attributes_updated = True
-                        else:
-                            logger.info('Updating attribute %s for user %s with value %s', attr, user.id, payload_value)
-                            setattr(user, attr, payload_value)
-                            attributes_updated = True
+                            else:
+                                logger.info(
+                                    'Adding attribute %s[%s] for user %s with value %s',
+                                    attr,
+                                    key,
+                                    user.id,
+                                    value,
+                                )
+                                current_value[key] = value
+                                attributes_updated = True
                     else:
-                        if getattr(user, attr) != payload_value and payload_value is not None:
-                            logger.info('Updating attribute %s for user %s with value %s', attr, user.id, payload_value)
-                            setattr(user, attr, payload_value)
-                            attributes_updated = True
+                        logger.info('Updating attribute %s for user %s with value %s', attr, user.id, payload_value)
+                        setattr(user, attr, payload_value)
+                        attributes_updated = True
+                else:
+                    if getattr(user, attr) != payload_value and payload_value is not None:
+                        logger.info('Updating attribute %s for user %s with value %s', attr, user.id, payload_value)
+                        setattr(user, attr, payload_value)
+                        attributes_updated = True
 
-                if attributes_updated:
-                    user.save()
-            except Exception:
-                msg = 'User retrieval failed.'
-                logger.exception(msg)
-                raise exceptions.AuthenticationFailed(msg)
+            if attributes_updated:
+                user.save()
+        except Exception:
+            msg = 'User retrieval failed.'
+            logger.exception(msg)
+            raise exceptions.AuthenticationFailed(msg)
 
         return user
 
