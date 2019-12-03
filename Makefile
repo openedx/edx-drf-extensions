@@ -63,4 +63,4 @@ quality: style isort_check linting ## run all code quality checks in current env
 	@echo "Quality checking complete!"
 
 test-python: ## run unit tests within this environment only
-	python -Wd -m pytest
+	pytest
