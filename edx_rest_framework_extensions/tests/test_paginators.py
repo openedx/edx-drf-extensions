@@ -7,7 +7,6 @@ import ddt
 from django.http import Http404
 from django.test import RequestFactory
 from mock import MagicMock, Mock
-from nose.plugins.attrib import attr
 from rest_framework import serializers
 from six.moves import range  # pylint: disable=redefined-builtin
 
@@ -17,7 +16,6 @@ from edx_rest_framework_extensions.paginators import (
 )
 
 
-@attr(shard=2)
 @ddt.ddt
 class PaginateSearchResultsTestCase(TestCase):
     """Test cases for paginate_search_results method"""
@@ -128,7 +126,6 @@ class PaginateSearchResultsTestCase(TestCase):
             paginate_search_results(self.mock_model, self.search_results, self.default_size, page_num)
 
 
-@attr(shard=2)
 class NamespacedPaginationTestCase(TestCase):
     """
     Test behavior of `NamespacedPageNumberPagination`

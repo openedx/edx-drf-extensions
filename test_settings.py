@@ -13,7 +13,6 @@ INSTALLED_APPS = (
     'csrf.apps.CsrfAppConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django_nose',
     'edx_rest_framework_extensions',
     'waffle',
 )

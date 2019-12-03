@@ -39,7 +39,7 @@ upgrade: upgrade-piptools piptools ## upgrade requirement pins.
 requirements: piptools ## install dev requirements into current env
 	pip-sync requirements/dev.txt
 
-test: ## run unit tests using tox
+test: ## run unit tests in all supported environments using tox
 	tox
 
 CHECK_DIRS=csrf edx_rest_framework_extensions
@@ -61,3 +61,6 @@ linting: ## check code quality with pylint
 
 quality: style isort_check linting ## run all code quality checks in current env
 	@echo "Quality checking complete!"
+
+test-python: ## run unit tests within this environment only
+	python -Wd -m pytest
