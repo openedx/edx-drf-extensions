@@ -48,13 +48,13 @@ style: ## check that code is PEP-8 compliant.
 	pycodestyle *.py $(CHECK_DIRS)
 
 isort: ## sort imports
-	isort $(CHECK_DIRS) --recursive
+	isort *.py $(CHECK_DIRS) --recursive
 
 isort_check: ## check that imports are correctly sorted
-	isort $(CHECK_DIRS) --recursive  --check-only --diff
+	isort *.py $(CHECK_DIRS) --recursive  --check-only --diff
 
 linting: ## check code quality with pylint
-	pylint csrf
+	pylint *.py csrf
 	# Disable "C" (convention) messages in `edx_rest_framework_extensions`
 	# because there are so many violations (TODO: fix them).
 	pylint --disable=C edx_rest_framework_extensions

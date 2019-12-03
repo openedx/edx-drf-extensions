@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Metadata for edx-drf-extensions PyPI package.
+"""
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 import edx_rest_framework_extensions
+
 
 setup(
     name='edx-drf-extensions',
