@@ -20,8 +20,14 @@ piptools: ## install pip-compile and pip-sync.
 upgrade-piptools: piptools # upgrade pip-tools using pip-tools.
 	pip-compile requirements/pip-tools.in --rebuild --upgrade -o requirements/pip-tools.txt
 
+install-tox: ## install tox, which can be used to manage test environments.
+	pip install -r requirements/tox.txt
+
+upgrade-tox: piptools # upgrade tox using pip-tools.
+	pip-compile requirements/tox.in --rebuild --upgrade -o requirements/tox.txt
+
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
-upgrade: upgrade-piptools piptools ## upgrade requirement pins.
+upgrade: upgrade-piptools piptools upgrade-tox ## upgrade requirement pins.
 	pip-compile requirements/base.in --rebuild --upgrade -o requirements/base.txt
 
 	# Delete line "-e file:///local/path/to/edx-drf-extensions", which

@@ -26,17 +26,15 @@ matrix:
   - python: 2.7
     env: TOXENV=django22
 
-
 cache:
   - pip
 
 install:
-  - pip install -U pip wheel
-  - make requirements
-  - pip install pip ${INSTALL_EXTRAS}  # Installing just pip is a no-op
+  - pip install -U pip wheel ${INSTALL_EXTRAS}
+  - make install-tox
 
 script:
-  - make test
+  - tox
 
 after_success:
   - true; ${AFTER_SUCCESS}  # "true; " on its own is no-op
