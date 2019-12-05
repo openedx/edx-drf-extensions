@@ -28,8 +28,6 @@ DATABASES = {
     }
 }
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
 EDX_DRF_EXTENSIONS = {}
 
 # USER_SETTINGS overrides for djangorestframework-jwt APISettings class
