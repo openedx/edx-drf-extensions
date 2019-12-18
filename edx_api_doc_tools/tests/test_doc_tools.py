@@ -54,7 +54,26 @@ class DocViewTests(SimpleTestCase):
         )
 
     def test_get_ui_view(self):
+        """
+        Test that the UI view returns a page with the expected title.
+
+        We can't assert anything about page content, because that is all loaded
+        via an AJAX call to /api-docs/?format=openapi
+        """
         response = self.client.get('/api-docs/')
         assert response.status_code == 200
-        assert 'edX Hedgehog Service API' in response.content.decode('utf-8')
-        # TODO!: make some more assertions about substrings.
+        content = response.content.decode('utf-8')
+        assert '<title>edX Hedgehog Service API</title>' in content
+
+    def test_ui_data_endpoint(self):
+        """
+        Test that the the endpoint that the UI calls via AJAX returns the same data
+        as the schema endpoint.
+        """
+        data_response = self.client.get('/swagger.json', )
+        ui_data_response = self.client.get('/api-docs/?format=openapi')
+        assert ui_data_response.status_code == data_response.status_code == 200
+        expected = data_response.json()
+        # Cannot use `.json()` because response has content type 'application/openapi+json'.
+        actual = json.loads(ui_data_response.content.decode('utf-8'))
+        assert actual == expected
