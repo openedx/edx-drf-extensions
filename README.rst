@@ -14,6 +14,13 @@ This library includes various cross-cutting concerns related to APIs. API functi
 
 Some of these concerns include extensions of `Django REST Framework <http://www.django-rest-framework.org/>`_ (DRF), which is how the repository initially got its name.
 
+JWT Authentication and REST API Endpoints
+-----------------------------------------
+
+JWT Authentication is the preferred method of authentication for Open edX API endpoints. See `JWT Authentication README`_ for more details.
+
+.. _JWT Authentication README: ./auth/jwt/README.rst
+
 CSRF API
 --------
 

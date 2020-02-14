@@ -1,5 +1,11 @@
-This directory contains authentication related extensions.
+This directory contains authentication related extensions, split by authentication type:
 
-See `ARCH-244`_ for details of completing the refactor into this directory.
+* Bearer_
 
-.. _ARCH-244: https://openedx.atlassian.net/browse/ARCH-244
+* JWT_
+
+* Session_
+
+.. _Bearer: ./bearer
+.. _JWT: ./jwt
+.. _Session: ./session
