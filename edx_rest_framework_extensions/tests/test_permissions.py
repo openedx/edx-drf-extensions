@@ -102,18 +102,15 @@ class IsUserInUrlTests(TestCase):
 class JwtApplicationPermissionsTests(TestCase):
     """ Tests for the JwtRestrictedApplication and NotJwtRestrictedApplication permission classes. """
 
-    @patch('edx_rest_framework_extensions.permissions.waffle.switch_is_active')
     @ddt.data(
         *product(
             (permissions.JwtRestrictedApplication, permissions.NotJwtRestrictedApplication),
             (JwtAuthentication, BaseJSONWebTokenAuthentication, SessionAuthentication, None),
             (True, False),
-            (True, False),
         )
     )
     @ddt.unpack
-    def test_has_permission(self, permission_class, authentication_class, is_restricted, enforce_scopes, waffle_mock):
-        waffle_mock.return_value = enforce_scopes
+    def test_has_permission(self, permission_class, authentication_class, is_restricted):
         request = RequestFactory().get('/')
         request.successful_authenticator = authentication_class() if authentication_class else None
         request.user = factories.UserFactory()
@@ -122,7 +119,7 @@ class JwtApplicationPermissionsTests(TestCase):
         is_jwt_auth_subclass = issubclass(type(request.successful_authenticator), BaseJSONWebTokenAuthentication)
 
         has_permission = permission_class().has_permission(request, view=None)
-        expected_restricted_permission = enforce_scopes and is_restricted and is_jwt_auth_subclass
+        expected_restricted_permission = is_restricted and is_jwt_auth_subclass
         if permission_class == permissions.JwtRestrictedApplication:
             self.assertEqual(has_permission, expected_restricted_permission)
         else:
@@ -292,50 +289,14 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     @ddt.data(
-        # **** Unenforced ****
         # unrestricted
         dict(
-            is_enforced=False,
             is_restricted=False,
             is_user_in_url=True,
             expected_response=200,
             expected_log=JwtIsUnrestrictedDebugLog
         ),
         dict(
-            is_enforced=False,
-            is_restricted=False,
-            is_user_in_url=False,
-            expected_response=403,
-            expected_log=IsUserInUrlLog
-        ),
-
-        # restricted
-        dict(
-            is_enforced=False,
-            is_restricted=True,
-            is_user_in_url=True,
-            expected_response=200,
-            expected_log=JwtIsUnrestrictedDebugLog
-        ),
-        dict(
-            is_enforced=False,
-            is_restricted=True,
-            is_user_in_url=False,
-            expected_response=403,
-            expected_log=IsUserInUrlLog
-        ),
-
-        # **** Enforced ****
-        # unrestricted
-        dict(
-            is_enforced=True,
-            is_restricted=False,
-            is_user_in_url=True,
-            expected_response=200,
-            expected_log=JwtIsUnrestrictedDebugLog
-        ),
-        dict(
-            is_enforced=True,
             is_restricted=False,
             is_user_in_url=False,
             expected_response=403,
@@ -344,14 +305,12 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
 
         # restricted (note: further test cases for scopes and filters are in tests below)
         dict(
-            is_enforced=True,
             is_restricted=True,
             is_user_in_url=True,
             expected_response=403,
             expected_log=JwtScopesErrorLog
         ),
         dict(
-            is_enforced=True,
             is_restricted=True,
             is_user_in_url=False,
             expected_response=403,
@@ -361,26 +320,23 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
     @ddt.unpack
     def test_jwt_without_scopes_and_filters(
             self,
-            is_enforced,
             is_restricted,
             is_user_in_url,
             expected_response,
             expected_log
     ):
-        with patch('edx_rest_framework_extensions.permissions.waffle.switch_is_active') as mock_toggle:
-            with patch('edx_rest_framework_extensions.permissions.log') as mock_log:
-                mock_toggle.return_value = is_enforced
-                user = self._create_user()
+        with patch('edx_rest_framework_extensions.permissions.log') as mock_log:
+            user = self._create_user()
 
-                auth_header = self._create_jwt_header(user, is_restricted=is_restricted)
-                request = self._create_request(
-                    username_in_url=user.username if is_user_in_url else None,
-                    auth_header=auth_header,
-                )
+            auth_header = self._create_jwt_header(user, is_restricted=is_restricted)
+            request = self._create_request(
+                username_in_url=user.username if is_user_in_url else None,
+                auth_header=auth_header,
+            )
 
-                response = self.SomeClassView().dispatch(request)
-                self.assertEqual(response.status_code, expected_response)
-                self._assert_log(mock_log, expected_log)
+            response = self.SomeClassView().dispatch(request)
+            self.assertEqual(response.status_code, expected_response)
+            self._assert_log(mock_log, expected_log)
 
     @ddt.data(
         # valid scopes
@@ -393,7 +349,7 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
     )
     @ddt.unpack
     def test_jwt_scopes(self, scopes, expected_response, expected_log):
-        self._assert_jwt_enforced_restricted_case(
+        self._assert_jwt_restricted_case(
             scopes=scopes,
             filters=['content_org:some_org'],
             is_user_in_url=False,
@@ -423,7 +379,7 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
     )
     @ddt.unpack
     def test_jwt_org_filters(self, filters, expected_response, expected_log):
-        self._assert_jwt_enforced_restricted_case(
+        self._assert_jwt_restricted_case(
             scopes=['required_scope'],
             filters=filters,
             is_user_in_url=False,
@@ -453,7 +409,7 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
     )
     @ddt.unpack
     def test_jwt_user_filters(self, user_filters, is_user_in_url, expected_response, expected_log):
-        self._assert_jwt_enforced_restricted_case(
+        self._assert_jwt_restricted_case(
             scopes=['required_scope'],
             filters=['content_org:some_org'] + user_filters,
             is_user_in_url=is_user_in_url,
@@ -461,18 +417,16 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
             expected_log=expected_log,
         )
 
-    def _assert_jwt_enforced_restricted_case(self, scopes, filters, is_user_in_url, expected_response, expected_log):
-        with patch('edx_rest_framework_extensions.permissions.waffle.switch_is_active') as mock_toggle:
-            with patch('edx_rest_framework_extensions.permissions.log') as mock_log:
-                mock_toggle.return_value = True
-                user = self._create_user()
+    def _assert_jwt_restricted_case(self, scopes, filters, is_user_in_url, expected_response, expected_log):
+        with patch('edx_rest_framework_extensions.permissions.log') as mock_log:
+            user = self._create_user()
 
-                auth_header = self._create_jwt_header(user, is_restricted=True, scopes=scopes, filters=filters)
-                request = self._create_request(
-                    username_in_url=user.username if is_user_in_url else None,
-                    auth_header=auth_header,
-                )
+            auth_header = self._create_jwt_header(user, is_restricted=True, scopes=scopes, filters=filters)
+            request = self._create_request(
+                username_in_url=user.username if is_user_in_url else None,
+                auth_header=auth_header,
+            )
 
-                response = self.SomeClassView().dispatch(request, course_id='some_org/course/run')
-                self.assertEqual(response.status_code, expected_response)
-                self._assert_log(mock_log, expected_log)
+            response = self.SomeClassView().dispatch(request, course_id='some_org/course/run')
+            self.assertEqual(response.status_code, expected_response)
+            self._assert_log(mock_log, expected_log)

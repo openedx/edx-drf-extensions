@@ -2,21 +2,6 @@
 Application configuration constants and code.
 """
 
-# .. toggle_name: oauth2.enforce_jwt_scopes
-# .. toggle_implementation: WaffleSwitch
-# .. toggle_default: False
-# .. toggle_description: Enforces JWT Scopes for an IDA. See https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions/0006-enforce-scopes-in-LMS-APIs.rst  # noqa E501 line too long
-# .. toggle_category: authorization
-# .. toggle_use_cases: incremental_release
-# .. toggle_creation_date: 2018-06-28
-# .. toggle_expiration_date: 2020-12-31
-# .. toggle_warnings: Toggle may be referenced from multiple IDAs.
-# .. toggle_tickets: ARCH-154
-# .. toggle_status: supported
-OAUTH_TOGGLE_NAMESPACE = 'oauth2'  # IMPORTANT: Constant is part of the public api.  Do NOT rename.
-SWITCH_ENFORCE_JWT_SCOPES = 'enforce_jwt_scopes'  # IMPORTANT: Constant is part of the public api.  Do NOT rename.
-NAMESPACED_SWITCH_ENFORCE_JWT_SCOPES = '{}.{}'.format(OAUTH_TOGGLE_NAMESPACE, SWITCH_ENFORCE_JWT_SCOPES)
-
 # .. toggle_name: EDX_DRF_EXTENSIONS[ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE]
 # .. toggle_implementation: DjangoSetting
 # .. toggle_default: False
