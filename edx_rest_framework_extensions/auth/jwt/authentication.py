@@ -2,6 +2,7 @@
 
 import logging
 
+import jwt
 from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from rest_framework import exceptions
@@ -81,7 +82,8 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
             # CSRF passed validation with authenticated user
             return user_and_auth
-
+        except jwt.InvalidTokenError:
+            raise exceptions.AuthenticationFailed()
         except Exception as ex:
             # Errors in production do not need to be logged (as they may be noisy),
             # but debug logging can help quickly resolve issues during development.
