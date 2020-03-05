@@ -116,7 +116,7 @@ class JwtAuthenticationTests(TestCase):
         self.assertEqual(user.email, email)
         self.assertFalse(user.is_staff)
         self.assertEqual(user.tags, old_tags)
-        self.assertEqual(user.fruit, old_fruit)
+        self.assertEqual(user.fruit, old_fruit)  # pylint: disable=no-member
 
         payload = {'username': username, 'email': email, 'is_staff': True, 'tags': new_tags, 'fun_attr': new_fun_attr}
 

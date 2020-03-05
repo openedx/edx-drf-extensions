@@ -159,7 +159,6 @@ class LoginRedirectIfUnauthenticated(IsAuthenticated):
     Requires JwtRedirectToLoginIfUnauthenticatedMiddleware to work.
 
     """
-    pass
 
 
 _NOT_JWT_RESTRICTED_PERMISSIONS = C(NotJwtRestrictedApplication) & (C(IsStaff) | IsUserInUrl)

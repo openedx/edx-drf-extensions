@@ -15,7 +15,7 @@ from edx_rest_framework_extensions.settings import get_first_jwt_issuer, get_jwt
 logger = logging.getLogger(__name__)
 
 
-class JwtTokenVersion(object):
+class JwtTokenVersion:
     default_latest_supported = '1.2.0'
 
     starting_version = '1.0.0'

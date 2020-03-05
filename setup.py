@@ -1,9 +1,44 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function
 
 from setuptools import setup, find_packages
 
 import edx_rest_framework_extensions
+
+
+def is_requirement(line):
+    """
+    Return True if the requirement line is a package requirement;
+    that is, it is not blank, a comment, or editable.
+    """
+    # Remove whitespace at the start/end of the line
+    line = line.strip()
+
+    # Skip blank lines, comments, and editable installs
+    return not (
+        line == '' or
+        line.startswith('-r') or
+        line.startswith('#') or
+        line.startswith('-e') or
+        line.startswith('git+') or
+        line.startswith('-c')
+    )
+
+
+def load_requirements(*requirements_paths):
+    """
+    Load all requirements from the specified requirements files.
+    Returns a list of requirement strings.
+    """
+    requirements = set()
+    for path in requirements_paths:
+        requirements.update(
+            line.strip() for line in open(path).readlines()
+            if is_requirement(line)
+        )
+    return list(requirements)
+
 
 setup(
     name='edx-drf-extensions',
@@ -31,19 +66,6 @@ setup(
         'Framework :: Django :: 2.2',
     ],
     packages=find_packages(exclude=["tests"]),
-    install_requires=[
-        'django>=1.8.9,<2.0',
-        'djangorestframework',
-        'djangorestframework-jwt>=1.7.2,<2.0.0',
-        'django-waffle',
-        'psutil==1.2.1',  # dependency of edx-django-utils
-        'edx-django-utils',
-        'edx-opaque-keys',
-        'semantic_version',
-        'pyjwkest==1.3.2',
-        'python-dateutil>=2.0',
-        'requests>=2.7.0,<3.0.0',
-        'rest-condition>=1.0.3,<2.0',
-        'six',
-    ]
+    install_requires=load_requirements('requirements/base.in'),
+    tests_require=load_requirements('requirements/test.in'),
 )

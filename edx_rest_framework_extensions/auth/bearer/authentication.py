@@ -51,7 +51,7 @@ class BearerAuthentication(BaseAuthentication):
 
         if len(auth) == 1:
             raise exceptions.AuthenticationFailed('Invalid token header. No credentials provided.')
-        elif len(auth) > 2:
+        if len(auth) > 2:
             raise exceptions.AuthenticationFailed('Invalid token header. Token string should not contain spaces.')
 
         output = self.authenticate_credentials(auth[1].decode('utf8'))

@@ -41,7 +41,7 @@ from edx_rest_framework_extensions.permissions import (
 from edx_rest_framework_extensions.tests.factories import UserFactory
 
 
-class SomeIncludedPermissionClass(object):
+class SomeIncludedPermissionClass:
     pass
 
 
@@ -103,7 +103,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         )
         view_classes = dict(
             class_view=SomeClassView,
-            view_set=views['view_set'].cls,
+            view_set=views['view_set'].cls,  # pylint: disable=no-member
             function_view=views['function_view'].view_class,
         )
         view = views[view_type]
@@ -250,10 +250,10 @@ urlpatterns = [
 
 
 class OverriddenJwtRedirectToLoginIfUnauthenticatedMiddleware(JwtRedirectToLoginIfUnauthenticatedMiddleware):
-    def get_login_url(self, request):  # pylint: disable=unused-argument
+    def get_login_url(self, request):
         return '/overridden/login/'
 
-    def is_jwt_auth_enabled_with_login_required(self, request, view_func):  # pylint: disable=unused-argument
+    def is_jwt_auth_enabled_with_login_required(self, request, view_func):
         # force disable jwt cookie reconstitution in all cases
         return False
 

@@ -8,7 +8,7 @@ from django.http import Http404
 from django.test import RequestFactory
 from mock import MagicMock, Mock
 from rest_framework import serializers
-from six.moves import range  # pylint: disable=redefined-builtin
+from six.moves import range
 
 from edx_rest_framework_extensions.paginators import (
     NamespacedPageNumberPagination,

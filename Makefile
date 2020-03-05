@@ -23,18 +23,15 @@ upgrade-piptools: piptools # upgrade pip-tools using pip-tools.
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
 upgrade: upgrade-piptools piptools ## upgrade requirement pins.
 	pip-compile requirements/base.in --rebuild --upgrade -o requirements/base.txt
-
-	# Delete line "-e file:///local/path/to/edx-drf-extensions", which
-	# is a result of the "-e ." hack in base.in.
-	sed '/^-e /d' requirements/base.txt > requirements/base.tmp
-	mv requirements/base.tmp requirements/base.txt
-
 	pip-compile requirements/test.in --rebuild --upgrade -o requirements/test.txt
 	pip-compile requirements/docs.in --rebuild --upgrade -o requirements/docs.txt
 	pip-compile requirements/dev.in --rebuild --upgrade -o requirements/dev.txt
-	# Delete django pin from test.txt so that tox can control Django version.
-	sed '/^[dD]jango==/d' requirements/test.txt > requirements/test.tmp
-	mv requirements/test.tmp requirements/test.txt
+
+	# Delete django, drf pins from test.txt so that tox can control
+	# Django version.
+	sed -i.tmp '/^[dD]jango==/d' requirements/test.txt
+	sed -i.tmp '/^djangorestframework==/d' requirements/test.txt
+	rm requirements/test.txt.tmp
 
 requirements: piptools ## install dev requirements into current env
 	pip-sync requirements/dev.txt

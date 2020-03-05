@@ -25,7 +25,7 @@ USER_INFO = {
 User = get_user_model()
 
 
-class AccessTokenMixin(object):
+class AccessTokenMixin:
     """ Test mixin for dealing with OAuth2 access tokens. """
     DEFAULT_TOKEN = 'abc123'
 

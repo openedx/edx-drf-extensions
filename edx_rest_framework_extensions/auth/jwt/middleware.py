@@ -132,7 +132,7 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
         Redirects unauthenticated users to login when LoginRedirectIfUnauthenticated permission class was used.
         """
         if self._is_login_required_found() and not request.user.is_authenticated:
-            login_url = self.get_login_url(request)
+            login_url = self.get_login_url(request)  # pylint: disable=assignment-from-none
             return login_required(function=lambda request: None, login_url=login_url)(request)
 
         return response
@@ -288,7 +288,7 @@ def _includes_base_class(iter_classes, base_class):
     Returns whether any class in iter_class is a subclass of the given base_class.
     """
     return any(
-        issubclass(current_class, base_class) for current_class in iter_classes,
+        (issubclass(current_class, base_class) for current_class in iter_classes)
     )
 
 

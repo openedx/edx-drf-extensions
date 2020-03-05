@@ -4,72 +4,68 @@
 #
 #    make upgrade
 #
-astroid==1.6.6            # via pylint, pylint-celery
-atomicwrites==1.3.0       # via pytest
+appdirs==1.4.3            # via virtualenv
+astroid==2.3.3            # via pylint, pylint-celery
 attrs==19.3.0             # via pytest
-backports.functools-lru-cache==1.6.1  # via astroid, isort, pylint
 certifi==2019.11.28
 chardet==3.0.4
 click-log==0.3.2          # via edx-lint
 click==7.0                # via click-log, edx-lint
-configparser==4.0.2       # via importlib-metadata, pylint
-contextlib2==0.6.0.post1  # via importlib-metadata
 coverage==4.5.4
 ddt==1.2.2
-django-waffle==0.18.0
+distlib==0.3.0            # via virtualenv
+django-waffle==0.20.0
 djangorestframework-jwt==1.11.0
-djangorestframework==3.9.4
-edx-django-utils==2.0.2
+edx-django-utils==3.0
 edx-lint==1.4.1
 edx-opaque-keys==2.0.1
-enum34==1.1.6             # via astroid
 factory-boy==2.12.0
-faker==2.0.4              # via factory-boy
-funcsigs==1.0.2           # via mock, pytest
+faker==4.0.1              # via factory-boy
+filelock==3.0.12          # via virtualenv
 future==0.18.2
-futures==3.1.1 ; python_version == "2.7"
+futures==3.1.1
 httpretty==0.9.7
-idna==2.8
-importlib-metadata==1.1.0  # via pluggy, pytest
-ipaddress==1.0.23         # via faker
+idna==2.9
+importlib-metadata==1.5.0  # via importlib-resources, pluggy, pytest, virtualenv
+importlib-resources==1.2.0  # via virtualenv
 isort==4.3.21
 lazy-object-proxy==1.4.3  # via astroid
 mccabe==0.6.1             # via pylint
 mock==1.3.0
-more-itertools==5.0.0     # via pytest, zipp
-newrelic==5.4.0.132
-packaging==19.2           # via pytest
-pathlib2==2.3.5           # via importlib-metadata, pytest, pytest-django
+more-itertools==8.2.0     # via pytest
+newrelic==5.8.0.136
+packaging==20.3           # via pytest
+pathlib2==2.3.5           # via pytest
 pbr==5.4.4
 pluggy==0.13.1            # via pytest, tox
 psutil==1.2.1
-py==1.8.0                 # via pytest, tox
+py==1.8.1                 # via pytest, tox
 pycodestyle==2.5.0
-pycryptodomex==3.9.4
+pycryptodomex==3.9.7
 pyjwkest==1.3.2
 pyjwt==1.7.1
 pylint-celery==0.3        # via edx-lint
-pylint-django==0.11.1     # via edx-lint
+pylint-django==2.0.11     # via edx-lint
 pylint-plugin-utils==0.6  # via pylint-celery, pylint-django
-pylint==1.9.4             # via edx-lint, pylint-celery, pylint-django, pylint-plugin-utils
-pymongo==3.9.0
-pyparsing==2.4.5          # via packaging
+pylint==2.4.2             # via edx-lint, pylint-celery, pylint-django, pylint-plugin-utils
+pymongo==3.10.1
+pyparsing==2.4.6          # via packaging
 pytest-cov==2.8.1
-pytest-django==3.7.0
-pytest==4.6.6             # via pytest-cov, pytest-django
+pytest-django==3.8.0
+pytest==5.3.5             # via pytest-cov, pytest-django
 python-dateutil==2.8.1
 pytz==2019.3
-requests==2.22.0
+requests==2.23.0
 rest-condition==1.0.3
-scandir==1.10.0           # via pathlib2
-semantic-version==2.8.3
-singledispatch==3.4.0.3   # via astroid, pylint
-six==1.13.0
-stevedore==1.31.0
+semantic-version==2.8.4
+six==1.14.0
+sqlparse==0.3.1
+stevedore==1.32.0
 text-unidecode==1.3       # via faker
 tox==2.9.1
-urllib3==1.25.7
-virtualenv==16.7.8        # via tox
-wcwidth==0.1.7            # via pytest
+typed-ast==1.4.1          # via astroid
+urllib3==1.25.8
+virtualenv==20.0.8        # via tox
+wcwidth==0.1.8            # via pytest
 wrapt==1.11.2             # via astroid
-zipp==0.6.0               # via importlib-metadata
+zipp==1.2.0               # via importlib-metadata, importlib-resources

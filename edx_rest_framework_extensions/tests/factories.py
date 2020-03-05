@@ -16,5 +16,5 @@ class UserFactory(factory.DjangoModelFactory):
     is_superuser = False
     is_staff = False
 
-    class Meta(object):
+    class Meta:
         model = get_user_model()
