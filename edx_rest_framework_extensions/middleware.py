@@ -20,7 +20,7 @@ class RequestMetricsMiddleware(MiddlewareMixin):
     This middleware is dependent on the RequestCacheMiddleware. You must
     include this middleware later.  For example::
 
-        MIDDLEWARE_CLASSES = (
+        MIDDLEWARE = (
             'edx_django_utils.cache.middleware.RequestCacheMiddleware',
             'edx_rest_framework_extensions.middleware.RequestMetricsMiddleware',
         )

@@ -6,10 +6,15 @@ python:
   - 3.5
 
 env:
-  - TOXENV=django111-drf37 AFTER_SUCCESS=codecov INSTALL_EXTRAS=codecov
-  - TOXENV=django111-drf38
+  - TOXENV=django111-drf39 AFTER_SUCCESS=codecov INSTALL_EXTRAS=codecov
   - TOXENV=django111-drf39
   - TOXENV=django111-drflatest
+  - TOXENV=django20-drf39
+  - TOXENV=django20-drflatest
+  - TOXENV=django21-drf39
+  - TOXENV=django21-drflatest
+  - TOXENV=django22-drf39
+  - TOXENV=django22-drflatest
 
 matrix:
   include:
