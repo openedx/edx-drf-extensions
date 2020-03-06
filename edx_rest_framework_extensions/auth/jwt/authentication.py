@@ -12,7 +12,6 @@ from rest_framework_jwt.authentication import (
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
-from edx_rest_framework_extensions.config import ENABLE_ANONYMOUS_ACCESS_ROLLOUT
 from edx_rest_framework_extensions.settings import get_setting
 
 
@@ -64,12 +63,6 @@ class JwtAuthentication(JSONWebTokenAuthentication):
     def authenticate(self, request):
         try:
             user_and_auth = super(JwtAuthentication, self).authenticate(request)
-
-            is_anonymous_access_rollout_enabled = get_setting(ENABLE_ANONYMOUS_ACCESS_ROLLOUT)
-            # Use Django Setting for rollout to coordinate with frontend-auth changes for
-            # anonymous access being available across MFEs.
-            if not is_anonymous_access_rollout_enabled:
-                return user_and_auth
 
             # Unauthenticated, CSRF validation not required
             if not user_and_auth:

@@ -17,7 +17,6 @@ from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
     generate_latest_version_payload,
 )
-from edx_rest_framework_extensions.config import ENABLE_ANONYMOUS_ACCESS_ROLLOUT
 from edx_rest_framework_extensions.tests import factories
 
 
@@ -176,48 +175,16 @@ class JwtAuthenticationTests(TestCase):
         with self.assertRaises(AuthenticationFailed):
             JwtAuthentication().authenticate_credentials({'email': 'test@example.com'})
 
-    _MOCK_ANONYMOUS_RETURN = None
-    _MOCK_USER_AUTH_RETURN = ('mock-user', "mock-auth")
-
-    @ddt.data(
-        # CSRF exempt because roll-out is not enabled
-        (False, False, _MOCK_USER_AUTH_RETURN),
-        # CSRF exempt because roll-out is not enabled (even though JWT cookies are used)
-        (False, True, _MOCK_USER_AUTH_RETURN),
-        # CSRF exempt because of anonymous access (similar to SessionAuthentication)
-        (True, True, _MOCK_ANONYMOUS_RETURN),
-        # CSRF exempt because request uses JWT authentication without JWT cookies
-        (True, False, _MOCK_USER_AUTH_RETURN),
-    )
-    @ddt.unpack
-    def test_authenticate_csrf_exempt(self, enable_rollout, use_jwt_cookies, mocked_return_value_user_and_auth):
-        """ Verify authenticate success for cases that are CSRF exempt. """
-        request = RequestFactory().post('/')
-        if use_jwt_cookies:
-            request.META[USE_JWT_COOKIE_HEADER] = 'true'
-
-        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=mocked_return_value_user_and_auth):  # noqa E501 line too long
-            with override_settings(EDX_DRF_EXTENSIONS={ENABLE_ANONYMOUS_ACCESS_ROLLOUT: enable_rollout}):
-                actual_user_and_auth = JwtAuthentication().authenticate(request)
-
-        self.assertEqual(mocked_return_value_user_and_auth, actual_user_and_auth)
-
-    @ddt.data(
-        # CSRF protected because using JWT cookies to successfully authenticate (similar to SessionAuthentication)
-        (True, True, _MOCK_USER_AUTH_RETURN),
-    )
-    @ddt.unpack
-    def test_authenticate_csrf_protected(self, enable_rollout, use_jwt_cookies, mocked_return_value_user_and_auth):
+    def test_authenticate_csrf_protected(self):
         """ Verify authenticate exception for CSRF protected cases. """
         request = RequestFactory().post('/')
-        if use_jwt_cookies:
-            request.META[USE_JWT_COOKIE_HEADER] = 'true'
 
-        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=mocked_return_value_user_and_auth):  # noqa E501 line too long
-            with override_settings(EDX_DRF_EXTENSIONS={ENABLE_ANONYMOUS_ACCESS_ROLLOUT: enable_rollout}):
-                with mock.patch.object(Logger, 'debug') as debug_logger:
-                    with self.assertRaises(PermissionDenied) as context_manager:
-                        JwtAuthentication().authenticate(request)
+        request.META[USE_JWT_COOKIE_HEADER] = 'true'
+
+        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=('mock-user', "mock-auth")):  # noqa E501 line too long
+            with mock.patch.object(Logger, 'debug') as debug_logger:
+                with self.assertRaises(PermissionDenied) as context_manager:
+                    JwtAuthentication().authenticate(request)
 
         self.assertEqual(context_manager.exception.detail, 'CSRF Failed: CSRF cookie not set.')
         self.assertTrue(debug_logger.called)
