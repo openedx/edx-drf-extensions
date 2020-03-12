@@ -15,6 +15,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'edx_rest_framework_extensions',
     'rest_framework_jwt',
+    'rest_framework_jwt.blacklist',
     'waffle',
 )
 
