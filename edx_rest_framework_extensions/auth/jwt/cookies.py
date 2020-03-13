@@ -4,7 +4,7 @@ JWT Authentication cookie utilities.
 
 from django.conf import settings
 
-from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
+from edx_rest_framework_extensions.auth.jwt.decoder import configured_jwt_decode_handler
 
 
 def jwt_cookie_name():
@@ -30,4 +30,4 @@ def get_decoded_jwt(request):
 
     if not jwt_cookie:
         return None
-    return jwt_decode_handler(jwt_cookie)
+    return configured_jwt_decode_handler(jwt_cookie)

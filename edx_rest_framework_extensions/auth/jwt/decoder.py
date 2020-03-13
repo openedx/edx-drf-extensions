@@ -44,6 +44,10 @@ def jwt_decode_handler(token):
                 'JWT_PUBLIC_SIGNING_JWK_SET': 'the-jwk-set-of-public-signing-keys',
             }
 
+    Warning:
+        Do **not** use this method internally.  Only use it in ``JWT_DECODE_HANDLER`` like the above example.
+        Internally, use ``configured_jwt_decode_handler`` which respects the ``JWT_DECODE_HANDLER`` setting.
+
     Args:
         token (str): JWT to be decoded.
 
@@ -60,18 +64,26 @@ def jwt_decode_handler(token):
     return _set_token_defaults(decoded_token)
 
 
+def configured_jwt_decode_handler(token):
+    """
+    Calls the ``jwt_decode_handler`` configured in the ``JWT_DECODE_HANDLER`` setting.
+    """
+    api_setting_jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
+    return api_setting_jwt_decode_handler(token)
+
+
 def decode_jwt_scopes(token):
     """
     Decode the JWT and return the scopes claim.
     """
-    return jwt_decode_handler(token).get('scopes', [])
+    return configured_jwt_decode_handler(token).get('scopes', [])
 
 
 def decode_jwt_is_restricted(token):
     """
     Decode the JWT and return the is_restricted claim.
     """
-    return jwt_decode_handler(token)['is_restricted']
+    return configured_jwt_decode_handler(token).get('is_restricted', False)
 
 
 def decode_jwt_filters(token):
@@ -79,7 +91,10 @@ def decode_jwt_filters(token):
     Decode the JWT, parse the filters claim, and return a
     list of (filter_type, filter_value) tuples.
     """
-    return [jwt_filter.split(':') for jwt_filter in jwt_decode_handler(token)['filters']]
+    return [
+        jwt_filter.split(':')
+        for jwt_filter in configured_jwt_decode_handler(token).get('filters', [])
+    ]
 
 
 def _set_token_defaults(token):
