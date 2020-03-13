@@ -7,7 +7,12 @@ import mock
 from django.conf import settings
 from django.test import TestCase, override_settings
 
-from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
+from edx_rest_framework_extensions.auth.jwt.decoder import (
+    decode_jwt_filters,
+    decode_jwt_is_restricted,
+    decode_jwt_scopes,
+    jwt_decode_handler,
+)
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
     generate_latest_version_payload,
@@ -137,3 +142,66 @@ class JWTDecodeHandlerTests(TestCase):
         # Keep time-related values constant for full-proof comparison.
         upgraded_payload['iat'], upgraded_payload['exp'] = jwt_payload['iat'], jwt_payload['exp']
         self.assertDictEqual(jwt_decode_handler(token), upgraded_payload)
+
+
+def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument
+    """
+    Accepts anything as a token and returns a fake JWT payload with defaults.
+    """
+    return {
+        'scopes': ['fake:scope'],
+        'is_restricted': True,
+        'filters': ['fake:filter'],
+    }
+
+
+def _jwt_decode_handler_no_defaults(token):  # pylint: disable=unused-argument
+    """
+    Accepts anything as a token and returns a fake JWT payload with no defaults.
+    """
+    return {}
+
+
+@ddt.ddt
+class JWTDecodeHandlerSettingTests(TestCase):
+    """
+    Tests to ensure utility functions respect JWT_DECODE_HANDLER setting.
+
+    Note: An attempt was made to use ``override_settings`` to actually set
+    ``JWT_DECODE_HANDLER``, but clean-up of the tests in tearDown was not working,
+    even after reloading the module, and it was failing other tests in the test suite.
+    """
+    NORMALLY_INVALID_TOKEN = 'this is a valid jwt only with fake_jwt_decode_handler'
+
+    @ddt.data(
+        ('_jwt_decode_handler_with_defaults', ['fake:scope']),
+        ('_jwt_decode_handler_no_defaults', [])
+    )
+    @ddt.unpack
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.api_settings')
+    def test_decode_jwt_scopes(self, jwt_decode_handler_name, expected_scope, mock_api_settings):
+        mock_api_settings.JWT_DECODE_HANDLER = globals()[jwt_decode_handler_name]
+        scopes = decode_jwt_scopes(self.NORMALLY_INVALID_TOKEN)
+        self.assertEqual(scopes, expected_scope)
+
+    @ddt.data(
+        ('_jwt_decode_handler_with_defaults', True),
+        ('_jwt_decode_handler_no_defaults', False)
+    )
+    @ddt.unpack
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.api_settings')
+    def test_decode_jwt_is_restricted(self, jwt_decode_handler_name, expected_is_restricted, mock_api_settings):
+        mock_api_settings.JWT_DECODE_HANDLER = globals()[jwt_decode_handler_name]
+        is_restricted = decode_jwt_is_restricted(self.NORMALLY_INVALID_TOKEN)
+        self.assertEqual(is_restricted, expected_is_restricted)
+
+    @ddt.data(
+        ('_jwt_decode_handler_with_defaults', [['fake', 'filter']]),
+        ('_jwt_decode_handler_no_defaults', [])
+    )
+    @ddt.unpack
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.api_settings')
+    def test_decode_jwt_filters(self, jwt_decode_handler_name, expected_filter, mock_api_settings):
+        mock_api_settings.JWT_DECODE_HANDLER = globals()[jwt_decode_handler_name]
+        filters = decode_jwt_filters(self.NORMALLY_INVALID_TOKEN)
+        self.assertEqual(filters, expected_filter)
