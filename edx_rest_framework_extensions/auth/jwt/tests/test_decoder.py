@@ -7,7 +7,12 @@ import mock
 from django.conf import settings
 from django.test import TestCase, override_settings
 
-from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
+from edx_rest_framework_extensions.auth.jwt.decoder import (
+    decode_jwt_filters,
+    decode_jwt_is_restricted,
+    decode_jwt_scopes,
+    jwt_decode_handler,
+)
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
     generate_latest_version_payload,
@@ -137,3 +142,43 @@ class JWTDecodeHandlerTests(TestCase):
         # Keep time-related values constant for full-proof comparison.
         upgraded_payload['iat'], upgraded_payload['exp'] = jwt_payload['iat'], jwt_payload['exp']
         self.assertDictEqual(jwt_decode_handler(token), upgraded_payload)
+
+
+class JWTDecodeHandlerSettingTests(TestCase):
+    """
+    Tests to ensure utility functions respect JWT_DECODE_HANDLER setting.
+
+    Note: An attempt was made to use ``override_settings`` to actually set
+    ``JWT_DECODE_HANDLER``, but clean-up of the tests in tearDown was not working,
+    even after reloading the module, and it was failing other tests in the test suite.
+    """
+    NORMALLY_INVALID_TOKEN = 'this is a valid jwt only with fake_jwt_decode_handler'
+
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.api_settings')
+    def test_decode_jwt_scopes(self, mock_api_settings):
+        mock_api_settings.JWT_DECODE_HANDLER = _fake_jwt_decode_handler
+        scopes = decode_jwt_scopes(self.NORMALLY_INVALID_TOKEN)
+        self.assertEqual(scopes, ['fake:scope'])
+
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.api_settings')
+    def test_decode_jwt_is_restricted(self, mock_api_settings):
+        mock_api_settings.JWT_DECODE_HANDLER = _fake_jwt_decode_handler
+        is_restricted = decode_jwt_is_restricted(self.NORMALLY_INVALID_TOKEN)
+        self.assertTrue(is_restricted)
+
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.api_settings')
+    def test_decode_jwt_filters(self, mock_api_settings):
+        mock_api_settings.JWT_DECODE_HANDLER = _fake_jwt_decode_handler
+        filters = decode_jwt_filters(self.NORMALLY_INVALID_TOKEN)
+        self.assertEqual(filters, [['fake', 'filter']])
+
+
+def _fake_jwt_decode_handler(token):  # pylint: disable=unused-argument
+    """
+    Accepts anything as a token and returns a fake JWT payload.
+    """
+    return {
+        'scopes': ['fake:scope'],
+        'is_restricted': True,
+        'filters': ['fake:filter'],
+    }

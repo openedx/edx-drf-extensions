@@ -9,7 +9,7 @@ from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
-from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
+from edx_rest_framework_extensions.auth.jwt.decoder import configured_jwt_decode_handler
 from edx_rest_framework_extensions.settings import get_setting
 
 
@@ -187,4 +187,4 @@ def get_decoded_jwt_from_auth(request):
     if not is_jwt_authenticated(request):
         return None
 
-    return jwt_decode_handler(request.auth)
+    return configured_jwt_decode_handler(request.auth)
