@@ -20,7 +20,7 @@ django-waffle==0.18.0     # via -c requirements/constraints.txt, -r requirements
 django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.txt, -r requirements/test.txt, djangorestframework, drf-jwt, edx-django-utils, rest-condition
 djangorestframework==3.11.0  # via -r requirements/base.txt, -r requirements/test.txt, drf-jwt, rest-condition
 docutils==0.16            # via -r requirements/docs.txt, sphinx
-drf-jwt==1.15.0           # via -r requirements/base.txt, -r requirements/test.txt
+drf-jwt==1.14.0           # via -r requirements/base.txt, -r requirements/test.txt
 edx-django-utils==3.0     # via -r requirements/base.txt, -r requirements/test.txt
 edx-lint==1.4.1           # via -r requirements/test.txt
 edx-opaque-keys==2.0.1    # via -r requirements/base.txt, -r requirements/test.txt

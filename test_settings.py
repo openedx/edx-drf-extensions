@@ -16,7 +16,6 @@ INSTALLED_APPS = (
     'edx_rest_framework_extensions',
     'rest_framework_jwt',
     'waffle',
-    'rest_framework_jwt.blacklist',
 )
 
 DATABASES = {
