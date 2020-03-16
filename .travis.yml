@@ -46,4 +46,4 @@ deploy:
   on:
     tags: true
     python: 3.5
-    condition: "$TOXENV = django111-drf39"
+    condition: "$TOXENV = django22-drf39"  # This env should NOT match the one used for AFTER_SUCCESS
