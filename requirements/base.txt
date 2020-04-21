@@ -4,18 +4,18 @@
 #
 #    make upgrade
 #
-certifi==2019.11.28       # via requests
+certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
-django-waffle==0.18.0     # via -c requirements/constraints.txt, -r requirements/base.in, edx-django-utils
-django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.in, djangorestframework, drf-jwt, edx-django-utils, rest-condition
+django-waffle==0.20.0     # via -r requirements/base.in, edx-django-utils
+django==2.2.12            # via -c requirements/constraints.txt, -r requirements/base.in, djangorestframework, drf-jwt, edx-django-utils, rest-condition
 djangorestframework==3.11.0  # via -r requirements/base.in, drf-jwt, rest-condition
 drf-jwt==1.14.0           # via -r requirements/base.in
-edx-django-utils==3.0     # via -r requirements/base.in
-edx-opaque-keys==2.0.1    # via -r requirements/base.in
+edx-django-utils==3.2.1   # via -r requirements/base.in
+edx-opaque-keys==2.0.2    # via -r requirements/base.in
 future==0.18.2            # via pyjwkest
 idna==2.9                 # via requests
-newrelic==5.10.0.138      # via edx-django-utils
-pbr==5.4.4                # via stevedore
+newrelic==5.12.0.140      # via edx-django-utils
+pbr==5.4.5                # via stevedore
 psutil==1.2.1             # via edx-django-utils
 pycryptodomex==3.9.7      # via pyjwkest
 pyjwkest==1.4.2           # via -r requirements/base.in
@@ -26,6 +26,7 @@ pytz==2019.3              # via django
 requests==2.23.0          # via -r requirements/base.in, pyjwkest
 rest-condition==1.0.3     # via -r requirements/base.in
 semantic-version==2.8.4   # via -r requirements/base.in
-six==1.14.0               # via -r requirements/base.in, edx-opaque-keys, pyjwkest, python-dateutil, stevedore
+six==1.14.0               # via -r requirements/base.in, django-waffle, edx-opaque-keys, pyjwkest, python-dateutil, stevedore
+sqlparse==0.3.1           # via django
 stevedore==1.32.0         # via edx-opaque-keys
-urllib3==1.25.8           # via requests
+urllib3==1.25.9           # via requests

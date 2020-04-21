@@ -1,6 +1,6 @@
 -c constraints.txt
 
-Django>=1.11
+Django>=2.2
 djangorestframework>=3.2.0
 drf-jwt<1.15.0  # max contraint added here to work with setup.py's `install_requires`.
                 # for explanation of 1.15.0 constraint, see https://github.com/edx/edx-drf-extensions/releases/tag/5.0.1

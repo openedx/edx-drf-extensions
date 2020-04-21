@@ -6,29 +6,29 @@
 #
 alabaster==0.7.12         # via sphinx
 babel==2.8.0              # via sphinx
-certifi==2019.11.28       # via -c requirements/test.txt, requests
+certifi==2020.4.5.1       # via -c requirements/test.txt, requests
 chardet==3.0.4            # via -c requirements/test.txt, requests
 docutils==0.16            # via sphinx
 idna==2.9                 # via -c requirements/test.txt, requests
 imagesize==1.2.0          # via sphinx
-jinja2==2.11.1            # via sphinx
+jinja2==2.11.2            # via sphinx
 markupsafe==1.1.1         # via jinja2
 packaging==20.3           # via -c requirements/test.txt, sphinx
 pygments==2.6.1           # via sphinx
-pyparsing==2.4.6          # via -c requirements/test.txt, packaging
+pyparsing==2.4.7          # via -c requirements/test.txt, packaging
 pytz==2019.3              # via -c requirements/test.txt, babel
 requests==2.23.0          # via -c requirements/test.txt, sphinx
 six==1.14.0               # via -c requirements/test.txt, packaging
 snowballstemmer==2.0.0    # via sphinx
 sphinx-rtd-theme==0.4.3   # via -r requirements/docs.in
-sphinx==2.4.4             # via -r requirements/docs.in, sphinx-rtd-theme
+sphinx==3.0.2             # via -r requirements/docs.in, sphinx-rtd-theme
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-devhelp==1.0.2  # via sphinx
 sphinxcontrib-htmlhelp==1.0.3  # via sphinx
 sphinxcontrib-jsmath==1.0.1  # via sphinx
 sphinxcontrib-qthelp==1.0.3  # via sphinx
 sphinxcontrib-serializinghtml==1.1.4  # via sphinx
-urllib3==1.25.8           # via -c requirements/test.txt, requests
+urllib3==1.25.9           # via -c requirements/test.txt, requests
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

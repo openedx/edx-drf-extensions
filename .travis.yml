@@ -1,42 +1,24 @@
 sudo: false
-
 language: python
-
 python:
-  - 3.5
-
+- 3.5
+- 3.8
 env:
-  - TOXENV=django111-drf39 AFTER_SUCCESS=codecov INSTALL_EXTRAS=codecov
-  - TOXENV=django111-drf39
-  - TOXENV=django111-drflatest
-  - TOXENV=django20-drf39
-  - TOXENV=django20-drflatest
-  - TOXENV=django21-drf39
-  - TOXENV=django21-drflatest
-  - TOXENV=django22-drf39
-  - TOXENV=django22-drflatest
-
-matrix:
-  include:
-    - python: 3.5
-      env: TOXENV=quality
-    - python: 3.5
-      env: TOXENV=docs
+- TOXENV=django22-drf39 AFTER_SUCCESS=codecov INSTALL_EXTRAS=codecov
+- TOXENV=django22-drflatest
+- TOXENV=quality
+- TOXENV=docs
 
 cache:
-  - pip
-
+- pip
 install:
-  - pip install -U pip wheel
-  - make requirements
-  - pip install pip ${INSTALL_EXTRAS} # Installing just pip is a no-op
-
+- make requirements
+- pip install pip ${INSTALL_EXTRAS}
+- pip install pip==20.0.2
 script:
-  - make test
-
+- make test
 after_success:
-  - true; ${AFTER_SUCCESS} # "true; " on its own is no-op
-
+- true; ${AFTER_SUCCESS} # "true; " on its own is no-op
 deploy:
   provider: pypi
   user: edx
@@ -46,4 +28,4 @@ deploy:
   on:
     tags: true
     python: 3.5
-    condition: "$TOXENV = django22-drf39"  # This env should NOT match the one used for AFTER_SUCCESS
+    condition: $TOXENV = django22-drf39  # This env should NOT match the one used for AFTER_SUCCESS
