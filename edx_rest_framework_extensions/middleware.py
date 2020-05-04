@@ -4,14 +4,22 @@ Middleware to ensure best practices of DRF and other endpoints.
 from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils import monitoring
 
+from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
+from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
+
 
 class RequestMetricsMiddleware(MiddlewareMixin):
     """
     Adds various request related metrics.
 
     Possible metrics include:
-        request_auth_type: Example values include: no-user, unauthenticated,
-            jwt, bearer, other-token-type, or session-or-unknown
+        request_authenticated_user_set_in_middleware:
+            Example values: 'process_request', 'process_view', 'process_response',
+            or 'process_exception'. Metric won't exist if user is not authenticated.
+        request_auth_type_guess: Example values include: no-user, unauthenticated,
+            jwt, bearer, other-token-type, jwt-cookie, or session-or-other
+            Note: These are just guesses because if a token was expired, for example,
+              the user could have been authenticated by some other means.
         request_client_name: The client name from edx-rest-api-client calls.
         request_referer
         request_user_agent: The user agent string from the request header.
@@ -28,17 +36,44 @@ class RequestMetricsMiddleware(MiddlewareMixin):
     This middleware should also appear after any authentication middleware.
 
     """
+    _authenticated_user_found_in_middleware = None
+
+    def process_request(self, request):
+        """
+        Caches if authenticated user was found.
+        """
+        self._cache_if_authenticated_user_found_in_middleware(request, 'process_request')
+
+    def process_view(self, request, view_func, view_args, view_kwargs):  # pylint: disable=unused-argument
+        """
+        Caches if authenticated user was found.
+        """
+        self._cache_if_authenticated_user_found_in_middleware(request, 'process_view')
 
     def process_response(self, request, response):
         """
         Add metrics for various details of the request.
         """
-        self._set_request_auth_type_metric(request)
+        self._cache_if_authenticated_user_found_in_middleware(request, 'process_response')
+        self._set_all_request_metrics(request)
+        return response
+
+    def process_exception(self, request, exception):  # pylint: disable=unused-argument
+        """
+        Django middleware handler to process an exception
+        """
+        self._cache_if_authenticated_user_found_in_middleware(request, 'process_exception')
+        self._set_all_request_metrics(request)
+
+    def _set_all_request_metrics(self, request):
+        """
+        Sets all the request metrics
+        """
+        self._set_request_auth_type_guess_metric(request)
         self._set_request_user_agent_metrics(request)
         self._set_request_referer_metric(request)
         self._set_request_user_id_metric(request)
-
-        return response
+        self._set_request_authenticated_user_found_in_middleware()
 
     def _set_request_user_id_metric(self, request):
         """
@@ -76,28 +111,52 @@ class RequestMetricsMiddleware(MiddlewareMixin):
                 if len(user_agent_parts) == 3 and user_agent_parts[1].startswith('edx-rest-api-client/'):
                     monitoring.set_custom_metric('request_client_name', user_agent_parts[2])
 
-    def _set_request_auth_type_metric(self, request):
+    def _set_request_auth_type_guess_metric(self, request):
         """
-        Add metric 'request_auth_type' for the authentication type used.
+        Add metric 'request_auth_type_guess' for the authentication type used.
 
         NOTE: This is a best guess at this point.  Possible values include:
             no-user
             unauthenticated
             jwt/bearer/other-token-type
-            session-or-unknown (catch all)
+            jwt-cookie
+            session-or-other (catch all)
 
         """
-        if 'HTTP_AUTHORIZATION' in request.META and request.META['HTTP_AUTHORIZATION']:
+        if not hasattr(request, 'user') or not request.user:
+            auth_type = 'no-user'
+        elif not request.user.is_authenticated:
+            auth_type = 'unauthenticated'
+        elif 'HTTP_AUTHORIZATION' in request.META and request.META['HTTP_AUTHORIZATION']:
             token_parts = request.META['HTTP_AUTHORIZATION'].split()
             # Example: "JWT eyJhbGciO..."
             if len(token_parts) == 2:
                 auth_type = token_parts[0].lower()  # 'jwt' or 'bearer' (for example)
             else:
                 auth_type = 'other-token-type'
-        elif not hasattr(request, 'user') or not request.user:
-            auth_type = 'no-user'
-        elif not request.user.is_authenticated:
-            auth_type = 'unauthenticated'
+        elif USE_JWT_COOKIE_HEADER in request.META and jwt_cookie_name() in request.COOKIES:
+            auth_type = 'jwt-cookie'
         else:
-            auth_type = 'session-or-unknown'
-        monitoring.set_custom_metric('request_auth_type', auth_type)
+            auth_type = 'session-or-other'
+        monitoring.set_custom_metric('request_auth_type_guess', auth_type)
+
+    def _set_request_authenticated_user_found_in_middleware(self):
+        """
+        Add metric 'request_authenticated_user_found_in_middleware' if authenticated user was found.
+        """
+        if self._authenticated_user_found_in_middleware:
+            monitoring.set_custom_metric(
+                'request_authenticated_user_found_in_middleware',
+                self._authenticated_user_found_in_middleware
+            )
+
+    def _cache_if_authenticated_user_found_in_middleware(self, request, value):
+        """
+        Updates the cached process step in which the authenticated user was found.
+        """
+        if self._authenticated_user_found_in_middleware:
+            # value already set in earlier middleware step
+            return
+
+        if hasattr(request, 'user') and request.user and request.user.is_authenticated:
+            self._authenticated_user_found_in_middleware = value
