@@ -3,6 +3,7 @@ Middleware to ensure best practices of DRF and other endpoints.
 """
 from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils import monitoring
+from edx_django_utils.cache import DEFAULT_REQUEST_CACHE
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
@@ -36,8 +37,6 @@ class RequestMetricsMiddleware(MiddlewareMixin):
     This middleware should also appear after any authentication middleware.
 
     """
-    _authenticated_user_found_in_middleware = None
-
     def process_request(self, request):
         """
         Caches if authenticated user was found.
@@ -73,7 +72,7 @@ class RequestMetricsMiddleware(MiddlewareMixin):
         self._set_request_user_agent_metrics(request)
         self._set_request_referer_metric(request)
         self._set_request_user_id_metric(request)
-        self._set_request_authenticated_user_found_in_middleware()
+        self._set_request_authenticated_user_found_in_middleware_metric()
 
     def _set_request_user_id_metric(self, request):
         """
@@ -140,23 +139,28 @@ class RequestMetricsMiddleware(MiddlewareMixin):
             auth_type = 'session-or-other'
         monitoring.set_custom_metric('request_auth_type_guess', auth_type)
 
-    def _set_request_authenticated_user_found_in_middleware(self):
+    AUTHENTICATED_USER_FOUND_CACHE_KEY = 'edx-drf-extensions.authenticated_user_found_in_middleware'
+
+    def _set_request_authenticated_user_found_in_middleware_metric(self):
         """
         Add metric 'request_authenticated_user_found_in_middleware' if authenticated user was found.
         """
-        if self._authenticated_user_found_in_middleware:
+        cached_response = DEFAULT_REQUEST_CACHE.get_cached_response(self.AUTHENTICATED_USER_FOUND_CACHE_KEY)
+        if cached_response.is_found:
             monitoring.set_custom_metric(
                 'request_authenticated_user_found_in_middleware',
-                self._authenticated_user_found_in_middleware
+                cached_response.value
             )
 
     def _cache_if_authenticated_user_found_in_middleware(self, request, value):
         """
-        Updates the cached process step in which the authenticated user was found.
+        Updates the cached process step in which the authenticated user was found, if it hasn't already been found.
         """
-        if self._authenticated_user_found_in_middleware:
-            # value already set in earlier middleware step
+        cached_response = DEFAULT_REQUEST_CACHE.get_cached_response(self.AUTHENTICATED_USER_FOUND_CACHE_KEY)
+        if cached_response.is_found:
+            # since we are tracking the earliest point the authenticated user was found,
+            # and the value was already set in earlier middleware step, do not set again.
             return
 
         if hasattr(request, 'user') and request.user and request.user.is_authenticated:
-            self._authenticated_user_found_in_middleware = value
+            DEFAULT_REQUEST_CACHE.set(self.AUTHENTICATED_USER_FOUND_CACHE_KEY, value)
