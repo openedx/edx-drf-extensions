@@ -4,6 +4,7 @@ Unit tests for middlewares.
 import ddt
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
+from edx_django_utils.cache import RequestCache
 from mock import call, patch
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
@@ -16,6 +17,7 @@ from edx_rest_framework_extensions.tests.factories import UserFactory
 class TestRequestMetricsMiddleware(TestCase):
     def setUp(self):
         super(TestRequestMetricsMiddleware, self).setUp()
+        RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
         self.middleware = RequestMetricsMiddleware()
 
@@ -143,4 +145,26 @@ class TestRequestMetricsMiddleware(TestCase):
 
         mock_set_custom_metric.assert_any_call(
             'request_authenticated_user_found_in_middleware', 'process_view'
+        )
+
+    @patch('edx_django_utils.monitoring.set_custom_metric')
+    def test_authenticated_user_found_is_properly_reset(self, mock_set_custom_metric):
+        # set user before process_request
+        self.request.user = UserFactory()
+        self.middleware.process_request(self.request)
+        self.middleware.process_response(self.request, None)
+
+        mock_set_custom_metric.assert_any_call(
+            'request_authenticated_user_found_in_middleware', 'process_request'
+        )
+
+        # set up new request and set user before process_response
+        mock_set_custom_metric.reset_mock()
+        RequestCache.clear_all_namespaces()
+        self.request = RequestFactory().get('/')
+        self.request.user = UserFactory()
+        self.middleware.process_response(self.request, None)
+
+        mock_set_custom_metric.assert_any_call(
+            'request_authenticated_user_found_in_middleware', 'process_response'
         )
