@@ -22,7 +22,7 @@ After a PR merges, a new version of the package will automatically be released b
     git tag -a X.Y.Z -m "Releasing version X.Y.Z"
     git push origin X.Y.Z
 
-Do **not** create a Github Release, or ensure its message points to the CHANGELOG.rst and ADR 0002-use-changelog.rst.
+Do **not** create a Github Release, or ensure its message points to the CHANGELOG.rst and ADR 0001-use-changelog.rst.
 
 JWT Authentication and REST API Endpoints
 -----------------------------------------
