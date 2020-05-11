@@ -33,3 +33,4 @@ Table of Contents
     middleware
     permissions
     utils
+    changelog

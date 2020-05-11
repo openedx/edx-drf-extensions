@@ -14,6 +14,16 @@ This library includes various cross-cutting concerns related to APIs. API functi
 
 Some of these concerns include extensions of `Django REST Framework <http://www.django-rest-framework.org/>`_ (DRF), which is how the repository initially got its name.
 
+Publishing a Release
+--------------------
+
+After a PR merges, a new version of the package will automatically be released by Travis when the commit is tagged. Use::
+
+    git tag -a X.Y.Z -m "Releasing version X.Y.Z"
+    git push origin X.Y.Z
+
+Do **not** create a Github Release, or ensure its message points to the CHANGELOG.rst and ADR 0002-use-changelog.rst.
+
 JWT Authentication and REST API Endpoints
 -----------------------------------------
 
@@ -52,10 +62,3 @@ Reporting Security Issues
 -------------------------
 
 Please do not report security issues in public. Please email security@edx.org.
-
-Mailing List and IRC Channel
-----------------------------
-
-You can discuss this code in the `edx-code Google Group`__ or in the ``#edx-code`` IRC channel on Freenode.
-
-__ https://groups.google.com/forum/#!forum/edx-code
