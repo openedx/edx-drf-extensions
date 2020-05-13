@@ -10,7 +10,6 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt import authentication
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
-from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
@@ -178,8 +177,6 @@ class JwtAuthenticationTests(TestCase):
     def test_authenticate_csrf_protected(self, mock_set_custom_attribute):
         """ Verify authenticate exception for CSRF protected cases. """
         request = RequestFactory().post('/')
-
-        request.META[USE_JWT_COOKIE_HEADER] = 'true'
 
         with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=('mock-user', "mock-auth")):
             with self.assertRaises(PermissionDenied) as context_manager:

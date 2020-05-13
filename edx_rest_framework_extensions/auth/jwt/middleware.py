@@ -126,6 +126,8 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
         """
         self._check_and_cache_login_required_found(view_func)
         if self.is_jwt_auth_enabled_with_login_required(request, view_func):
+            # TODO: How much of this can be cleaned up if we deprecate/remove USE_JWT_COOKIE_HEADER?
+            # Can the entire middleware go away, or is it just greatly simplified?
             request.META[USE_JWT_COOKIE_HEADER] = 'true'
 
     def process_response(self, request, response):
@@ -200,6 +202,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         request_jwt_cookie = f'missing-{cookie_name}'
         return cookie_missing_message, request_jwt_cookie
 
+    # TODO: If we can get rid of JwtRedirectToLoginIfUnauthenticatedMiddleware, we can restore this to `process_request`
     # Note: Using `process_view` over `process_request` so JwtRedirectToLoginIfUnauthenticatedMiddleware which
     # uses `process_view` can update the request before this middleware. Method `process_request` happened too early.
     def process_view(self, request, view_func, view_args, view_kwargs):  # pylint: disable=unused-argument
@@ -208,17 +211,37 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         """
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
 
+        # # TODO: Move pseudocode to helper function and make this work.
+        # if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+        #     # JSONWebTokenAuthentication gives precedence to a JWT in the authorization header, before
+        #     # using the JWT Cookie. Don't reconstitute the JWT Cookie unless it would be used.
+        #     # This simplifies later code that wants to rely on the JWT Cookie and isn't aware of
+        #     # this order of precendence.
+        #     # See https://github.com/Styria-Digital/django-rest-framework-jwt/blob/befefaa1ac1a57b1f207639a7ead472094093642/src/rest_framework_jwt/authentication.py#L90-L98
+        #     reconstitute_jwt_cookie = False
+        #     try:
+        #         authorization_header = force_str(JwtAuthentication.get_authorization_header(request))
+        #         JwtAuthentication.get_token_from_authorization_header(authorization_header)
+        #     except InvalidAuthorizationCredentials:
+        #         reconstitute_jwt_cookie = True
+        # else:
+        #     reconstitute_jwt_cookie = request.META.get(USE_JWT_COOKIE_HEADER)
+        reconstitute_jwt_cookie = request.META.get(USE_JWT_COOKIE_HEADER)
+
         use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
+        # TODO: This should be move later and should check if the JWT Cookie has been reconstituted, rather than
+        # checking `reconstitute_jwt_cookie`, since the reconstitution could fail.
         is_set_request_user_for_jwt_cookie_enabled = get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE)
-        if use_jwt_cookie_requested and is_set_request_user_for_jwt_cookie_enabled:
+        if reconstitute_jwt_cookie and is_set_request_user_for_jwt_cookie_enabled:
             # DRF does not set request.user until process_response. This makes it available in process_view.
             # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
             request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
 
-        if not use_jwt_cookie_requested:
+        # TODO: Instead of checking for the header, ALWAYS reconstitute the cookie.
+        if not reconstitute_jwt_cookie:
             attribute_value = 'not-requested'
         elif header_payload_cookie and signature_cookie:
             # Reconstitute JWT auth cookie if split cookies are available and jwt cookie
@@ -253,6 +276,8 @@ def _get_user_from_jwt(request, view_func):
         return user
 
     try:
+        # TODO: Is there a way to do this safely from `process_request` for all requests and not check
+        # if a JwtAuthentication class is used on the view?
         jwt_authentication_class = _get_jwt_authentication_class(view_func)
         if jwt_authentication_class:
             user_jwt = jwt_authentication_class().authenticate(Request(

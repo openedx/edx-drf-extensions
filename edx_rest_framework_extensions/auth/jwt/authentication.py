@@ -2,17 +2,17 @@
 
 import logging
 
-import jwt
 from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
+from django.utils.encoding import force_str
 from edx_django_utils.monitoring import set_custom_attribute
-from rest_framework import exceptions
+from rest_framework.authentication import get_authorization_header
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_jwt.blacklist.exceptions import InvalidAuthorizationCredentials
 
-from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import configured_jwt_decode_handler
 from edx_rest_framework_extensions.settings import get_setting
-
 
 logger = logging.getLogger(__name__)
 
@@ -60,35 +60,54 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         return get_setting('JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES')
 
     def authenticate(self, request):
+        is_jwt_from_authorization_header = self._is_jwt_from_authorization_header(request)
+
         try:
             user_and_auth = super().authenticate(request)
 
-            # Unauthenticated, CSRF validation not required
+            # Unable to authenticate, proceed to next Authentication class
             if not user_and_auth:
+                return None
+
+            # JWT found in authorization header, CSRF validation not required
+            if is_jwt_from_authorization_header:
                 return user_and_auth
 
-            # Not using JWT cookies, CSRF validation not required
-            use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
-            if not use_jwt_cookie_requested:
-                return user_and_auth
-
+            # TODO: Why do we need CSRF protection but the original class does not?
+            # Enforce CSRF for JWT Cookie (assumed if not using the authorization header)
             self.enforce_csrf(request)
 
             # CSRF passed validation with authenticated user
             return user_and_auth
 
-        except jwt.InvalidTokenError as token_error:
-            # Note: I think this case is not used, but will monitor the custom attribute to verify.
-            set_custom_attribute('jwt_auth_failed', 'InvalidTokenError:{}'.format(repr(token_error)))
-            raise exceptions.AuthenticationFailed() from token_error
-        except Exception as exception:
-            # Errors in production do not need to be logged (as they may be noisy),
-            # but debug logging can help quickly resolve issues during development.
-            logger.debug('Failed JWT Authentication,', exc_info=exception)
-            # Note: I think this case should only include AuthenticationFailed and PermissionDenied,
-            #   but will monitor the custom attribute to verify.
-            set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
-            raise
+        except (AuthenticationFailed, PermissionDenied) as exception:
+            if is_jwt_from_authorization_header:
+                logger.debug('Invalid JWT auth header.', exc_info=exception)
+                set_custom_attribute('jwt_auth_failed', 'auth header:{}'.format(repr(exception)))
+                raise
+
+            # TODO: Add test coverage
+            # If we reach here, we must be using the JWT Cookie.
+            # For failed authentication using JWT Cookie, we will allow other Authentication classes
+            # to have a chance to attempt authentication by returning none, but will log and add monitoring.
+            logger.debug('Invalid JWT Cookie. Proceeding to next Authentication class.', exc_info=exception)
+            set_custom_attribute('jwt_auth_failed', 'cookie:{}'.format(repr(exception)))
+            return None
+
+    @classmethod
+    def _is_jwt_from_authorization_header(cls, request):
+        """
+        Returns True if the JWT is from the authorization header, and False otherwise (i.e. not found or JWT cookie)
+
+        This is a modified version of JSONWebTokenAuthentication.get_token_from_request:
+            https://github.com/Styria-Digital/django-rest-framework-jwt/blob/88096b16d8639336fcb34d1e3420fafd1dc7c8f7/src/rest_framework_jwt/authentication.py#L93-L100
+        """
+        try:
+            authorization_header = force_str(get_authorization_header(request))
+            jwt_token = cls.get_token_from_authorization_header(authorization_header)
+            return bool(jwt_token)
+        except (InvalidAuthorizationCredentials, UnicodeDecodeError):
+            return False
 
     def authenticate_credentials(self, payload):
         """Get or create an active user with the username contained in the payload."""
@@ -96,7 +115,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         # pylint: disable=too-many-nested-blocks
         username = payload.get('preferred_username') or payload.get('username')
         if username is None:
-            raise exceptions.AuthenticationFailed('JWT must include a preferred_username or username claim!')
+            raise AuthenticationFailed('JWT must include a preferred_username or username claim!')
         try:
             user, __ = get_user_model().objects.get_or_create(username=username)
             attributes_updated = False
@@ -150,7 +169,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         except Exception as authentication_error:
             msg = 'User retrieval failed.'
             logger.exception(msg)
-            raise exceptions.AuthenticationFailed(msg) from authentication_error
+            raise AuthenticationFailed(msg) from authentication_error
 
         return user
 
@@ -167,7 +186,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         reason = check.process_view(request, None, (), {})
         if reason:
             # CSRF failed, bail with explicit error message
-            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
+            raise PermissionDenied('CSRF Failed: %s' % reason)
 
 
 def is_jwt_authenticated(request):
