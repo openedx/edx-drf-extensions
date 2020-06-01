@@ -1,18 +1,18 @@
 Part of `edX code`__.
 
-__ http://code.edx.org/
+__ https://code.edx.org/
 
 edX Django REST Framework Extensions  |Travis|_ |Codecov|_
 ==========================================================
 .. |Travis| image:: https://travis-ci.org/edx/edx-drf-extensions.svg?branch=master
 .. _Travis: https://travis-ci.org/edx/edx-drf-extensions?branch=master
 
-.. |Codecov| image:: http://codecov.io/github/edx/edx-drf-extensions/coverage.svg?branch=master
-.. _Codecov: http://codecov.io/github/edx/edx-drf-extensions?branch=master
+.. |Codecov| image:: https://codecov.io/github/edx/edx-drf-extensions/coverage.svg?branch=master
+.. _Codecov: https://codecov.io/github/edx/edx-drf-extensions?branch=master
 
 This library includes various cross-cutting concerns related to APIs. API functionality added to this library must be required for multiple Open edX applications or multiple repositories.
 
-Some of these concerns include extensions of `Django REST Framework <http://www.django-rest-framework.org/>`_ (DRF), which is how the repository initially got its name.
+Some of these concerns include extensions of `Django REST Framework <https://www.django-rest-framework.org/>`_ (DRF), which is how the repository initially got its name.
 
 Publishing a Release
 --------------------
