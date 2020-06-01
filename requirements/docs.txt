@@ -13,15 +13,15 @@ idna==2.9                 # via -c requirements/test.txt, requests
 imagesize==1.2.0          # via sphinx
 jinja2==2.11.2            # via sphinx
 markupsafe==1.1.1         # via jinja2
-packaging==20.3           # via -c requirements/test.txt, sphinx
+packaging==20.4           # via -c requirements/test.txt, sphinx
 pygments==2.6.1           # via sphinx
 pyparsing==2.4.7          # via -c requirements/test.txt, packaging
-pytz==2019.3              # via -c requirements/test.txt, babel
+pytz==2020.1              # via -c requirements/test.txt, babel
 requests==2.23.0          # via -c requirements/test.txt, sphinx
-six==1.14.0               # via -c requirements/test.txt, packaging
+six==1.15.0               # via -c requirements/test.txt, packaging
 snowballstemmer==2.0.0    # via sphinx
 sphinx-rtd-theme==0.4.3   # via -r requirements/docs.in
-sphinx==3.0.2             # via -r requirements/docs.in, sphinx-rtd-theme
+sphinx==3.0.4             # via -r requirements/docs.in, sphinx-rtd-theme
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-devhelp==1.0.2  # via sphinx
 sphinxcontrib-htmlhelp==1.0.3  # via sphinx
