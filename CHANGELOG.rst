@@ -14,6 +14,22 @@ Unreleased
 
 *
 
+[6.1.0] - 2020-06-26
+--------------------
+
+Changed
+~~~~~~~
+
+* Update `drf-jwt` to pull in new allow-list(they called it blacklist) feature.
+
+Added
+~~~~~
+
+Fixed
+~~~~~
+
+
+
 [6.0.0] - 2020-05-05
 --------------------
 
