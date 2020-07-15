@@ -14,6 +14,23 @@ Unreleased
 
 *
 
+[7.0.0] - 2020-07-15
+--------------------
+
+Changed
+~~~~~~~
+
+* Refactored a large permissions.py module into multiple modules within a new permissions folder in order to clarify the different sets of permissions for their different purposes. In particular, Permissions related to enforcing OAuth Scopes and Restricted Applications were intermixed with other Basic permissions, which added confusion on what needed to be used.
+
+Added
+~~~~~
+
+* Created a new permissions folder for containing and organizing Permission classes.
+* Created a new permissions-related modules: basic.py, oauth_scopes.py, and redirect.py.
+
+Fixed
+~~~~~
+
 [6.1.0] - 2020-06-26
 --------------------
 

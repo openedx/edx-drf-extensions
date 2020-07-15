@@ -6,9 +6,9 @@ https://github.com/edx/edx-platform/tree/master/openedx/core/djangoapps/oauth_di
 """
 import logging
 
+from opaque_keys.edx.keys import CourseKey
 from rest_condition import C
 from rest_framework.permissions import BasePermission, IsAuthenticated
-from opaque_keys.edx.keys import CourseKey
 
 from edx_rest_framework_extensions.permissions.basic import IsStaff, IsUserInUrl
 
