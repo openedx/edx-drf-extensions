@@ -20,13 +20,13 @@ Unreleased
 Changed
 ~~~~~~~
 
-* Refactored a large permissions.py module into multiple modules within a new permissions folder in order to clarify the different sets of permissions for their different purposes. In particular, Permissions related to enforcing OAuth Scopes and Restricted Applications were intermixed with other Basic permissions, which added confusion on what needed to be used.
+* Refactored a large permissions.py module into multiple modules within a new permissions folder in order to clarify the different sets of permissions for their different purposes. In particular, separated Permissions related to enforcing OAuth Scopes and Restricted Applications from other Basic permissions in order to avoid confusion on which permissions to use for basic functionality.
 
 Added
 ~~~~~
 
 * Created a new permissions folder for containing and organizing Permission classes.
-* Created a new permissions-related modules: basic.py, oauth_scopes.py, and redirect.py.
+* Created new permissions-related modules: basic.py, oauth_scopes.py, and redirect.py.
 
 Fixed
 ~~~~~
