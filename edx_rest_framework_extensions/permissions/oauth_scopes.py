@@ -1,9 +1,16 @@
-""" Permission classes. """
+"""
+Permission classes to be used only for Views that need to support OAuth Scopes and/or OAuth
+Restricted Applications. See the following for understanding Restricted Applications and
+OAuth Scope enforcement in the platform:
+https://github.com/edx/edx-platform/tree/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions
+"""
 import logging
 
-from opaque_keys.edx.keys import CourseKey
 from rest_condition import C
 from rest_framework.permissions import BasePermission, IsAuthenticated
+from opaque_keys.edx.keys import CourseKey
+
+from edx_rest_framework_extensions.permissions.basic import IsStaff, IsUserInUrl
 
 from edx_rest_framework_extensions.auth.jwt.authentication import is_jwt_authenticated
 from edx_rest_framework_extensions.auth.jwt.decoder import (
@@ -11,35 +18,10 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
     decode_jwt_is_restricted,
     decode_jwt_scopes,
 )
+from edx_rest_framework_extensions.utils import get_username_param
 
 
 log = logging.getLogger(__name__)
-
-
-class IsSuperuser(BasePermission):
-    """ Allows access only to superusers. """
-
-    def has_permission(self, request, view):
-        return request.user and request.user.is_superuser
-
-
-class IsStaff(BasePermission):
-    """
-    Allows access to "global" staff users..
-    """
-    def has_permission(self, request, view):
-        return request.user.is_staff
-
-
-class IsUserInUrl(BasePermission):
-    """
-    Allows access if the requesting user matches the user in the URL.
-    """
-    def has_permission(self, request, view):
-        allowed = request.user.username.lower() == get_username_param(request)
-        if not allowed:
-            log.info(u"Permission IsUserInUrl: not satisfied for requesting user %s.", request.user.username)
-        return allowed
 
 
 class JwtRestrictedApplication(BasePermission):
@@ -149,18 +131,6 @@ class JwtHasUserFilterForRequestedUser(BasePermission):
         return None
 
 
-class LoginRedirectIfUnauthenticated(IsAuthenticated):
-    """
-    A DRF permission class that will login redirect unauthorized users.
-
-    It can be used to convert a plain Django view that was using @login_required
-    into a DRF APIView, which is useful to enable our DRF JwtAuthentication class.
-
-    Requires JwtRedirectToLoginIfUnauthenticatedMiddleware to work.
-
-    """
-
-
 _NOT_JWT_RESTRICTED_PERMISSIONS = C(NotJwtRestrictedApplication) & (C(IsStaff) | IsUserInUrl)
 _JWT_RESTRICTED_PERMISSIONS = (
     C(JwtRestrictedApplication) &
@@ -172,12 +142,3 @@ JWT_RESTRICTED_APPLICATION_OR_USER_ACCESS = (
     C(IsAuthenticated) &
     (_NOT_JWT_RESTRICTED_PERMISSIONS | _JWT_RESTRICTED_PERMISSIONS)
 )
-
-
-def get_username_param(request):
-    user_parameter_name = 'username'
-    url_username = (
-        getattr(request, 'parser_context', {}).get('kwargs', {}).get(user_parameter_name, '') or
-        request.GET.get(user_parameter_name, '')
-    )
-    return url_username.lower()
