@@ -22,14 +22,16 @@ Changed
 
 * Refactored a large permissions.py module into multiple modules within a new permissions folder in order to clarify the different sets of permissions for their different purposes. In particular, separated Permissions related to enforcing OAuth Scopes and Restricted Applications from other Basic permissions in order to avoid confusion on which permissions to use for basic functionality.
 
+* To continue to support clients who imported permissions from the old permissions.py module, those permissions are exported from the permissions/__init__.py module for backward compatibility (with the following caveat). *(Note: This works since Python's import statement is the same whether the code is imported from a module named XXX or from an __init__.py module in a directory named XXX.)*
+
+* **BREAKING CHANGE** All permissions moved into the oauth_scopes.py module are *not* exported from the permissions/__init__.py module since these permissions are not expected to be used widely and far in the future. The only clients of these permissions are in edx-platform, which will be updated once these changes are released.
+
 Added
 ~~~~~
 
 * Created a new permissions folder for containing and organizing Permission classes.
 * Created new permissions-related modules: basic.py, oauth_scopes.py, and redirect.py.
 
-Fixed
-~~~~~
 
 [6.1.0] - 2020-06-26
 --------------------
@@ -38,13 +40,6 @@ Changed
 ~~~~~~~
 
 * Update `drf-jwt` to pull in new allow-list(they called it blacklist) feature.
-
-Added
-~~~~~
-
-Fixed
-~~~~~
-
 
 
 [6.0.0] - 2020-05-05
