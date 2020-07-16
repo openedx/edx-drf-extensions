@@ -205,3 +205,16 @@ class JwtAuthenticationTests(TestCase):
 
         decoded_jwt = authentication.get_decoded_jwt_from_auth(mock_request_with_cookie)
         self.assertEqual(expected_decoded_jwt, decoded_jwt)
+
+    def test_with_explicitly_jwt_authorization(self):
+        """ With JWT header it continues and validates the credentials and throws error. """
+        auth_header = '{token_name} {token}'.format(token_name='JWT', token='wrongvalue')
+        request = RequestFactory().get('/', HTTP_AUTHORIZATION=auth_header)
+        with self.assertRaises(AuthenticationFailed):
+            JwtAuthentication().authenticate(request)
+
+    def test_jwt_returns_none_for_bearer_header(self):
+        """ Returns a None for bearer header request. """
+        auth_header = '{token_name} {token}'.format(token_name='Bearer', token='abc123')
+        request = RequestFactory().get('/', HTTP_AUTHORIZATION=auth_header)
+        self.assertIsNone(JwtAuthentication().authenticate(request))

@@ -14,6 +14,16 @@ Unreleased
 
 *
 
+[6.1.1] - 2020-07-19
+--------------------
+
+Fixed
+~~~~~~~
+
+* Latest `drf-jwt` is throwing error in case of any other Authorization Header. Fixing that issue in `JwtAuthentication` class.
+
+
+
 [6.1.0] - 2020-06-26
 --------------------
 
