@@ -2,12 +2,11 @@
 # https://open-edx-proposals.readthedocs.io/en/latest/oep-0002-bp-repo-metadata.html#specification
 
 nick: drfx
-owner: 'edx/arch-bom'
 oeps:
     oep-2: true
     oep-7: true
     oep-18:
-      state: false
-      reason: "There is an upgrade Makefile target, but it is not automated"
+        state: false
+        reason: There is an upgrade Makefile target, but it is not automated
 tags:
     - library
