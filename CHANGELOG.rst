@@ -12,7 +12,16 @@ Change Log
 Unreleased
 ----------
 
-*
+
+[6.1.2] - 2020-07-19
+--------------------
+
+Fixed
+~~~~~~~
+
+* `_get_user_from_jwt` no longer throws an `UnsupportedMediaType` error for failing to parse "new user" requests.
+
+
 
 [6.1.1] - 2020-07-19
 --------------------

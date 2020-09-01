@@ -10,6 +10,7 @@ from django.utils.functional import SimpleLazyObject
 from edx_django_utils import monitoring
 from edx_django_utils.cache import RequestCache
 from rest_framework.request import Request
+from rest_framework.settings import api_settings
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt.constants import (
@@ -254,7 +255,10 @@ def _get_user_from_jwt(request, view_func):
     try:
         jwt_authentication_class = _get_jwt_authentication_class(view_func)
         if jwt_authentication_class:
-            user_jwt = jwt_authentication_class().authenticate(Request(request))
+            user_jwt = jwt_authentication_class().authenticate(Request(
+                request,
+                parsers=api_settings.DEFAULT_PARSER_CLASSES
+            ))
             if user_jwt is not None:
                 return user_jwt[0]
             else:

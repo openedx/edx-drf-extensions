@@ -193,6 +193,13 @@ class MockJwtAuthentication(JSONWebTokenAuthentication):
     def authenticate(self, request):
         if request.COOKIES.get(jwt_cookie_name(), None) != 'header.payload.signature':
             return None
+
+        # authenticate was failing on POST calls because it previously wasn't passing the
+        # supported parsers into the new Request object. This retrieval of POST data
+        # simulates the CSRF POST data checks in the non-test authenticate method. This
+        # line lets us verify that the parsers are being correctly passed to the request
+        request.POST.get('csrfmiddlewaretoken', '')
+
         user = UserFactory()
         return (user, None)
 
@@ -206,6 +213,9 @@ class MockJwtAuthenticationView(APIView):
     authentication_classes = (MockJwtAuthentication,)
 
     def get(self, request):  # pylint: disable=unused-argument
+        return Response({'success': True})
+
+    def post(self, request):  # pylint: disable=unused-argument
         return Response({'success': True})
 
 
@@ -401,17 +411,18 @@ class TestJwtAuthCookieMiddleware(TestCase):
 
     @patch('edx_rest_framework_extensions.auth.jwt.middleware.log')
     @ddt.data(
-        ('/nopermissionsrequired/', True, True, True, None),
-        ('/nopermissionsrequired/', True, False, False, None),
-        ('/nopermissionsrequired/', False, False, True, _LOG_WARN_AUTHENTICATION_FAILED),
-        ('/nopermissionsrequired/', False, False, False, None),
-        ('/unauthenticated/', True, False, True, _LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS),
-        ('/unauthenticated/', True, False, False, None),
+        ('/nopermissionsrequired/', True, True, True, None, False),
+        ('/nopermissionsrequired/', True, False, False, None, False),
+        ('/nopermissionsrequired/', False, False, True, _LOG_WARN_AUTHENTICATION_FAILED, False),
+        ('/nopermissionsrequired/', False, False, False, None, False),
+        ('/nopermissionsrequired/', True, True, True, None, True),
+        ('/unauthenticated/', True, False, True, _LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS, False),
+        ('/unauthenticated/', True, False, True, None, False),
     )
     @ddt.unpack
     def test_set_request_user_with_use_jwt_cookie(
             self, url, is_cookie_valid, is_request_user_set, is_toggle_enabled, log_warning,
-            mock_log,
+            send_post, mock_log,
     ):
         header = {USE_JWT_COOKIE_HEADER: 'true'}
         self.client.cookies = _get_test_cookie(is_cookie_valid=is_cookie_valid)
@@ -434,7 +445,10 @@ class TestJwtAuthCookieMiddleware(TestCase):
                 ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: is_toggle_enabled,
             }
         ):
-            response = self.client.get(url, **header)
+            if send_post:
+                response = self.client.post(url, {}, content_type="application/json", **header)
+            else:
+                response = self.client.get(url, **header)
             self.assertEqual(200, response.status_code)
 
             if log_warning == self._LOG_WARN_AUTHENTICATION_FAILED:

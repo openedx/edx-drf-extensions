@@ -14,7 +14,6 @@ Describe in a couple of sentences what this PR adds
 * **Author concerns:** List any concerns about this PR
 
 **Reviewers:**
-- [ ] @edx/arch-review
 - [ ] tag reviewer
 
 **Merge checklist:**
@@ -27,6 +26,6 @@ Describe in a couple of sentences what this PR adds
 
 **Post merge:**
 - [ ] Create a tag
-- [ ] Check new version is pushed to PyPi after tag-triggered build is 
+- [ ] Check new version is pushed to PyPi after tag-triggered build is
       finished.
 - [ ] Delete working branch (if not needed anymore)
