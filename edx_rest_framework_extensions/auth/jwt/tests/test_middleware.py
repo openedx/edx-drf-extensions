@@ -364,11 +364,11 @@ class TestJwtAuthCookieMiddleware(TestCase):
         self.request.session = 'mock session'
         self.middleware = JwtAuthCookieMiddleware()
 
-    @patch('edx_django_utils.monitoring.set_custom_metric')
-    def test_do_not_use_jwt_cookies(self, mock_set_custom_metric):
+    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    def test_do_not_use_jwt_cookies(self, mock_set_custom_attribute):
         self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
-        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'not-requested')
+        mock_set_custom_attribute.assert_called_once_with('request_jwt_cookie', 'not-requested')
 
     @ddt.data(
         (jwt_cookie_header_payload_name(), jwt_cookie_signature_name()),
@@ -376,9 +376,9 @@ class TestJwtAuthCookieMiddleware(TestCase):
     )
     @ddt.unpack
     @patch('edx_rest_framework_extensions.auth.jwt.middleware.log')
-    @patch('edx_django_utils.monitoring.set_custom_metric')
+    @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_missing_cookies(
-            self, set_cookie_name, missing_cookie_name, mock_set_custom_metric, mock_log
+            self, set_cookie_name, missing_cookie_name, mock_set_custom_attribute, mock_log
     ):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.request.COOKIES[set_cookie_name] = 'test'
@@ -388,23 +388,25 @@ class TestJwtAuthCookieMiddleware(TestCase):
             '%s cookie is missing. JWT auth cookies will not be reconstituted.' %
             missing_cookie_name
         )
-        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'missing-{}'.format(missing_cookie_name))
+        mock_set_custom_attribute.assert_called_once_with(
+            'request_jwt_cookie', 'missing-{}'.format(missing_cookie_name)
+        )
 
-    @patch('edx_django_utils.monitoring.set_custom_metric')
-    def test_no_cookies(self, mock_set_custom_metric):
+    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    def test_no_cookies(self, mock_set_custom_attribute):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
-        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'missing-both')
+        mock_set_custom_attribute.assert_called_once_with('request_jwt_cookie', 'missing-both')
 
-    @patch('edx_django_utils.monitoring.set_custom_metric')
-    def test_success(self, mock_set_custom_metric):
+    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    def test_success(self, mock_set_custom_attribute):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.request.COOKIES[jwt_cookie_header_payload_name()] = 'header.payload'
         self.request.COOKIES[jwt_cookie_signature_name()] = 'signature'
         self.middleware.process_view(self.request, None, None, None)
         self.assertEqual(self.request.COOKIES[jwt_cookie_name()], 'header.payload.signature')
-        mock_set_custom_metric.assert_called_once_with('request_jwt_cookie', 'success')
+        mock_set_custom_attribute.assert_called_once_with('request_jwt_cookie', 'success')
 
     _LOG_WARN_AUTHENTICATION_FAILED = 0
     _LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS = 1

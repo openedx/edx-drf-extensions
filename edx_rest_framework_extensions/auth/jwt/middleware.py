@@ -175,7 +175,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
     See the full decision here:
         https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions/0009-jwt-in-session-cookie.rst
 
-    Also, sets the metric 'request_jwt_cookie' with one of the following values:
+    Also, sets the custom attribute 'request_jwt_cookie' with one of the following values:
         'success': Value when reconstitution is successful.
         'not-requested': Value when jwt cookie authentication was not requested by the client.
         'missing-both': Value when both cookies are missing and reconstitution is not possible.
@@ -192,8 +192,8 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
 
     """
 
-    def _get_missing_cookie_message_and_metric(self, cookie_name):
-        """ Returns tuple with missing cookie (log_message, metric_value) """
+    def _get_missing_cookie_message_and_attribute(self, cookie_name):
+        """ Returns tuple with missing cookie (log_message, custom_attribute_value) """
         cookie_missing_message = '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
                 cookie_name
         )
@@ -219,7 +219,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
             request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
 
         if not use_jwt_cookie_requested:
-            metric_value = 'not-requested'
+            attribute_value = 'not-requested'
         elif header_payload_cookie and signature_cookie:
             # Reconstitute JWT auth cookie if split cookies are available and jwt cookie
             # authentication was requested by the client.
@@ -228,23 +228,23 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
                 JWT_DELIMITER,
                 signature_cookie,
             )
-            metric_value = 'success'
+            attribute_value = 'success'
         elif header_payload_cookie or signature_cookie:
             # Log unexpected case of only finding one cookie.
             if not header_payload_cookie:
-                log_message, metric_value = self._get_missing_cookie_message_and_metric(
+                log_message, attribute_value = self._get_missing_cookie_message_and_attribute(
                     jwt_cookie_header_payload_name()
                 )
             if not signature_cookie:
-                log_message, metric_value = self._get_missing_cookie_message_and_metric(
+                log_message, attribute_value = self._get_missing_cookie_message_and_attribute(
                     jwt_cookie_signature_name()
                 )
             log.warning(log_message)
         else:
-            metric_value = 'missing-both'
+            attribute_value = 'missing-both'
             log.warning('Both JWT auth cookies missing. JWT auth cookies will not be reconstituted.')
 
-        monitoring.set_custom_metric('request_jwt_cookie', metric_value)
+        monitoring.set_custom_attribute('request_jwt_cookie', attribute_value)
 
 
 def _get_user_from_jwt(request, view_func):

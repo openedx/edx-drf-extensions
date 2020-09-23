@@ -4,7 +4,7 @@ import logging
 
 import requests
 from django.contrib.auth import get_user_model
-from edx_django_utils.monitoring import set_custom_metric
+from edx_django_utils.monitoring import set_custom_attribute
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
 
@@ -37,16 +37,16 @@ class BearerAuthentication(BaseAuthentication):
         return get_setting('OAUTH2_USER_INFO_URL')
 
     def authenticate(self, request):
-        set_custom_metric("BearerAuthentication", "Failed")  # default value
+        set_custom_attribute("BearerAuthentication", "Failed")  # default value
         if not self.get_user_info_url():
             logger.warning('The setting OAUTH2_USER_INFO_URL is invalid!')
-            set_custom_metric("BearerAuthentication", "NoURL")
+            set_custom_attribute("BearerAuthentication", "NoURL")
             return None
-        set_custom_metric("BearerAuthentication_user_info_url", self.get_user_info_url())
+        set_custom_attribute("BearerAuthentication_user_info_url", self.get_user_info_url())
         auth = get_authorization_header(request).split()
 
         if not auth or auth[0].lower() != b'bearer':
-            set_custom_metric("BearerAuthentication", "None")
+            set_custom_attribute("BearerAuthentication", "None")
             return None
 
         if len(auth) == 1:
@@ -55,7 +55,7 @@ class BearerAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed('Invalid token header. Token string should not contain spaces.')
 
         output = self.authenticate_credentials(auth[1].decode('utf8'))
-        set_custom_metric("BearerAuthentication", "Success")
+        set_custom_attribute("BearerAuthentication", "Success")
         return output
 
     def authenticate_credentials(self, token):

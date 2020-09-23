@@ -4,7 +4,7 @@ Django>=2.2
 djangorestframework>=3.2.0
 drf-jwt
 django-waffle
-edx-django-utils
+edx-django-utils>=3.8.0      # using new set_custom_attribute method
 edx-opaque-keys
 pyjwkest
 python-dateutil>=2.0
