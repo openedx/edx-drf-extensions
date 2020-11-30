@@ -15,6 +15,7 @@ clean: ## remove intermediate files
 	rm -rf build
 
 piptools: ## install pip-compile and pip-sync.
+	pip install -qr requirements/pip.txt
 	pip install -r requirements/pip-tools.txt
 
 upgrade-piptools: piptools # upgrade pip-tools using pip-tools.
@@ -22,10 +23,11 @@ upgrade-piptools: piptools # upgrade pip-tools using pip-tools.
 
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
 upgrade: upgrade-piptools piptools ## upgrade requirement pins.
-	pip-compile requirements/base.in --rebuild --upgrade -o requirements/base.txt
-	pip-compile requirements/test.in --rebuild --upgrade -o requirements/test.txt
-	pip-compile requirements/docs.in --rebuild --upgrade -o requirements/docs.txt
-	pip-compile requirements/dev.in --rebuild --upgrade -o requirements/dev.txt
+	pip-compile --allow-unsafe --rebuild -o requirements/pip.txt requirements/pip.in
+	pip-compile requirements/base.in --upgrade -o requirements/base.txt
+	pip-compile requirements/test.in --upgrade -o requirements/test.txt
+	pip-compile requirements/docs.in --upgrade -o requirements/docs.txt
+	pip-compile requirements/dev.in --upgrade -o requirements/dev.txt
 
 	# Delete django, drf pins from test.txt so that tox can control
 	# Django version.

@@ -4,8 +4,8 @@ __ https://code.edx.org/
 
 edX Django REST Framework Extensions  |Travis|_ |Codecov|_
 ==========================================================
-.. |Travis| image:: https://travis-ci.org/edx/edx-drf-extensions.svg?branch=master
-.. _Travis: https://travis-ci.org/edx/edx-drf-extensions?branch=master
+.. |Travis| image:: https://github.com/edx/edx-drf-extensions/workflows/Python%20CI/badge.svg?branch=master
+.. _Travis: https://github.com/edx/edx-drf-extensions/actions
 
 .. |Codecov| image:: https://codecov.io/github/edx/edx-drf-extensions/coverage.svg?branch=master
 .. _Codecov: https://codecov.io/github/edx/edx-drf-extensions?branch=master
