@@ -13,7 +13,7 @@ idna==2.10                # via -c requirements/test.txt, requests
 imagesize==1.2.0          # via sphinx
 jinja2==2.11.2            # via sphinx
 markupsafe==1.1.1         # via jinja2
-packaging==20.7           # via -c requirements/test.txt, sphinx
+packaging==20.8           # via -c requirements/test.txt, sphinx
 pygments==2.7.3           # via sphinx
 pyparsing==2.4.7          # via -c requirements/test.txt, packaging
 pytz==2020.4              # via -c requirements/test.txt, babel
