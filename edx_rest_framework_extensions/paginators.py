@@ -93,11 +93,11 @@ def paginate_search_results(object_class, search_results, page_size, page):
     # It is common code, but
     try:
         page_number = paginator.validate_number(page)
-    except InvalidPage:
+    except InvalidPage as page_error:
         if page == 'last':
             page_number = paginator.num_pages
         else:
-            raise Http404("Page is not 'last', nor can it be converted to an int.")
+            raise Http404("Page is not 'last', nor can it be converted to an int.") from page_error
 
     try:
         paged_results = paginator.page(page_number)
@@ -107,7 +107,7 @@ def paginate_search_results(object_class, search_results, page_size, page):
                 page_number=page_number,
                 message=str(exception)
             )
-        )
+        ) from exception
 
     search_queryset_pks = [item['data']['pk'] for item in paged_results.object_list]
     queryset = object_class.objects.filter(pk__in=search_queryset_pks)

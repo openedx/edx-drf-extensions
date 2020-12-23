@@ -77,10 +77,10 @@ class BearerAuthentication(BaseAuthentication):
 
         try:
             user_info = self.get_user_info(token)
-        except UserInfoRetrievalFailed:
+        except UserInfoRetrievalFailed as authentication_error:
             msg = 'Failed to retrieve user info. Unable to authenticate.'
             logger.error(msg)
-            raise exceptions.AuthenticationFailed(msg)
+            raise exceptions.AuthenticationFailed(msg) from authentication_error
 
         user, __ = get_user_model().objects.get_or_create(username=user_info['username'], defaults=user_info)
 
@@ -108,9 +108,9 @@ class BearerAuthentication(BaseAuthentication):
         try:
             headers = {'Authorization': 'Bearer {}'.format(token)}
             response = requests.get(url, headers=headers)
-        except requests.RequestException:
+        except requests.RequestException as error:
             logger.exception('Failed to retrieve user info due to a request exception.')
-            raise UserInfoRetrievalFailed
+            raise UserInfoRetrievalFailed from error
 
         if response.status_code == 200:
             return self.process_user_info_response(response.json())

@@ -66,7 +66,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             return None
 
         try:
-            user_and_auth = super(JwtAuthentication, self).authenticate(request)
+            user_and_auth = super().authenticate(request)
 
             # Unauthenticated, CSRF validation not required
             if not user_and_auth:
@@ -82,8 +82,8 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # CSRF passed validation with authenticated user
             return user_and_auth
 
-        except jwt.InvalidTokenError:
-            raise exceptions.AuthenticationFailed()
+        except jwt.InvalidTokenError as token_error:
+            raise exceptions.AuthenticationFailed() from token_error
         except Exception as ex:
             # Errors in production do not need to be logged (as they may be noisy),
             # but debug logging can help quickly resolve issues during development.
@@ -147,10 +147,10 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
             if attributes_updated:
                 user.save()
-        except Exception:
+        except Exception as authentication_error:
             msg = 'User retrieval failed.'
             logger.exception(msg)
-            raise exceptions.AuthenticationFailed(msg)
+            raise exceptions.AuthenticationFailed(msg) from authentication_error
 
         return user
 

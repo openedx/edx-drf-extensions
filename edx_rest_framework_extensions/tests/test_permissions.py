@@ -130,7 +130,7 @@ class JwtApplicationPermissionsTests(TestCase):
 class JwtHasScopeTests(TestCase):
     """ Tests for JwtHasScope permission class. """
     def setUp(self):
-        super(JwtHasScopeTests, self).setUp()
+        super().setUp()
         self.user = UserFactory()
 
     @ddt.data(
@@ -158,7 +158,7 @@ class JwtHasScopeTests(TestCase):
 class JwtHasContentOrgFilterForRequestedCourseTests(TestCase):
     """ Tests for JwtHasContentOrgFilterForRequestedCourse permission class. """
     def setUp(self):
-        super(JwtHasContentOrgFilterForRequestedCourseTests, self).setUp()
+        super().setUp()
         self.user = UserFactory()
 
     @ddt.data(

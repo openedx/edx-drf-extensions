@@ -43,7 +43,7 @@ def update_jwt_auth_setting(jwt_auth_overrides):
 class JWTDecodeHandlerTests(TestCase):
     """ Tests for the `jwt_decode_handler` utility function. """
     def setUp(self):
-        super(JWTDecodeHandlerTests, self).setUp()
+        super().setUp()
         self.user = UserFactory()
         self.payload = generate_latest_version_payload(self.user)
         self.jwt = generate_jwt_token(self.payload)

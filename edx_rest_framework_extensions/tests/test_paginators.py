@@ -21,7 +21,7 @@ class PaginateSearchResultsTestCase(TestCase):
     """Test cases for paginate_search_results method"""
 
     def setUp(self):
-        super(PaginateSearchResultsTestCase, self).setUp()
+        super().setUp()
 
         self.default_size = 6
         self.default_page = 1
@@ -157,7 +157,7 @@ class NamespacedPaginationTestCase(TestCase):
     }
 
     def setUp(self):
-        super(NamespacedPaginationTestCase, self).setUp()
+        super().setUp()
         self.paginator = NamespacedPageNumberPagination()
         self.users = [self.TestUser('user_{}'.format(idx), 'user_{}@example.com'.format(idx)) for idx in range(25)]
         self.request_factory = RequestFactory()

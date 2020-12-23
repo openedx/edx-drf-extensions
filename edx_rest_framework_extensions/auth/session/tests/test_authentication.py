@@ -9,7 +9,7 @@ from edx_rest_framework_extensions.tests import factories
 
 class SessionAuthenticationAllowInactiveUserTests(TestCase):
     def setUp(self):
-        super(SessionAuthenticationAllowInactiveUserTests, self).setUp()
+        super().setUp()
         self.user = factories.UserFactory(
             email='inactive', username='inactive@example.com', password='dummypassword', is_active=False
         )

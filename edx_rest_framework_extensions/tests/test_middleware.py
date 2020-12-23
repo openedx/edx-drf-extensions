@@ -19,7 +19,7 @@ from edx_rest_framework_extensions.tests.factories import UserFactory
 @ddt.ddt
 class TestRequestCustomAttributesMiddleware(TestCase):
     def setUp(self):
-        super(TestRequestCustomAttributesMiddleware, self).setUp()
+        super().setUp()
         RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
         self.middleware = RequestCustomAttributesMiddleware()
@@ -182,7 +182,7 @@ class TestRequestMetricsMiddleware(TestCase):
     which is more fully tested.
     """
     def setUp(self):
-        super(TestRequestMetricsMiddleware, self).setUp()
+        super().setUp()
         RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
         self.middleware = RequestMetricsMiddleware()

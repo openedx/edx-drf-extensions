@@ -64,7 +64,7 @@ def some_auth_decorator(include_jwt_auth, include_required_perm):
 @ddt.ddt
 class TestEnsureJWTAuthSettingsMiddleware(TestCase):
     def setUp(self):
-        super(TestEnsureJWTAuthSettingsMiddleware, self).setUp()
+        super().setUp()
         self.request = RequestFactory().get('/')
         self.middleware = EnsureJWTAuthSettingsMiddleware()
 
@@ -277,7 +277,7 @@ class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
     """
 
     def setUp(self):
-        super(TestJwtRedirectToLoginIfUnauthenticatedMiddleware, self).setUp()
+        super().setUp()
         RequestCache.clear_all_namespaces()
         self.client = Client()
 
@@ -359,7 +359,7 @@ class CheckRequestUserAnonymousForJwtAuthMiddleware(MiddlewareMixin):
 @ddt.ddt
 class TestJwtAuthCookieMiddleware(TestCase):
     def setUp(self):
-        super(TestJwtAuthCookieMiddleware, self).setUp()
+        super().setUp()
         self.request = RequestFactory().get('/')
         self.request.session = 'mock session'
         self.middleware = JwtAuthCookieMiddleware()

@@ -173,6 +173,6 @@ class RequestMetricsMiddleware(RequestCustomAttributesMiddleware):
     Deprecated class for handling middleware. Class has been renamed to RequestCustomAttributesMiddleware.
     """
     def __init__(self, *args, **kwargs):
-        super(RequestMetricsMiddleware, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         msg = "Use 'RequestCustomAttributesMiddleware' in place of 'RequestMetricsMiddleware'."
         warnings.warn(msg, DeprecationWarning)

@@ -6,7 +6,7 @@
 #
 certifi==2020.12.5        # via requests
 cffi==1.14.4              # via cryptography
-chardet==3.0.4            # via requests
+chardet==4.0.0            # via requests
 cryptography==3.2.1       # via pyjwt
 django-crum==0.7.9        # via edx-django-utils
 django-waffle==2.0.0      # via -r requirements/base.in, edx-django-utils
@@ -17,9 +17,9 @@ edx-django-utils==3.13.0  # via -r requirements/base.in
 edx-opaque-keys==2.1.1    # via -r requirements/base.in
 future==0.18.2            # via pyjwkest
 idna==2.10                # via requests
-newrelic==5.22.1.152      # via edx-django-utils
+newrelic==5.24.0.153      # via edx-django-utils
 pbr==5.5.1                # via stevedore
-psutil==5.7.3             # via edx-django-utils
+psutil==5.8.0             # via edx-django-utils
 pycparser==2.20           # via cffi
 pycryptodomex==3.9.9      # via pyjwkest
 pyjwkest==1.4.2           # via -r requirements/base.in
@@ -27,7 +27,7 @@ pyjwt[crypto]==1.7.1      # via drf-jwt
 pymongo==3.11.2           # via edx-opaque-keys
 python-dateutil==2.8.1    # via -r requirements/base.in
 pytz==2020.4              # via django
-requests==2.25.0          # via -r requirements/base.in, pyjwkest
+requests==2.25.1          # via -r requirements/base.in, pyjwkest
 rest-condition==1.0.3     # via -r requirements/base.in
 semantic-version==2.8.5   # via -r requirements/base.in
 six==1.15.0               # via -r requirements/base.in, cryptography, edx-opaque-keys, pyjwkest, python-dateutil, stevedore
