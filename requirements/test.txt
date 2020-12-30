@@ -57,7 +57,7 @@ pytest-cov==2.10.1        # via -r requirements/test.in
 pytest-django==4.1.0      # via -r requirements/test.in
 pytest==6.1.2             # via pytest-cov, pytest-django
 python-dateutil==2.8.1    # via -r requirements/base.txt, faker
-pytz==2020.4              # via -r requirements/base.txt, django
+pytz==2020.5              # via -r requirements/base.txt, django
 requests==2.25.1          # via -r requirements/base.txt, pyjwkest
 rest-condition==1.0.3     # via -r requirements/base.txt
 semantic-version==2.8.5   # via -r requirements/base.txt
