@@ -9,7 +9,7 @@ from django.http.cookie import SimpleCookie
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils.cache import RequestCache
-from mock import ANY, patch
+from unittest.mock import ANY, patch
 from rest_condition import C
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view
@@ -389,7 +389,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
             missing_cookie_name
         )
         mock_set_custom_attribute.assert_called_once_with(
-            'request_jwt_cookie', 'missing-{}'.format(missing_cookie_name)
+            'request_jwt_cookie', f'missing-{missing_cookie_name}'
         )
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')

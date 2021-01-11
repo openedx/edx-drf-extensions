@@ -38,7 +38,7 @@ class IsUserInUrl(BasePermission):
     def has_permission(self, request, view):
         allowed = request.user.username.lower() == get_username_param(request)
         if not allowed:
-            log.info(u"Permission IsUserInUrl: not satisfied for requesting user %s.", request.user.username)
+            log.info("Permission IsUserInUrl: not satisfied for requesting user %s.", request.user.username)
         return allowed
 
 
@@ -51,7 +51,7 @@ class JwtRestrictedApplication(BasePermission):
 
     def has_permission(self, request, view):
         ret_val = is_jwt_authenticated(request) and decode_jwt_is_restricted(request.auth)
-        log.debug(u"Permission JwtRestrictedApplication: returns %s.", ret_val)
+        log.debug("Permission JwtRestrictedApplication: returns %s.", ret_val)
         return ret_val
 
 
@@ -80,7 +80,7 @@ class JwtHasScope(BasePermission):
         allowed = bool(required_scopes) and required_scopes.issubset(jwt_scopes)
         if not allowed:
             log.warning(
-                u"Permission JwtHasScope: required scopes '%s' are not a subset of the token's scopes '%s'.",
+                "Permission JwtHasScope: required scopes '%s' are not a subset of the token's scopes '%s'.",
                 required_scopes,
                 jwt_scopes,
             )
@@ -106,7 +106,7 @@ class JwtHasContentOrgFilterForRequestedCourse(BasePermission):
             if filter_type == 'content_org' and filter_value == course_key.org:
                 return True
         log.warning(
-            u"Permission JwtHasContentOrgFilterForRequestedCourse: no filter found for %s.",
+            "Permission JwtHasContentOrgFilterForRequestedCourse: no filter found for %s.",
             course_key.org,
         )
         return False
@@ -133,7 +133,7 @@ class JwtHasUserFilterForRequestedUser(BasePermission):
         allowed = user_filter == username_param
         if not allowed:
             log.warning(
-                u"Permission JwtHasUserFilterForRequestedUser: user_filter %s doesn't match username %s.",
+                "Permission JwtHasUserFilterForRequestedUser: user_filter %s doesn't match username %s.",
                 user_filter,
                 username_param,
             )

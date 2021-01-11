@@ -64,8 +64,8 @@ class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):
         for perm_class in self._required_permission_classes:
             if not _includes_base_class(permission_classes, perm_class):
                 message = (
-                    u"The view %s allows Jwt Authentication. The required permission class, %s,",
-                    u" was automatically added."
+                    "The view %s allows Jwt Authentication. The required permission class, %s,",
+                    " was automatically added."
                 )
                 log.info(
                     message,
@@ -197,7 +197,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         cookie_missing_message = '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
                 cookie_name
         )
-        request_jwt_cookie = 'missing-{}'.format(cookie_name)
+        request_jwt_cookie = f'missing-{cookie_name}'
         return cookie_missing_message, request_jwt_cookie
 
     # Note: Using `process_view` over `process_request` so JwtRedirectToLoginIfUnauthenticatedMiddleware which
@@ -292,7 +292,7 @@ def _includes_base_class(iter_classes, base_class):
     Returns whether any class in iter_class is a subclass of the given base_class.
     """
     return any(
-        (issubclass(current_class, base_class) for current_class in iter_classes)
+        issubclass(current_class, base_class) for current_class in iter_classes
     )
 
 

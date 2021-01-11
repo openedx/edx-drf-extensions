@@ -6,7 +6,7 @@ from itertools import product
 import ddt
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -56,7 +56,7 @@ class IsUserInUrlTests(TestCase):
     def _create_request(self, user, username_in_param=None, username_in_resource=None):
         url = '/'
         if username_in_param:
-            url += '?username={}'.format(username_in_param)
+            url += f'?username={username_in_param}'
         request = RequestFactory().get(url)
         request.user = user
         if username_in_resource:
@@ -185,7 +185,7 @@ class JwtHasUserFilterForRequestedUserTests(TestCase):
     """ Tests for JwtHasUserFilterForRequestedUserTests permission class. """
 
     def _create_request(self, user_filters, requested_username):
-        url = '/?username={}'.format(requested_username)
+        url = f'/?username={requested_username}'
         request = RequestFactory().get(url)
         request.user = UserFactory(username='this_user')
         request.auth = generate_jwt(request.user, filters=user_filters)
@@ -239,7 +239,7 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
     def _create_request(self, username_in_url=None, auth_header=None):
         url = '/'
         if username_in_url:
-            url += '?username={}'.format(username_in_url)
+            url += f'?username={username_in_url}'
         extra = dict(HTTP_AUTHORIZATION=auth_header) if auth_header else dict()
         return RequestFactory().get(url, **extra)
 
@@ -248,7 +248,7 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
 
     def _create_jwt_header(self, user, is_restricted=False, scopes=None, filters=None):
         token = generate_jwt(user, is_restricted=is_restricted, scopes=scopes, filters=filters)
-        return "JWT {}".format(token)
+        return f"JWT {token}"
 
     def _assert_log(self, mock_log, expected_log):
         mock_log_method = getattr(mock_log, expected_log.method)

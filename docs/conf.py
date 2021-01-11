@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # edX REST Framework Extensions documentation build configuration file, created by
 # sphinx-quickstart on Sun Feb 17 11:46:20 2013.
@@ -58,8 +57,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'edX REST Framework Extensions'
-copyright = u'{year}, edX'.format(year=datetime.now().year)
+project = 'edX REST Framework Extensions'
+copyright = f'{datetime.now().year}, edX'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -204,8 +203,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ('index', 'edx_drf_extensions.tex', u'edX Django REST Framework Extensions Documentation',
-     u'edX', 'manual'),
+    ('index', 'edx_drf_extensions.tex', 'edX Django REST Framework Extensions Documentation',
+     'edX', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -234,8 +233,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'edX REST Framework Extensions', u'edX REST Framework Extensions Documentation',
-     [u'edX'], 1)
+    ('index', 'edX REST Framework Extensions', 'edX REST Framework Extensions Documentation',
+     ['edX'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -248,8 +247,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'edX REST Framework Extensions', u'edX REST Framework Extensions Documentation',
-     u'edX', 'edX REST Framework Extensions', 'edX REST Framework Extensions',
+    ('index', 'edX REST Framework Extensions', 'edX REST Framework Extensions Documentation',
+     'edX', 'edX REST Framework Extensions', 'edX REST Framework Extensions',
      'Miscellaneous'
      ),
 ]

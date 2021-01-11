@@ -66,7 +66,7 @@ class NamespacedPageNumberPagination(pagination.PageNumberPagination):
         }
         if isinstance(data, dict):
             if 'results' not in data:
-                raise TypeError(u'Malformed result dict')
+                raise TypeError('Malformed result dict')
             data['pagination'] = metadata
         else:
             data = {

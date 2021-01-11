@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 """ Tests for Bearer authentication class. """
 import json
 
 import httpretty
-import mock
+from unittest import mock
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase, override_settings
 from requests import RequestException
@@ -61,7 +60,7 @@ class BearerAuthenticationTests(AccessTokenMixin, TestCase):
 
     def create_authenticated_request(self, token=AccessTokenMixin.DEFAULT_TOKEN, token_name=TOKEN_NAME):
         """ Returns a Request with the authorization set using the specified values. """
-        auth_header = '{token_name} {token}'.format(token_name=token_name, token=token)
+        auth_header = f'{token_name} {token}'
         request = self.factory.get('/', HTTP_AUTHORIZATION=auth_header)
         return request
 

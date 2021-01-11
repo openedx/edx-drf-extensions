@@ -6,9 +6,8 @@ from unittest import TestCase
 import ddt
 from django.http import Http404
 from django.test import RequestFactory
-from mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock
 from rest_framework import serializers
-from six.moves import range
 
 from edx_rest_framework_extensions.paginators import (
     NamespacedPageNumberPagination,
@@ -159,7 +158,7 @@ class NamespacedPaginationTestCase(TestCase):
     def setUp(self):
         super().setUp()
         self.paginator = NamespacedPageNumberPagination()
-        self.users = [self.TestUser('user_{}'.format(idx), 'user_{}@example.com'.format(idx)) for idx in range(25)]
+        self.users = [self.TestUser(f'user_{idx}', f'user_{idx}@example.com') for idx in range(25)]
         self.request_factory = RequestFactory()
 
     def test_basic_pagination(self):
@@ -175,7 +174,7 @@ def build_mock_object(obj_id):
     mock_object = Mock()
     object_config = {
         'pk': obj_id,
-        'name': "object {}".format(obj_id)
+        'name': f"object {obj_id}"
     }
     mock_object.configure_mock(**object_config)
     return mock_object

@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 """ Tests for JWT authentication class. """
 from logging import Logger
 
 import ddt
-import mock
+from unittest import mock
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase, override_settings
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied

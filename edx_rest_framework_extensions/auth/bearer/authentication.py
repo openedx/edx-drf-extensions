@@ -106,7 +106,7 @@ class BearerAuthentication(BaseAuthentication):
         url = self.get_user_info_url()
 
         try:
-            headers = {'Authorization': 'Bearer {}'.format(token)}
+            headers = {'Authorization': f'Bearer {token}'}
             response = requests.get(url, headers=headers)
         except requests.RequestException as error:
             logger.exception('Failed to retrieve user info due to a request exception.')
