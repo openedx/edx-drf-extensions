@@ -13,17 +13,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04]
-        python-version: ["3.5", "3.8"]
+        python-version: ["3.8"]
         toxenv: ["django22-drf39","django22-drflatest","django30-drflatest","quality","docs"]
-        exclude:
-          - python-version: "3.5"
-            toxenv: "django30-drf39"
-          - python-version: "3.5"
-            toxenv: "django30-drflatest"
-          - python-version: "3.5"
-            toxenv: "quality"
-          - python-version: "3.5"
-            toxenv: "docs"
 
     steps:
     - uses: actions/checkout@v1
