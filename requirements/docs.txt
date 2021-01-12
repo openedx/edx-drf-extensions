@@ -32,7 +32,7 @@ packaging==20.8
     # via
     #   -c requirements/test.txt
     #   sphinx
-pygments==2.7.3
+pygments==2.7.4
     # via sphinx
 pyparsing==2.4.7
     # via
