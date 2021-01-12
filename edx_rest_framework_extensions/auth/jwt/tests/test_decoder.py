@@ -1,9 +1,9 @@
 """ Tests for utility functions. """
 import copy
+from unittest import mock
 
 import ddt
 import jwt
-from unittest import mock
 from django.conf import settings
 from django.test import TestCase, override_settings
 

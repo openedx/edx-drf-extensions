@@ -2,11 +2,11 @@
 
 from collections import namedtuple
 from unittest import TestCase
+from unittest.mock import MagicMock, Mock
 
 import ddt
 from django.http import Http404
 from django.test import RequestFactory
-from unittest.mock import MagicMock, Mock
 from rest_framework import serializers
 
 from edx_rest_framework_extensions.paginators import (

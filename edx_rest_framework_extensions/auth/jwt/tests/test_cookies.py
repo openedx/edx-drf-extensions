@@ -1,8 +1,9 @@
 """
 Unit tests for jwt cookies module.
 """
-import ddt
 from unittest import mock
+
+import ddt
 from django.test import TestCase, override_settings
 
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler

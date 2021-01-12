@@ -1,8 +1,8 @@
 """ Tests for Bearer authentication class. """
 import json
+from unittest import mock
 
 import httpretty
-from unittest import mock
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase, override_settings
 from requests import RequestException

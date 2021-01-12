@@ -2,11 +2,11 @@
 
 from collections import namedtuple
 from itertools import product
+from unittest.mock import Mock, patch
 
 import ddt
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
-from unittest.mock import Mock, patch
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView

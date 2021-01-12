@@ -2,6 +2,7 @@
 Unit tests for jwt authentication middlewares.
 """
 from itertools import product
+from unittest.mock import ANY, patch
 
 import ddt
 from django.conf.urls import url as url_pattern
@@ -9,7 +10,6 @@ from django.http.cookie import SimpleCookie
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils.cache import RequestCache
-from unittest.mock import ANY, patch
 from rest_condition import C
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view

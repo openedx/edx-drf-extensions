@@ -1,11 +1,12 @@
 """
 Unit tests for middlewares.
 """
+from unittest.mock import call, patch
+
 import ddt
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 from edx_django_utils.cache import RequestCache
-from unittest.mock import call, patch
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
