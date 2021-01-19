@@ -8,7 +8,6 @@ PASSWORD = 'password'
 
 class UserFactory(factory.DjangoModelFactory):
     """ User factory. """
-    # pylint: disable=unnecessary-lambda
     username = email = factory.Sequence(lambda n: f'user{n}')
     email = factory.Sequence(lambda n: f'user{n}@example.com')
     password = factory.PostGenerationMethodCall('set_password', PASSWORD)

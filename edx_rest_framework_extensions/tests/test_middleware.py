@@ -173,6 +173,31 @@ class TestRequestCustomAttributesMiddleware(TestCase):
             'request_authenticated_user_found_in_middleware', 'process_response'
         )
 
+    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    def test_authenticated_standard_user(self, mock_set_custom_attribute):
+        self.request.user = UserFactory()
+        self.middleware.process_request(self.request)
+        self.middleware.process_response(self.request, None)
+
+        attributes_called_with = [c[0] for c in mock_set_custom_attribute.call_args_list]
+        assert 'request_is_staff_or_superuser' not in attributes_called_with
+
+    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    def test_authenticated_staff_user(self, mock_set_custom_attribute):
+        self.request.user = UserFactory(is_staff=True)
+        self.middleware.process_request(self.request)
+        self.middleware.process_response(self.request, None)
+
+        mock_set_custom_attribute.assert_any_call('request_is_staff_or_superuser', 'staff')
+
+    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    def test_authenticated_superuser(self, mock_set_custom_attribute):
+        self.request.user = UserFactory(is_superuser=True)
+        self.middleware.process_request(self.request)
+        self.middleware.process_response(self.request, None)
+
+        mock_set_custom_attribute.assert_any_call('request_is_staff_or_superuser', 'superuser')
+
 
 @ddt.ddt
 class TestRequestMetricsMiddleware(TestCase):

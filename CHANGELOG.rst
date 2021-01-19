@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[6.4.0] - 2021-01-19
+--------------------
+
+Updated
+~~~~~~~
+
+* Added a new custom attribute `request_is_staff_or_superuser`
+
 [6.2.0] - 2020-08-24
 --------------------
 

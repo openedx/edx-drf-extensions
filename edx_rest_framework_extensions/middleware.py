@@ -27,6 +27,8 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
         request_referer
         request_user_agent: The user agent string from the request header.
         request_user_id: The user id of the request user.
+        request_is_staff_or_superuser: `staff` or `superuser` depending on whether the
+            user in the request is a django staff or superuser.
 
     This middleware is dependent on the RequestCacheMiddleware. You must
     include this middleware later.  For example::
@@ -75,6 +77,24 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
         self._set_request_referer_attribute(request)
         self._set_request_user_id_attribute(request)
         self._set_request_authenticated_user_found_in_middleware_attribute()
+        self._set_request_is_staff_or_superuser(request)
+
+    def _set_request_is_staff_or_superuser(self, request):
+        """
+        Add `request_is_staff_or_superuser` custom attribute.
+
+        Custom Attributes:
+            request_is_staff_or_superuser
+        """
+        value = None
+        if hasattr(request, 'user') and request.user:
+            if request.user.is_superuser:
+                value = 'superuser'
+            elif request.user.is_staff:
+                value = 'staff'
+
+            if value:
+                monitoring.set_custom_attribute('request_is_staff_or_superuser', value)
 
     def _set_request_user_id_attribute(self, request):
         """
