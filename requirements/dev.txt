@@ -51,11 +51,11 @@ click==7.1.2
     #   -r requirements/test.txt
     #   click-log
     #   edx-lint
-coverage==4.5.4
+coverage==5.3.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==3.2.1
+cryptography==3.3.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -112,20 +112,21 @@ edx-opaque-keys==2.1.1
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==5.0.0
+faker==5.6.3
     # via
     #   -r requirements/test.txt
     #   factory-boy
 filelock==3.0.12
     # via
     #   -r requirements/test.txt
+    #   tox
     #   virtualenv
 future==0.18.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   pyjwkest
-httpretty==0.9.7
+httpretty==1.0.5
     # via -r requirements/test.txt
 idna==2.10
     # via
@@ -137,21 +138,11 @@ imagesize==1.2.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
-importlib-metadata==2.1.1
-    # via
-    #   -r requirements/test.txt
-    #   pluggy
-    #   pytest
-    #   virtualenv
-importlib-resources==3.2.1
-    # via
-    #   -r requirements/test.txt
-    #   virtualenv
 iniconfig==1.1.1
     # via
     #   -r requirements/test.txt
     #   pytest
-isort==4.3.21
+isort==5.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -182,10 +173,7 @@ packaging==20.8
     #   -r requirements/test.txt
     #   pytest
     #   sphinx
-pathlib2==2.3.5
-    # via
-    #   -r requirements/test.txt
-    #   pytest
+    #   tox
 pbr==5.5.1
     # via
     #   -r requirements/base.txt
@@ -261,11 +249,11 @@ pyparsing==2.4.7
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   packaging
-pytest-cov==2.10.1
+pytest-cov==2.11.0
     # via -r requirements/test.txt
 pytest-django==4.1.0
     # via -r requirements/test.txt
-pytest==6.1.2
+pytest==6.2.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -305,11 +293,8 @@ six==1.15.0
     #   cryptography
     #   edx-lint
     #   edx-opaque-keys
-    #   httpretty
-    #   pathlib2
     #   pyjwkest
     #   python-dateutil
-    #   stevedore
     #   tox
     #   virtualenv
 snowballstemmer==2.0.0
@@ -351,7 +336,7 @@ sqlparse==0.4.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-stevedore==1.32.0
+stevedore==3.3.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -366,19 +351,16 @@ toml==0.10.2
     #   -r requirements/test.txt
     #   pylint
     #   pytest
-tox==2.9.1
+    #   tox
+tox==3.21.2
     # via -r requirements/test.txt
-typed-ast==1.4.2
-    # via
-    #   -r requirements/test.txt
-    #   astroid
 urllib3==1.26.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.3.0
+virtualenv==20.4.0
     # via
     #   -r requirements/test.txt
     #   tox
@@ -386,11 +368,6 @@ wrapt==1.12.1
     # via
     #   -r requirements/test.txt
     #   astroid
-zipp==1.2.0
-    # via
-    #   -r requirements/test.txt
-    #   importlib-metadata
-    #   importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
