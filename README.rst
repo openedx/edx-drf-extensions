@@ -2,10 +2,10 @@ Part of `edX code`__.
 
 __ https://code.edx.org/
 
-edX Django REST Framework Extensions  |Travis|_ |Codecov|_
+edX Django REST Framework Extensions  |CI|_ |Codecov|_
 ==========================================================
-.. |Travis| image:: https://github.com/edx/edx-drf-extensions/workflows/Python%20CI/badge.svg?branch=master
-.. _Travis: https://github.com/edx/edx-drf-extensions/actions
+.. |CI| image:: https://github.com/edx/edx-drf-extensions/workflows/Python%20CI/badge.svg?branch=master
+.. _CI: https://github.com/edx/edx-drf-extensions/actions?query=workflow%3A%22Python+CI%22
 
 .. |Codecov| image:: https://codecov.io/github/edx/edx-drf-extensions/coverage.svg?branch=master
 .. _Codecov: https://codecov.io/github/edx/edx-drf-extensions?branch=master
