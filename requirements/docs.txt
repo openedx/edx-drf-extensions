@@ -25,9 +25,13 @@ idna==2.10
 imagesize==1.2.0
     # via sphinx
 jinja2==2.11.2
-    # via sphinx
+    # via
+    #   -c requirements/test.txt
+    #   sphinx
 markupsafe==1.1.1
-    # via jinja2
+    # via
+    #   -c requirements/test.txt
+    #   jinja2
 packaging==20.8
     # via
     #   -c requirements/test.txt
@@ -46,7 +50,7 @@ requests==2.25.1
     # via
     #   -c requirements/test.txt
     #   sphinx
-snowballstemmer==2.0.0
+snowballstemmer==2.1.0
     # via sphinx
 sphinx-rtd-theme==0.5.1
     # via -r requirements/docs.in
@@ -66,7 +70,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
-urllib3==1.26.2
+urllib3==1.26.3
     # via
     #   -c requirements/test.txt
     #   requests
