@@ -47,10 +47,10 @@ style: ## check that code is PEP-8 compliant.
 	pycodestyle *.py $(CHECK_DIRS)
 
 isort: ## sort imports
-	isort $(CHECK_DIRS) --recursive
+	isort $(CHECK_DIRS)
 
 isort_check: ## check that imports are correctly sorted
-	isort $(CHECK_DIRS) --recursive  --check-only --diff
+	isort $(CHECK_DIRS) --check-only --diff
 
 linting: ## check code quality with pylint
 	pylint csrf
