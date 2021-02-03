@@ -31,7 +31,7 @@ click==7.1.2
     #   click-log
     #   code-annotations
     #   edx-lint
-code-annotations==1.0.2
+code-annotations==1.1.0
     # via edx-lint
 coverage==5.4
     # via
@@ -71,9 +71,9 @@ drf-jwt==1.17.3
     # via -r requirements/base.txt
 edx-django-utils==3.13.0
     # via -r requirements/base.txt
-edx-lint==3.0.2
+edx-lint==4.0.0
     # via -r requirements/test.in
-edx-opaque-keys==2.1.1
+edx-opaque-keys==2.2.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
@@ -99,7 +99,7 @@ isort==5.7.0
     # via
     #   -r requirements/test.in
     #   pylint
-jinja2==2.11.2
+jinja2==2.11.3
     # via code-annotations
 lazy-object-proxy==1.4.3
     # via astroid
@@ -111,7 +111,7 @@ newrelic==6.0.1.155
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-packaging==20.8
+packaging==20.9
     # via
     #   pytest
     #   tox
@@ -161,7 +161,7 @@ pylint==2.6.0
     #   pylint-celery
     #   pylint-django
     #   pylint-plugin-utils
-pymongo==3.11.2
+pymongo==3.11.3
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
@@ -181,7 +181,7 @@ python-dateutil==2.8.1
     #   faker
 python-slugify==4.0.1
     # via code-annotations
-pytz==2020.5
+pytz==2021.1
     # via
     #   -r requirements/base.txt
     #   django
@@ -201,7 +201,6 @@ six==1.15.0
     #   astroid
     #   cryptography
     #   edx-lint
-    #   edx-opaque-keys
     #   pyjwkest
     #   python-dateutil
     #   tox
@@ -225,13 +224,13 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   tox
-tox==3.21.2
+tox==3.21.4
     # via -r requirements/test.in
 urllib3==1.26.3
     # via
     #   -r requirements/base.txt
     #   requests
-virtualenv==20.4.0
+virtualenv==20.4.2
     # via tox
 wrapt==1.12.1
     # via astroid
