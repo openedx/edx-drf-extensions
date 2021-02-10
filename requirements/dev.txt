@@ -6,86 +6,86 @@
 #
 alabaster==0.7.12
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 appdirs==1.4.4
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   virtualenv
 astroid==2.4.2
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pylint
     #   pylint-celery
 attrs==20.3.0
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pytest
 babel==2.9.0
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 certifi==2020.12.5
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   requests
 cffi==1.14.4
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   cryptography
 chardet==4.0.0
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   requests
 click-log==0.3.2
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   edx-lint
 click==7.1.2
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   click-log
     #   code-annotations
     #   edx-lint
 code-annotations==1.1.0
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   edx-lint
 coverage==5.4
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pytest-cov
-cryptography==3.3.1
+cryptography==3.3.2
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   pyjwt
 ddt==1.4.1
-    # via -r requirements/test.txt
+    # via -r test.txt
 distlib==0.3.1
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   virtualenv
 django-crum==0.7.9
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   edx-django-utils
 django-waffle==2.1.0
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   edx-django-utils
 django==2.2.18
     # via
-    #   -c requirements/constraints.txt
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -c constraints.txt
+    #   -r base.txt
+    #   -r test.txt
     #   code-annotations
     #   django-crum
     #   djangorestframework
@@ -95,218 +95,218 @@ django==2.2.18
     #   rest-condition
 djangorestframework==3.12.2
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   drf-jwt
     #   rest-condition
 docutils==0.16
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 drf-jwt==1.17.3
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
 edx-django-utils==3.13.0
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
 edx-lint==4.0.0
-    # via -r requirements/test.txt
+    # via -r test.txt
 edx-opaque-keys==2.2.0
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
 factory-boy==2.12.0
-    # via -r requirements/test.txt
+    # via -r test.txt
 faker==5.8.0
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   factory-boy
 filelock==3.0.12
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   tox
     #   virtualenv
 future==0.18.2
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   pyjwkest
 httpretty==1.0.5
-    # via -r requirements/test.txt
+    # via -r test.txt
 idna==2.10
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   requests
 imagesize==1.2.0
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 iniconfig==1.1.1
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pytest
 isort==5.7.0
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pylint
 jinja2==2.11.3
     # via
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   code-annotations
     #   sphinx
 lazy-object-proxy==1.4.3
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   astroid
 markupsafe==1.1.1
     # via
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   jinja2
 mccabe==0.6.1
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pylint
 newrelic==6.0.1.155
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   edx-django-utils
 packaging==20.9
     # via
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   pytest
     #   sphinx
     #   tox
 pbr==5.5.1
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   stevedore
 pluggy==0.13.1
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pytest
     #   tox
 psutil==5.8.0
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   edx-django-utils
 py==1.10.0
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pytest
     #   tox
 pycodestyle==2.6.0
-    # via -r requirements/test.txt
+    # via -r test.txt
 pycparser==2.20
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   cffi
 pycryptodomex==3.9.9
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   pyjwkest
 pygments==2.7.4
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 pyjwkest==1.4.2
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
 pyjwt[crypto]==1.7.1
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   drf-jwt
 pylint-celery==0.3
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   edx-lint
 pylint-django==2.4.2
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   edx-lint
 pylint-plugin-utils==0.6
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pylint-celery
     #   pylint-django
 pylint==2.6.0
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   edx-lint
     #   pylint-celery
     #   pylint-django
     #   pylint-plugin-utils
 pymongo==3.11.3
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   edx-opaque-keys
 pyparsing==2.4.7
     # via
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   packaging
 pytest-cov==2.11.1
-    # via -r requirements/test.txt
+    # via -r test.txt
 pytest-django==4.1.0
-    # via -r requirements/test.txt
+    # via -r test.txt
 pytest==6.2.2
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pytest-cov
     #   pytest-django
 python-dateutil==2.8.1
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   faker
 python-slugify==4.0.1
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   code-annotations
 pytz==2021.1
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   babel
     #   django
 pyyaml==5.4.1
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   code-annotations
 requests==2.25.1
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   pyjwkest
     #   sphinx
 rest-condition==1.0.3
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
 semantic-version==2.8.5
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
 six==1.15.0
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   astroid
     #   cryptography
     #   edx-lint
@@ -316,76 +316,76 @@ six==1.15.0
     #   virtualenv
 snowballstemmer==2.1.0
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 sphinx-rtd-theme==0.5.1
-    # via -r requirements/docs.txt
+    # via -r docs.txt
 sphinx==3.4.3
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx-rtd-theme
 sphinxcontrib-applehelp==1.0.2
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 sphinxcontrib-devhelp==1.0.2
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 sphinxcontrib-htmlhelp==1.0.3
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 sphinxcontrib-jsmath==1.0.1
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 sphinxcontrib-qthelp==1.0.3
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 sphinxcontrib-serializinghtml==1.1.4
     # via
-    #   -r requirements/docs.txt
+    #   -r docs.txt
     #   sphinx
 sqlparse==0.4.1
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   django
 stevedore==3.3.0
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r test.txt
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
 text-unidecode==1.3
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   faker
     #   python-slugify
 toml==0.10.2
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   pylint
     #   pytest
     #   tox
 tox==3.21.4
-    # via -r requirements/test.txt
+    # via -r test.txt
 urllib3==1.26.3
     # via
-    #   -r requirements/base.txt
-    #   -r requirements/docs.txt
-    #   -r requirements/test.txt
+    #   -r base.txt
+    #   -r docs.txt
+    #   -r test.txt
     #   requests
 virtualenv==20.4.2
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   tox
 wrapt==1.12.1
     # via
-    #   -r requirements/test.txt
+    #   -r test.txt
     #   astroid
 
 # The following packages are considered to be unsafe in a requirements file:
