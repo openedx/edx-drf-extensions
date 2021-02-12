@@ -59,12 +59,6 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         return get_setting('JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES')
 
     def authenticate(self, request):
-        # latest drf-jwt version throws error for any other value other than jwt. So returns None and pass it to other
-        # Authentication class
-        auth_header_value = request.environ.get('HTTP_AUTHORIZATION')
-        if auth_header_value and not auth_header_value.lower().startswith('jwt'):
-            return None
-
         try:
             user_and_auth = super().authenticate(request)
 
