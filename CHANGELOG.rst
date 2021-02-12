@@ -12,13 +12,30 @@ Change Log
 Unreleased
 ----------
 
+[6.5.0] - 2021-02-12
+--------------------
+
+Added
+~~~~~
+
+* Added a new custom attribute `jwt_auth_failed` to both monitor failures, and to help prepare for future refactors.
+
+
 [6.4.0] - 2021-01-19
 --------------------
 
-Updated
-~~~~~~~
+Added
+~~~~~
 
 * Added a new custom attribute `request_is_staff_or_superuser`
+
+[6.3.0] - 2021-01-12
+--------------------
+
+Removed
+~~~~~~~~
+
+* Drop support for Python 3.5
 
 [6.2.0] - 2020-08-24
 --------------------

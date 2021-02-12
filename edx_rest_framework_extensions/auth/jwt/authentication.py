@@ -5,6 +5,7 @@ import logging
 import jwt
 from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
+from edx_django_utils.monitoring import set_custom_attribute
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
@@ -77,11 +78,16 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             return user_and_auth
 
         except jwt.InvalidTokenError as token_error:
+            # Note: I think this case is not used, but will monitor the custom attribute to verify.
+            set_custom_attribute('jwt_auth_failed', 'InvalidTokenError:{}'.format(repr(token_error)))
             raise exceptions.AuthenticationFailed() from token_error
-        except Exception as ex:
+        except Exception as exception:
             # Errors in production do not need to be logged (as they may be noisy),
             # but debug logging can help quickly resolve issues during development.
-            logger.debug(ex)
+            logger.debug('Failed JWT Authentication,', exc_info=exception)
+            # Note: I think this case should only include AuthenticationFailed and PermissionDenied,
+            #   but will monitor the custom attribute to verify.
+            set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
             raise
 
     def authenticate_credentials(self, payload):

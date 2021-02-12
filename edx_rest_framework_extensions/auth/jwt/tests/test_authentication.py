@@ -174,19 +174,22 @@ class JwtAuthenticationTests(TestCase):
         with self.assertRaises(AuthenticationFailed):
             JwtAuthentication().authenticate_credentials({'email': 'test@example.com'})
 
-    def test_authenticate_csrf_protected(self):
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_csrf_protected(self, mock_set_custom_attribute):
         """ Verify authenticate exception for CSRF protected cases. """
         request = RequestFactory().post('/')
 
         request.META[USE_JWT_COOKIE_HEADER] = 'true'
 
-        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=('mock-user', "mock-auth")):  # noqa E501 line too long
-            with mock.patch.object(Logger, 'debug') as debug_logger:
-                with self.assertRaises(PermissionDenied) as context_manager:
-                    JwtAuthentication().authenticate(request)
+        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=('mock-user', "mock-auth")):
+            with self.assertRaises(PermissionDenied) as context_manager:
+                JwtAuthentication().authenticate(request)
 
-        self.assertEqual(context_manager.exception.detail, 'CSRF Failed: CSRF cookie not set.')
-        self.assertTrue(debug_logger.called)
+        assert context_manager.exception.detail.startswith('CSRF Failed')
+        mock_set_custom_attribute.assert_called_once_with(
+            'jwt_auth_failed',
+            "Exception:PermissionDenied('CSRF Failed: CSRF cookie not set.')",
+        )
 
     @ddt.data(True, False)
     def test_get_decoded_jwt_from_auth(self, is_jwt_authentication):
@@ -195,25 +198,40 @@ class JwtAuthenticationTests(TestCase):
         # Mock out the `is_jwt_authenticated` method
         authentication.is_jwt_authenticated = lambda request: is_jwt_authentication
 
-        user = factories.UserFactory()
-        payload = generate_latest_version_payload(user)
-        jwt = generate_jwt_token(payload)
-        mock_request_with_cookie = mock.Mock(COOKIES={}, auth=jwt)
+        jwt_token = self._get_test_jwt_token()
+        mock_request_with_cookie = mock.Mock(COOKIES={}, auth=jwt_token)
 
-        expected_decoded_jwt = jwt_decode_handler(jwt) if is_jwt_authentication else None
+        expected_decoded_jwt = jwt_decode_handler(jwt_token) if is_jwt_authentication else None
 
         decoded_jwt = authentication.get_decoded_jwt_from_auth(mock_request_with_cookie)
         self.assertEqual(expected_decoded_jwt, decoded_jwt)
 
-    def test_with_explicitly_jwt_authorization(self):
+    def test_authenticate_with_correct_jwt_authorization(self):
+        """
+        With JWT header it continues and validates the credentials and throws error.
+
+        Note: CSRF protection should be skipped for this case, with no PermissionDenied.
+        """
+        jwt_token = self._get_test_jwt_token()
+        request = RequestFactory().get('/', HTTP_AUTHORIZATION=jwt_token)
+        JwtAuthentication().authenticate(request)
+
+    def test_authenticate_with_incorrect_jwt_authorization(self):
         """ With JWT header it continues and validates the credentials and throws error. """
         auth_header = '{token_name} {token}'.format(token_name='JWT', token='wrongvalue')
         request = RequestFactory().get('/', HTTP_AUTHORIZATION=auth_header)
         with self.assertRaises(AuthenticationFailed):
             JwtAuthentication().authenticate(request)
 
-    def test_jwt_returns_none_for_bearer_header(self):
+    def test_authenticate_with_bearer_token(self):
         """ Returns a None for bearer header request. """
         auth_header = '{token_name} {token}'.format(token_name='Bearer', token='abc123')
         request = RequestFactory().get('/', HTTP_AUTHORIZATION=auth_header)
         self.assertIsNone(JwtAuthentication().authenticate(request))
+
+    def _get_test_jwt_token(self):
+        """ Returns a user and jwt token """
+        user = factories.UserFactory()
+        payload = generate_latest_version_payload(user)
+        jwt_token = generate_jwt_token(payload)
+        return jwt_token
