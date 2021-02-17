@@ -31,7 +31,7 @@ certifi==2020.12.5
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-cffi==1.14.4
+cffi==1.14.5
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -60,7 +60,7 @@ coverage==5.4
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==3.4.4
+cryptography==3.4.6
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -216,7 +216,7 @@ pycryptodomex==3.10.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   pyjwkest
-pygments==2.7.4
+pygments==2.8.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -242,7 +242,7 @@ pylint-plugin-utils==0.6
     #   -r requirements/test.txt
     #   pylint-celery
     #   pylint-django
-pylint==2.6.0
+pylint==2.6.2
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -319,7 +319,7 @@ snowballstemmer==2.1.0
     #   sphinx
 sphinx-rtd-theme==0.5.1
     # via -r requirements/docs.txt
-sphinx==3.4.3
+sphinx==3.5.1
     # via
     #   -r requirements/docs.txt
     #   sphinx-rtd-theme
@@ -370,7 +370,7 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   tox
-tox==3.21.4
+tox==3.22.0
     # via -r requirements/test.txt
 urllib3==1.26.3
     # via

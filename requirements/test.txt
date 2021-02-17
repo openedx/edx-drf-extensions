@@ -16,7 +16,7 @@ certifi==2020.12.5
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.14.4
+cffi==1.14.5
     # via
     #   -r requirements/base.txt
     #   cryptography
@@ -37,7 +37,7 @@ coverage==5.4
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==3.4.4
+cryptography==3.4.6
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -155,7 +155,7 @@ pylint-plugin-utils==0.6
     # via
     #   pylint-celery
     #   pylint-django
-pylint==2.6.0
+pylint==2.6.2
     # via
     #   edx-lint
     #   pylint-celery
@@ -223,7 +223,7 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   tox
-tox==3.21.4
+tox==3.22.0
     # via -r requirements/test.in
 urllib3==1.26.3
     # via
