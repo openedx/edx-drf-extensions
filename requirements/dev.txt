@@ -12,7 +12,7 @@ appdirs==1.4.4
     # via
     #   -r requirements/test.txt
     #   virtualenv
-astroid==2.4.2
+astroid==2.5
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -81,7 +81,7 @@ django-waffle==2.1.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-django==2.2.18
+django==2.2.19
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt
@@ -119,7 +119,7 @@ edx-opaque-keys==2.2.0
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==6.1.1
+faker==6.4.1
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -159,7 +159,7 @@ jinja2==2.11.3
     #   -r requirements/test.txt
     #   code-annotations
     #   sphinx
-lazy-object-proxy==1.4.3
+lazy-object-proxy==1.5.2
     # via
     #   -r requirements/test.txt
     #   astroid
@@ -242,7 +242,7 @@ pylint-plugin-utils==0.6
     #   -r requirements/test.txt
     #   pylint-celery
     #   pylint-django
-pylint==2.6.2
+pylint==2.7.1
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -307,7 +307,6 @@ six==1.15.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-    #   astroid
     #   edx-lint
     #   pyjwkest
     #   python-dateutil
