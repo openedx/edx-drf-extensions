@@ -36,7 +36,7 @@ packaging==20.9
     # via
     #   -c requirements/test.txt
     #   sphinx
-pygments==2.8.0
+pygments==2.8.1
     # via sphinx
 pyparsing==2.4.7
     # via
@@ -54,7 +54,7 @@ snowballstemmer==2.1.0
     # via sphinx
 sphinx-rtd-theme==0.5.1
     # via -r requirements/docs.in
-sphinx==3.5.1
+sphinx==3.5.2
     # via
     #   -r requirements/docs.in
     #   sphinx-rtd-theme
