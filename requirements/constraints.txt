@@ -10,3 +10,6 @@
 
 # Until we start testing the newer versions in CI.
 django < 2.3
+
+# greater versions causing tests failures.
+pyjwt[crypto]==1.7.1

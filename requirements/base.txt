@@ -54,8 +54,10 @@ pycryptodomex==3.10.1
     # via pyjwkest
 pyjwkest==1.4.2
     # via -r requirements/base.in
-pyjwt[crypto]==2.0.1
-    # via drf-jwt
+pyjwt[crypto]==1.7.1
+    # via
+    #   -c requirements/constraints.txt
+    #   drf-jwt
 pymongo==3.11.3
     # via edx-opaque-keys
 python-dateutil==2.8.1
