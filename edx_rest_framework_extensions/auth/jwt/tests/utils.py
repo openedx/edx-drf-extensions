@@ -23,7 +23,7 @@ def generate_jwt_token(payload, signing_key=None):
     Generate a valid JWT token for authenticated requests.
     """
     signing_key = signing_key or settings.JWT_AUTH['JWT_ISSUERS'][0]['SECRET_KEY']
-    return jwt.encode(payload, signing_key).decode('utf-8')
+    return jwt.encode(payload, signing_key)
 
 
 def generate_latest_version_payload(user, scopes=None, filters=None, version=None,

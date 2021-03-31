@@ -68,7 +68,8 @@ class JWTDecodeHandlerTests(TestCase):
 
     def test_failure_invalid_issuer(self):
         """
-        Verifies the function logs decode failures, and raises an InvalidTokenError if the token cannot be decoded
+        Verifies the function logs decode failures with invalid issuer,
+        and raises an InvalidTokenError if the token cannot be decoded
         """
 
         # Create tokens using each invalid issuer and attempt to decode them against
@@ -76,14 +77,16 @@ class JWTDecodeHandlerTests(TestCase):
         with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
                 self.payload['iss'] = 'invalid-issuer'
-                signing_key = 'invalid-secret-key'
+                # signing key of None will use the default valid signing key
+                valid_signing_key = None
                 # Generate a token using the invalid issuer data
-                token = generate_jwt_token(self.payload, signing_key)
+                token = generate_jwt_token(self.payload, valid_signing_key)
                 # Attempt to decode the token against the entries in the valid issuers list,
                 # which will fail with an InvalidTokenError
                 jwt_decode_handler(token)
 
-            patched_log.exception.assert_any_call("Token verification failed.")
+            msg = "Token decode failed due to mismatched issuer [%s]"
+            patched_log.info.assert_any_call(msg, 'invalid-issuer')
 
     def test_failure_invalid_token(self):
         """
@@ -142,6 +145,25 @@ class JWTDecodeHandlerTests(TestCase):
         # Keep time-related values constant for full-proof comparison.
         upgraded_payload['iat'], upgraded_payload['exp'] = jwt_payload['iat'], jwt_payload['exp']
         self.assertDictEqual(jwt_decode_handler(token), upgraded_payload)
+
+    def test_failure_invalid_signature(self):
+        """
+        Verifies the function logs decode failures with invalid signature,
+        and raises an InvalidTokenError if the token cannot be decoded
+        """
+        # Create tokens using each invalid signature and attempt to decode them against
+        # the valid signature.
+        with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
+            with self.assertRaises(jwt.InvalidTokenError):
+                invalid_signing_key = 'invalid-secret-key'
+
+                # Generate a token using the invalid signing key data
+                token = generate_jwt_token(self.payload, invalid_signing_key)
+                # Attempt to decode the token against invalid signature,
+                # which will fail with an InvalidTokenError
+                jwt_decode_handler(token)
+
+            patched_log.exception.assert_any_call("Token verification failed.")
 
 
 def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument

@@ -146,9 +146,8 @@ pycryptodomex==3.10.1
     #   pyjwkest
 pyjwkest==1.4.2
     # via -r requirements/base.txt
-pyjwt[crypto]==1.7.1
+pyjwt[crypto]==2.1.0
     # via
-    #   -c requirements/constraints.txt
     #   -r requirements/base.txt
     #   drf-jwt
 pylint==2.9.6

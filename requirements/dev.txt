@@ -229,9 +229,8 @@ pyjwkest==1.4.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-pyjwt[crypto]==1.7.1
+pyjwt[crypto]==2.1.0
     # via
-    #   -c requirements/constraints.txt
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt

@@ -174,7 +174,6 @@ def _decode_and_verify_token(token, jwt_issuer):
     decoded_token = jwt.decode(
         token,
         jwt_issuer['SECRET_KEY'],
-        api_settings.JWT_VERIFY,
         options=options,
         leeway=api_settings.JWT_LEEWAY,
         audience=jwt_issuer['AUDIENCE'],

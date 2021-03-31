@@ -12,6 +12,15 @@ Change Log
 Unreleased
 ----------
 
+[7.0.0] - 2021-08-03
+--------------------
+
+Changed
+~~~~~~~
+
+* **BREAKING CHANGE:** ``generate_jwt_token``: Now returns string (instead of bytes), and no longer requires decoding. This was to keep consistent with change to ``jwt.encode`` in `pyjwt` upgrade (see below).
+* **BREAKING CHANGE:** Upgraded dependency ``pyjwt[crypto]`` to 2.1.0, which introduces its own breaking changes that may affect consumers of this library. Pay careful attention to the 2.0.0 breaking changes documented in https://pyjwt.readthedocs.io/en/stable/changelog.html#v2-0-0.
+
 [6.6.0] - 2021-07-13
 --------------------
 
