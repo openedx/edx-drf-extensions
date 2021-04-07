@@ -18,7 +18,7 @@ django-waffle==2.1.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
-django==2.2.19
+django==2.2.20
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
@@ -34,7 +34,7 @@ djangorestframework==3.12.4
     #   rest-condition
 drf-jwt==1.19.0
     # via -r requirements/base.in
-edx-django-utils==3.15.0
+edx-django-utils==3.16.0
     # via -r requirements/base.in
 edx-opaque-keys==2.2.0
     # via -r requirements/base.in

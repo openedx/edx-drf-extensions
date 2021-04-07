@@ -17,7 +17,9 @@ chardet==4.0.0
     #   -c requirements/test.txt
     #   requests
 docutils==0.16
-    # via sphinx
+    # via
+    #   sphinx
+    #   sphinx-rtd-theme
 idna==2.10
     # via
     #   -c requirements/test.txt
@@ -52,7 +54,7 @@ requests==2.25.1
     #   sphinx
 snowballstemmer==2.1.0
     # via sphinx
-sphinx-rtd-theme==0.5.1
+sphinx-rtd-theme==0.5.2
     # via -r requirements/docs.in
 sphinx==3.5.3
     # via
