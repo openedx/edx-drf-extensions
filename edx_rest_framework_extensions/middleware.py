@@ -213,7 +213,7 @@ class AccessControlExposeHeadersMiddleware(MiddlewareMixin):
             return response
 
         exposed_headers = response.get('Access-Control-Expose-Headers', '')
-        header_list[0:0] = exposed_headers
+        header_list.insert(0, exposed_headers)
         response['Access-Control-Expose-Headers'] = ', '.join(header_list)
 
         return response
