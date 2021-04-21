@@ -241,7 +241,7 @@ class TestAccessControlExposeHeadersMiddleware(TestCase):
         self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date, X-Foo-Bar')
 
     @override_settings(
-        ACCESS_CONTROL_EXPOSE_HEADERS=['Date',],
+        ACCESS_CONTROL_EXPOSE_HEADERS=['Date', ],
     )
     def test_access_control_expose_headers_one_setting(self):
         response = HttpResponse("Basic Response")
@@ -249,7 +249,7 @@ class TestAccessControlExposeHeadersMiddleware(TestCase):
         self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date')
 
     @override_settings(
-        ACCESS_CONTROL_EXPOSE_HEADERS=['Date', 'X-Foo-Bar'],
+        ACCESS_CONTROL_EXPOSE_HEADERS=['Date', 'X-Foo-Bar', ],
     )
     def test_access_control_expose_headers_with_list_no_existing(self):
         response = HttpResponse("Basic Response")
@@ -257,10 +257,11 @@ class TestAccessControlExposeHeadersMiddleware(TestCase):
         self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date, X-Foo-Bar')
 
     @override_settings(
-        ACCESS_CONTROL_EXPOSE_HEADERS=['Date', 'X-Foo-Bar'],
+        ACCESS_CONTROL_EXPOSE_HEADERS=['Date', 'X-Foo-Bar', ],
     )
     def test_access_control_expose_headers_with_list_with_existing(self):
         response = HttpResponse("Basic Response")
         response['Access-Control-Expose-Headers'] = 'Date, X-Junk'
         self.middleware.process_response(None, response)
-        self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date, X-Junk, Date, X-Foo-Bar')  # Presently the entries are not de-dup'd
+        self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date, X-Junk, Date, X-Foo-Bar')
+        # Note that presently the entries are not de-dup'd

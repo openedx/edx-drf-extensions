@@ -204,13 +204,14 @@ class AccessControlExposeHeadersMiddleware(MiddlewareMixin):
     Globally adds entries to the Access-Control-Expose-Headers header on responses.
 
     Set ACCESS_CONTROL_EXPOSE_HEADERS in
-    your project's Django settings to a list of header names to add; these will be added to any exposed headers already on the response.
+    your project's Django settings to a list of header names to add; these will be added to any exposed headers already
+    on the response.
     """
     def process_response(self, request, response):
         header_list = getattr(settings, 'ACCESS_CONTROL_EXPOSE_HEADERS', [])
         if not header_list:
             return response
-        
+
         exposed_headers = response.get('Access-Control-Expose-Headers', '')
         header_list[0:0] = exposed_headers
         response['Access-Control-Expose-Headers'] = ', '.join(header_list)
