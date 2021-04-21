@@ -232,7 +232,7 @@ class TestAccessControlExposeHeadersMiddleware(TestCase):
     def test_access_control_expose_headers_no_setting_no_existing(self):
         response = HttpResponse("Basic Response")
         self.middleware.process_response(None, response)
-        self.assertIsNone(response.get('Access-Control-Expose-Headers', "FLUNK"))
+        self.assertIsNone(response.get('Access-Control-Expose-Headers'))
 
     def test_access_control_expose_headers_no_setting_with_existing(self):
         response = HttpResponse("Basic Response")
