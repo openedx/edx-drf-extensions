@@ -12,6 +12,15 @@ Change Log
 Unreleased
 ----------
 
+[6.6.0] - 2021-02-12
+--------------------
+
+Added
+~~~~~
+
+* Added AccessControlExposeHeadersMiddleware, a new middleware for globally exposing headers such as Date; access to the Date header will be used on the client-side to maintain a correction offset between the server time and the browser time as requests are made.  This offset will allow frontends to display much more reliable durations and expirations without making extra requests.
+
+
 [6.5.0] - 2021-02-12
 --------------------
 

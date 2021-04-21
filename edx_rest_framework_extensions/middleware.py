@@ -212,8 +212,9 @@ class AccessControlExposeHeadersMiddleware(MiddlewareMixin):
         if not header_list:
             return response
 
-        exposed_headers = response.get('Access-Control-Expose-Headers', '')
-        header_list.insert(0, exposed_headers)
+        exposed_headers = response.get('Access-Control-Expose-Headers')
+        if exposed_headers:
+            header_list.insert(0, exposed_headers)
         response['Access-Control-Expose-Headers'] = ', '.join(header_list)
 
         return response
