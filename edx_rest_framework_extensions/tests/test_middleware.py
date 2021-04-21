@@ -5,7 +5,9 @@ from unittest.mock import call, patch
 
 import ddt
 from django.contrib.auth.models import AnonymousUser
+from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
+from django.test.utils import override_settings
 from edx_django_utils.cache import RequestCache
 
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
@@ -13,6 +15,7 @@ from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.middleware import (
     RequestCustomAttributesMiddleware,
     RequestMetricsMiddleware,
+    AccessControlExposeHeadersMiddleware,
 )
 from edx_rest_framework_extensions.tests.factories import UserFactory
 
@@ -219,3 +222,45 @@ class TestRequestMetricsMiddleware(TestCase):
 
         self.middleware.process_response(self.request, None)
         mock_set_custom_attribute.assert_called_once_with('request_auth_type_guess', 'unauthenticated')
+
+
+class TestAccessControlExposeHeadersMiddleware(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.middleware = AccessControlExposeHeadersMiddleware()
+
+    def test_access_control_expose_headers_no_setting_no_existing(self):
+        response = HttpResponse("Basic Response")
+        self.middleware.process_response(None, response)
+        self.assertIsNone(response.get('Access-Control-Expose-Headers', "FLUNK"))
+
+    def test_access_control_expose_headers_no_setting_with_existing(self):
+        response = HttpResponse("Basic Response")
+        response['Access-Control-Expose-Headers'] = 'Date, X-Foo-Bar'
+        self.middleware.process_response(None, response)
+        self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date, X-Foo-Bar')
+
+    @override_settings(
+        ACCESS_CONTROL_EXPOSE_HEADERS=['Date',],
+    )
+    def test_access_control_expose_headers_one_setting(self):
+        response = HttpResponse("Basic Response")
+        self.middleware.process_response(None, response)
+        self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date')
+
+    @override_settings(
+        ACCESS_CONTROL_EXPOSE_HEADERS=['Date', 'X-Foo-Bar'],
+    )
+    def test_access_control_expose_headers_with_list_no_existing(self):
+        response = HttpResponse("Basic Response")
+        self.middleware.process_response(None, response)
+        self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date, X-Foo-Bar')
+
+    @override_settings(
+        ACCESS_CONTROL_EXPOSE_HEADERS=['Date', 'X-Foo-Bar'],
+    )
+    def test_access_control_expose_headers_with_list_with_existing(self):
+        response = HttpResponse("Basic Response")
+        response['Access-Control-Expose-Headers'] = 'Date, X-Junk'
+        self.middleware.process_response(None, response)
+        self.assertEqual(response.get('Access-Control-Expose-Headers'), 'Date, X-Junk, Date, X-Foo-Bar')  # Presently the entries are not de-dup'd
