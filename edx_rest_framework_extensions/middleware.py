@@ -207,7 +207,7 @@ class AccessControlExposeHeadersMiddleware(MiddlewareMixin):
     your project's Django settings to a list of header names to add; these will be added to any exposed headers already
     on the response.
     """
-    def process_response(self, request, response):
+    def process_response(self, request, response):  # pylint: disable=unused-argument
         header_list = getattr(settings, 'ACCESS_CONTROL_EXPOSE_HEADERS', [])
         if not header_list:
             return response
