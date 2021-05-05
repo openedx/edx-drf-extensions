@@ -69,7 +69,7 @@ django-waffle==2.1.0
     #   rest-condition
 drf-jwt==1.19.0
     # via -r requirements/base.txt
-edx-django-utils==3.16.0
+edx-django-utils==4.0.0
     # via -r requirements/base.txt
 edx-lint==5.0.0
     # via -r requirements/test.in
@@ -77,7 +77,7 @@ edx-opaque-keys==2.2.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==8.1.1
+faker==8.1.2
     # via factory-boy
 filelock==3.0.12
     # via
@@ -162,7 +162,7 @@ pylint==2.8.2
     #   pylint-celery
     #   pylint-django
     #   pylint-plugin-utils
-pymongo==3.11.3
+pymongo==3.11.4
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
@@ -172,7 +172,7 @@ pytest-cov==2.11.1
     # via -r requirements/test.in
 pytest-django==4.2.0
     # via -r requirements/test.in
-pytest==6.2.3
+pytest==6.2.4
     # via
     #   pytest-cov
     #   pytest-django
@@ -180,7 +180,7 @@ python-dateutil==2.8.1
     # via
     #   -r requirements/base.txt
     #   faker
-python-slugify==4.0.1
+python-slugify==5.0.0
     # via code-annotations
 pytz==2021.1
     # via
