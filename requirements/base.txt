@@ -18,9 +18,9 @@ django-waffle==2.1.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
-django==2.2.21
+django==2.2.23
     # via
-    #   -c requirements/constraints.txt
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in
     #   django-crum
     #   djangorestframework
@@ -32,7 +32,7 @@ djangorestframework==3.12.4
     #   -r requirements/base.in
     #   drf-jwt
     #   rest-condition
-drf-jwt==1.19.0
+drf-jwt==1.19.1
     # via -r requirements/base.in
 edx-django-utils==4.0.0
     # via -r requirements/base.in
@@ -56,6 +56,7 @@ pyjwkest==1.4.2
     # via -r requirements/base.in
 pyjwt[crypto]==1.7.1
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -c requirements/constraints.txt
     #   drf-jwt
 pymongo==3.11.4
@@ -72,7 +73,7 @@ rest-condition==1.0.3
     # via -r requirements/base.in
 semantic-version==2.8.5
     # via -r requirements/base.in
-six==1.15.0
+six==1.16.0
     # via
     #   -r requirements/base.in
     #   pyjwkest
