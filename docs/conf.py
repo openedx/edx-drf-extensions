@@ -271,4 +271,4 @@ def skip_modules_docstring(app, what, name, obj, options, lines):
 
 def setup(app):
     app.connect('autodoc-process-docstring', skip_modules_docstring)
-    app.add_stylesheet('theme_overrides.css')
+    app.add_css_file('theme_overrides.css')
