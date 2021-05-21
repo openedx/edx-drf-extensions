@@ -48,7 +48,6 @@ click-log==0.3.2
     #   edx-lint
 click==7.1.2
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
     #   click-log
     #   code-annotations
@@ -106,8 +105,9 @@ docutils==0.16
     #   -r requirements/docs.txt
     #   sphinx
     #   sphinx-rtd-theme
-drf-jwt==1.19.1
+drf-jwt==1.19.0
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.txt
     #   -r requirements/test.txt
 edx-django-utils==4.0.0
@@ -136,7 +136,7 @@ future==0.18.2
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   pyjwkest
-httpretty==1.1.1
+httpretty==1.1.2
     # via -r requirements/test.txt
 idna==2.10
     # via
@@ -156,9 +156,8 @@ isort==5.8.0
     # via
     #   -r requirements/test.txt
     #   pylint
-jinja2==2.11.3
+jinja2==3.0.1
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   code-annotations
@@ -167,13 +166,11 @@ lazy-object-proxy==1.6.0
     # via
     #   -r requirements/test.txt
     #   astroid
-markupsafe==1.1.1
+markupsafe==2.0.1
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   jinja2
-    #   sphinx
 mccabe==0.6.1
     # via
     #   -r requirements/test.txt
@@ -326,7 +323,7 @@ snowballstemmer==2.1.0
     #   sphinx
 sphinx-rtd-theme==0.5.2
     # via -r requirements/docs.txt
-sphinx==4.0.1
+sphinx==4.0.2
     # via
     #   -r requirements/docs.txt
     #   sphinx-rtd-theme
