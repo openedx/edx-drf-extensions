@@ -78,7 +78,7 @@ edx-opaque-keys==2.2.1
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==8.2.1
+faker==8.4.0
     # via factory-boy
 filelock==3.0.12
     # via
@@ -228,7 +228,7 @@ toml==0.10.2
     #   tox
 tox==3.23.1
     # via -r requirements/test.in
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   -r requirements/base.txt
     #   requests
