@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-certifi==2020.12.5
+certifi==2021.5.30
     # via requests
 cffi==1.14.5
     # via cryptography
@@ -36,7 +36,7 @@ drf-jwt==1.19.0
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in
-edx-django-utils==4.0.0
+edx-django-utils==4.1.0
     # via -r requirements/base.in
 edx-opaque-keys==2.2.1
     # via -r requirements/base.in
