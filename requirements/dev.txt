@@ -31,7 +31,7 @@ certifi==2021.5.30
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-cffi==1.14.5
+cffi==1.14.6
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -120,7 +120,7 @@ edx-opaque-keys==2.2.2
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==8.9.0
+faker==8.10.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -150,7 +150,7 @@ iniconfig==1.1.1
     # via
     #   -r requirements/test.txt
     #   pytest
-isort==5.9.1
+isort==5.9.2
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -173,12 +173,12 @@ mccabe==0.6.1
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==6.4.3.160
+newrelic==6.4.4.161
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-packaging==20.9
+packaging==21.0
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -319,7 +319,7 @@ snowballstemmer==2.1.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
-sphinx==4.0.2
+sphinx==4.0.3
     # via
     #   -r requirements/docs.txt
     #   sphinx-rtd-theme

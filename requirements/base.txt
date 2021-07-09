@@ -6,7 +6,7 @@
 #
 certifi==2021.5.30
     # via requests
-cffi==1.14.5
+cffi==1.14.6
     # via cryptography
 chardet==4.0.0
     # via requests
@@ -44,7 +44,7 @@ future==0.18.2
     # via pyjwkest
 idna==2.10
     # via requests
-newrelic==6.4.3.160
+newrelic==6.4.4.161
     # via edx-django-utils
 pbr==5.6.0
     # via stevedore
