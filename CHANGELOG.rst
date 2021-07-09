@@ -18,7 +18,7 @@ Unreleased
 Added
 ~~~~~
 
-* Added support for django3.2
+* Added support for django3.1 and 3.2
 
 [6.5.0] - 2021-02-12
 --------------------
