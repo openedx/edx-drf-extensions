@@ -12,7 +12,7 @@ certifi==2021.5.30
     # via
     #   -c requirements/test.txt
     #   requests
-chardet==4.0.0
+charset-normalizer==2.0.2
     # via
     #   -c requirements/test.txt
     #   requests
@@ -20,7 +20,7 @@ docutils==0.16
     # via
     #   sphinx
     #   sphinx-rtd-theme
-idna==2.10
+idna==3.2
     # via
     #   -c requirements/test.txt
     #   requests
@@ -48,13 +48,13 @@ pytz==2021.1
     # via
     #   -c requirements/test.txt
     #   babel
-requests==2.25.1
+requests==2.26.0
     # via
     #   -c requirements/test.txt
     #   sphinx
 snowballstemmer==2.1.0
     # via sphinx
-sphinx==4.0.3
+sphinx==4.1.1
     # via
     #   -r requirements/docs.in
     #   sphinx-rtd-theme

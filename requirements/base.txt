@@ -8,7 +8,7 @@ certifi==2021.5.30
     # via requests
 cffi==1.14.6
     # via cryptography
-chardet==4.0.0
+charset-normalizer==2.0.2
     # via requests
 cryptography==3.4.7
     # via pyjwt
@@ -23,7 +23,7 @@ django==2.2.24
     #   rest-condition
 django-crum==0.7.9
     # via edx-django-utils
-django-waffle==2.2.0
+django-waffle==2.2.1
     # via
     #   -r requirements/base.in
     #   edx-django-utils
@@ -36,13 +36,13 @@ drf-jwt==1.19.0
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in
-edx-django-utils==4.1.0
+edx-django-utils==4.2.0
     # via -r requirements/base.in
 edx-opaque-keys==2.2.2
     # via -r requirements/base.in
 future==0.18.2
     # via pyjwkest
-idna==2.10
+idna==3.2
     # via requests
 newrelic==6.4.4.161
     # via edx-django-utils
@@ -61,13 +61,13 @@ pyjwt[crypto]==1.7.1
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -c requirements/constraints.txt
     #   drf-jwt
-pymongo==3.11.4
+pymongo==3.12.0
     # via edx-opaque-keys
-python-dateutil==2.8.1
+python-dateutil==2.8.2
     # via -r requirements/base.in
 pytz==2021.1
     # via django
-requests==2.25.1
+requests==2.26.0
     # via
     #   -r requirements/base.in
     #   pyjwkest
