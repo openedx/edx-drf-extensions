@@ -8,7 +8,7 @@ alabaster==0.7.12
     # via
     #   -r requirements/docs.txt
     #   sphinx
-astroid==2.6.2
+astroid==2.6.5
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -36,7 +36,7 @@ cffi==1.14.6
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   cryptography
-charset-normalizer==2.0.2
+charset-normalizer==2.0.3
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -236,7 +236,7 @@ pyjwt[crypto]==1.7.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==2.9.3
+pylint==2.9.5
     # via
     #   -r requirements/test.txt
     #   edx-lint
