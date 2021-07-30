@@ -52,7 +52,7 @@ click-log==0.3.2
     # via
     #   -r requirements/test.txt
     #   edx-lint
-code-annotations==1.1.2
+code-annotations==1.2.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -120,7 +120,7 @@ edx-opaque-keys==2.2.2
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==8.10.1
+faker==8.10.3
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -150,7 +150,7 @@ iniconfig==1.1.1
     # via
     #   -r requirements/test.txt
     #   pytest
-isort==5.9.2
+isort==5.9.3
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -173,7 +173,7 @@ mccabe==0.6.1
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==6.4.4.161
+newrelic==6.6.0.162
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -190,7 +190,7 @@ pbr==5.6.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==2.0.2
+platformdirs==2.2.0
     # via
     #   -r requirements/test.txt
     #   virtualenv
@@ -236,7 +236,7 @@ pyjwt[crypto]==1.7.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==2.9.5
+pylint==2.9.6
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -323,7 +323,7 @@ snowballstemmer==2.1.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
-sphinx==4.1.1
+sphinx==4.1.2
     # via
     #   -r requirements/docs.txt
     #   sphinx-rtd-theme
