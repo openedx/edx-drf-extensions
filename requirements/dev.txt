@@ -73,7 +73,7 @@ distlib==0.3.2
     #   virtualenv
 django==2.2.24
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django-crum
@@ -105,7 +105,7 @@ docutils==0.16
     #   sphinx-rtd-theme
 drf-jwt==1.19.0
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
     #   -r requirements/test.txt
 edx-django-utils==4.2.0
@@ -231,7 +231,6 @@ pyjwkest==1.4.2
     #   -r requirements/test.txt
 pyjwt[crypto]==1.7.1
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt
     #   -r requirements/test.txt

@@ -46,7 +46,7 @@ ddt==1.4.2
 distlib==0.3.2
     # via virtualenv
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
     #   django-crum
     #   djangorestframework
@@ -68,7 +68,7 @@ django-waffle==2.2.1
     #   rest-condition
 drf-jwt==1.19.0
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
 edx-django-utils==4.2.0
     # via -r requirements/base.txt
@@ -148,7 +148,6 @@ pyjwkest==1.4.2
     # via -r requirements/base.txt
 pyjwt[crypto]==1.7.1
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt
     #   drf-jwt

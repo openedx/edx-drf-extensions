@@ -19,4 +19,4 @@ Django<2.3
 drf-jwt<1.19.1
 
 # Newer versions causing tests failures in multiple repos.
-pyjwt[crypto]==1.7.1
+
