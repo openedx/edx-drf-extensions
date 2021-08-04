@@ -10,6 +10,3 @@
 
 # This file contains all common constraints for edx-repos
 -c common_constraints.txt
-
-# greater versions causing tests failures.
-pyjwt[crypto]==1.7.1
