@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.6.5
+astroid==2.6.6
     # via
     #   pylint
     #   pylint-celery
@@ -20,7 +20,7 @@ cffi==1.14.6
     # via
     #   -r requirements/base.txt
     #   cryptography
-charset-normalizer==2.0.3
+charset-normalizer==2.0.4
     # via
     #   -r requirements/base.txt
     #   requests
@@ -78,7 +78,7 @@ edx-opaque-keys==2.2.2
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==8.10.3
+faker==8.11.0
     # via factory-boy
 filelock==3.0.12
     # via
@@ -108,7 +108,7 @@ markupsafe==2.0.1
     # via jinja2
 mccabe==0.6.1
     # via pylint
-newrelic==6.6.0.162
+newrelic==6.8.0.163
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -227,13 +227,13 @@ toml==0.10.2
     #   pytest
     #   pytest-cov
     #   tox
-tox==3.24.0
+tox==3.24.1
     # via -r requirements/test.in
 urllib3==1.26.6
     # via
     #   -r requirements/base.txt
     #   requests
-virtualenv==20.6.0
+virtualenv==20.7.0
     # via tox
 wrapt==1.12.1
     # via astroid
