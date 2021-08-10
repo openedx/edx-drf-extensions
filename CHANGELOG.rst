@@ -12,6 +12,16 @@ Change Log
 Unreleased
 ----------
 
+[7.0.1] - 2021-08-10
+--------------------
+
+Fixed
+~~~~~
+
+* Removed dropped ``require_exp`` and ``require_iat`` options from jwt.decode and instead used ``require`` option with both ``exp`` and ``iat``. For more info visit this: https://pyjwt.readthedocs.io/en/stable/changelog.html#dropped-deprecated-require-options-in-jwt-decode
+* This fixes an error in previous release which had a multiple breaking changes
+
+
 [7.0.0] - 2021-08-03
 --------------------
 

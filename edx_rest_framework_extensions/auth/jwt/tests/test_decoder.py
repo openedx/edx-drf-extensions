@@ -165,6 +165,18 @@ class JWTDecodeHandlerTests(TestCase):
 
             patched_log.exception.assert_any_call("Token verification failed.")
 
+    @ddt.data("exp", "iat")
+    def test_required_claims(self, claim):
+        """
+        Verify that tokens that do not carry 'exp' or 'iat' claims are rejected
+        """
+        # Deletes required claim from payload
+        del self.payload[claim]
+        token = generate_jwt_token(self.payload)
+        with self.assertRaises(jwt.MissingRequiredClaimError):
+            # Decode to see if MissingRequiredClaimError exception is raised or not
+            jwt_decode_handler(token)
+
 
 def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument
     """

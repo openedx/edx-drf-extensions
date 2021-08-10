@@ -162,8 +162,7 @@ def _verify_jwt_signature(token, jwt_issuer):
 
 def _decode_and_verify_token(token, jwt_issuer):
     options = {
-        'require_exp': True,
-        'require_iat': True,
+        'require': ["exp", "iat"],
 
         'verify_exp': api_settings.JWT_VERIFY_EXPIRATION,
         'verify_aud': settings.JWT_AUTH.get('JWT_VERIFY_AUDIENCE', True),
