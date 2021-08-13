@@ -8,8 +8,10 @@ from edx_django_utils.monitoring import set_custom_attribute
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
+from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import configured_jwt_decode_handler
+from edx_rest_framework_extensions.config import ENABLE_FORGIVING_JWT_COOKIES
 from edx_rest_framework_extensions.settings import get_setting
 
 
@@ -59,6 +61,21 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         return get_setting('JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES')
 
     def authenticate(self, request):
+        # Add monitoring to help resolve issues with JWT cookies.
+        # Note: In the very exceptional case that a JWT authorization header is also used
+        #   and takes precedence over the JWT cookies, this custom attribute
+        #   could be slightly misleading.
+        has_jwt_cookie = jwt_cookie_name() in request.COOKIES
+        set_custom_attribute('jwt_auth_has_jwt_cookie', has_jwt_cookie)
+
+        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        if is_forgiving_jwt_cookies_enabled:
+            set_custom_attribute('jwt_auth_forgiving_jwt_cookies', True)
+            return self._authenticate_forgiving_jwt_cookies(request)
+        set_custom_attribute('jwt_auth_forgiving_jwt_cookies', False)
+        return self._authenticate_original(request)
+
+    def _authenticate_original(self, request):
         try:
             user_and_auth = super().authenticate(request)
 
@@ -80,9 +97,52 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # Errors in production do not need to be logged (as they may be noisy),
             # but debug logging can help quickly resolve issues during development.
             logger.debug('Failed JWT Authentication,', exc_info=exception)
-            # Note: I think this case should only include AuthenticationFailed and PermissionDenied,
-            #   but will monitor the custom attribute to verify.
+            # Useful monitoring for debugging various types of failures.
             set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
+            raise
+
+    def _authenticate_forgiving_jwt_cookies(self, request):
+        """
+        Authenticate using a JWT token.
+
+        If the JWT is in the authorization header, and authentication fails, we will raise
+            an exception which will halt additional authentication methods, and is the default
+            behavior of DRF authentication classes.
+
+        If the JWT token is found in the JWT cookie, we've had issues with the cookie sometimes
+        containing an expired token. For failed authentication, instead of raising an exception,
+        we will return None which will enable other authentication classes to be attempted where
+        defined (e.g. SessionAuthentication).
+
+        See docs/decisions/0002-remove-use-jwt-cookie-header.rst
+
+        """
+        has_jwt_cookie = jwt_cookie_name() in request.COOKIES
+        try:
+            user_and_auth = super().authenticate(request)
+
+            # Unauthenticated, CSRF validation not required
+            if not user_and_auth:
+                return user_and_auth
+
+            # Not using JWT cookie, CSRF validation not required
+            if not has_jwt_cookie:
+                return user_and_auth
+
+            self.enforce_csrf(request)
+
+            # CSRF passed validation with authenticated user
+            return user_and_auth
+
+        except Exception as exception:
+            # Errors in production do not need to be logged (as they may be noisy),
+            # but debug logging can help quickly resolve issues during development.
+            logger.debug('Failed JWT Authentication,', exc_info=exception)
+            # Useful monitoring for debugging various types of failures.
+            set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
+            if has_jwt_cookie:
+                # See docs/decisions/0002-remove-use-jwt-cookie-header.rst for details.
+                return None
             raise
 
     def authenticate_credentials(self, payload):

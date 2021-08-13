@@ -168,10 +168,12 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
                 auth_type = token_parts[0].lower()  # 'jwt' or 'bearer' (for example)
             else:
                 auth_type = 'other-token-type'
-        elif USE_JWT_COOKIE_HEADER in request.META and jwt_cookie_name() in request.COOKIES:
+        elif jwt_cookie_name() in request.COOKIES:
             auth_type = 'jwt-cookie'
         else:
             auth_type = 'session-or-other'
+        # Note: This is a somewhat odd custom attribute, and could be enhanced with more
+        #   accurate standard custom attributes in our authentication classes.
         monitoring.set_custom_attribute('request_auth_type_guess', auth_type)
 
     AUTHENTICATED_USER_FOUND_CACHE_KEY = 'edx-drf-extensions.authenticated_user_found_in_middleware'
