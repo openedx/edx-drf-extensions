@@ -29,7 +29,7 @@ JWT Authentication and REST API Endpoints
 
 JWT Authentication is the preferred method of authentication for Open edX API endpoints. See `JWT Authentication README`_ for more details.
 
-.. _JWT Authentication README: ./auth/jwt/README.rst
+.. _JWT Authentication README: ./edx_rest_framework_extensions/auth/jwt/README.rst
 
 CSRF API
 --------
