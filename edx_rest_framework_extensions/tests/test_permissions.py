@@ -240,7 +240,7 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
         url = '/'
         if username_in_url:
             url += f'?username={username_in_url}'
-        extra = dict(HTTP_AUTHORIZATION=auth_header) if auth_header else dict()
+        extra = {"HTTP_AUTHORIZATION": auth_header} if auth_header else {}
         return RequestFactory().get(url, **extra)
 
     def _create_session(self, request, user):
