@@ -8,7 +8,7 @@ alabaster==0.7.12
     # via
     #   -r requirements/docs.txt
     #   sphinx
-astroid==2.7.2
+astroid==2.7.3
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -80,7 +80,6 @@ django==2.2.24
     #   djangorestframework
     #   drf-jwt
     #   edx-django-utils
-    #   edx-lint
     #   rest-condition
 django-crum==0.7.9
     # via
@@ -108,11 +107,11 @@ drf-jwt==1.19.0
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-django-utils==4.3.0
+edx-django-utils==4.4.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-lint==5.0.0
+edx-lint==5.1.0
     # via -r requirements/test.txt
 edx-opaque-keys==2.2.2
     # via
@@ -190,14 +189,13 @@ pbr==5.6.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==2.2.0
+platformdirs==2.3.0
     # via
     #   -r requirements/test.txt
     #   pylint
     #   virtualenv
-pluggy==0.13.1
+pluggy==1.0.0
     # via
-    #   -c requirements/common_constraints.txt
     #   -r requirements/test.txt
     #   pytest
     #   tox
@@ -266,7 +264,7 @@ pyparsing==2.4.7
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   packaging
-pytest==6.2.4
+pytest==6.2.5
     # via
     #   -r requirements/test.txt
     #   pytest-cov
