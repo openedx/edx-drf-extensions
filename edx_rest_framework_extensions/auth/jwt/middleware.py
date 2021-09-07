@@ -9,6 +9,7 @@ from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 from edx_django_utils import monitoring
 from edx_django_utils.cache import RequestCache
+from rest_framework.permissions import OperandHolder, SingleOperandHolder
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
@@ -40,29 +41,36 @@ class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):
     """
     _required_permission_classes = (NotJwtRestrictedApplication,)
 
+    def _iter_included_base_classes(self, view_permissions):
+        """
+        Yield all the permissions that are encapsulated in provided view_permissions, directly or as
+        a part of DRF's composed permissions.
+        """
+        # Not all permissions are classes, some will be OperandHolder
+        # objects from DRF. So we have to crawl all those and expand them to see
+        # if our target classes are inside the conditionals somewhere.
+        for permission in view_permissions:
+            # Composition using DRF native support in 3.9+:
+            # IsStaff | IsSuperuser -> [IsStaff, IsSuperuser]
+            # IsOwner | IsStaff | IsSuperuser -> [IsOwner | IsStaff, IsSuperuser]
+            if isinstance(permission, OperandHolder):
+                decomposed_permissions = [permission.op1_class, permission.op2_class]
+                yield from self._iter_included_base_classes(decomposed_permissions)
+            elif isinstance(permission, SingleOperandHolder):
+                yield permission.op1_class
+            else:
+                yield permission
+
     def _add_missing_jwt_permission_classes(self, view_class):
         """
         Adds permissions classes that should exist for Jwt based authentication,
         if needed.
         """
+        classes_to_add = []
         view_permissions = list(getattr(view_class, 'permission_classes', []))
 
-        # Not all permissions are classes, some will be ConditionalPermission
-        # objects from the rest_condition library. So we have to crawl all those
-        # and expand them to see if our target classes are inside the
-        # conditionals somewhere.
-        permission_classes = []
-        classes_to_add = []
-        while view_permissions:
-            permission = view_permissions.pop()
-            if not hasattr(permission, 'perms_or_conds'):
-                permission_classes.append(permission)
-            else:
-                for child in getattr(permission, 'perms_or_conds', []):
-                    view_permissions.append(child)
-
         for perm_class in self._required_permission_classes:
-            if not _includes_base_class(permission_classes, perm_class):
+            if not _includes_base_class(self._iter_included_base_classes(view_permissions), perm_class):
                 message = (
                     "The view %s allows Jwt Authentication. The required permission class, %s,",
                     " was automatically added."

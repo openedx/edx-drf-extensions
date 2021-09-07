@@ -10,7 +10,6 @@ from django.http.cookie import SimpleCookie
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils.cache import RequestCache
-from rest_condition import C
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
@@ -142,15 +141,23 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             self.middleware.process_view(self.request, some_simple_view, None, None)
         )
 
-    def test_conditional_permissions(self):
+    def test_conditional_permissions_drf(self):
         """
-        Make sure we handle ConditionalPermissions from rest_condition.
+        Make sure we handle conditional permissions composed using the inbuilt-support in DRF>=3.9
         """
         class HasCondPermView(APIView):
             authentication_classes = (SomeJwtAuthenticationSubclass,)
             original_permission_classes = (
-                C(JwtHasContentOrgFilterForRequestedCourse) & NotJwtRestrictedApplication,
-                C(IsSuperuser) | IsStaff,
+                JwtHasContentOrgFilterForRequestedCourse & NotJwtRestrictedApplication,
+                IsSuperuser | IsStaff,
+            )
+            permission_classes = original_permission_classes
+
+        class HasNegatedCondPermView(APIView):
+            authentication_classes = (SomeJwtAuthenticationSubclass,)
+            original_permission_classes = (
+                ~NotJwtRestrictedApplication & JwtHasContentOrgFilterForRequestedCourse,
+                IsSuperuser | IsStaff,
             )
             permission_classes = original_permission_classes
 
@@ -158,7 +165,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
             authentication_classes = (SomeJwtAuthenticationSubclass,)
             original_permission_classes = (
                 JwtHasContentOrgFilterForRequestedCourse,
-                C(IsSuperuser) | IsStaff,
+                IsSuperuser | IsStaff,
             )
             permission_classes = original_permission_classes
 
@@ -170,6 +177,16 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         self.assertIs(
             HasCondPermView.original_permission_classes,
             HasCondPermView.permission_classes
+        )
+
+        # NotJwtRestrictedApplication exists (it's nested in a conditional), so the middleware
+        # shouldn't modify this class.
+        self.middleware.process_view(self.request, HasNegatedCondPermView, None, None)
+
+        # Note: ConditionalPermissions don't implement __eq__
+        self.assertIs(
+            HasNegatedCondPermView.original_permission_classes,
+            HasNegatedCondPermView.permission_classes
         )
 
         # NotJwtRestrictedApplication does not exist anywhere, so it should be appended

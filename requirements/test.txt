@@ -52,7 +52,6 @@ distlib==0.3.3
     #   djangorestframework
     #   drf-jwt
     #   edx-django-utils
-    #   rest-condition
 django-crum==0.7.9
     # via
     #   -r requirements/base.txt
@@ -64,7 +63,6 @@ django-waffle==2.2.1
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-    #   rest-condition
 drf-jwt==1.19.0
     # via
     #   -c requirements/common_constraints.txt
@@ -195,8 +193,6 @@ requests==2.26.0
     # via
     #   -r requirements/base.txt
     #   pyjwkest
-rest-condition==1.0.3
-    # via -r requirements/base.txt
 semantic-version==2.8.5
     # via -r requirements/base.txt
 six==1.16.0

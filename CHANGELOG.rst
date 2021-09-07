@@ -12,6 +12,15 @@ Change Log
 Unreleased
 ----------
 
+[8.0.0] - 2021-09-30
+--------------------
+
+Changed
+~~~~~~~
+
+* **BREAKING CHANGE:** Updated ``EnsureJWTAuthSettingsMiddleware`` to understand and work with permissions combined using DRF's in-built support. This allows switching away from ``rest_condition``. Any view that still uses ``rest_condition`` will cause the middleware to throw an error. 
+
+
 [7.0.1] - 2021-08-10
 --------------------
 

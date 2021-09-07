@@ -2,7 +2,6 @@
 import logging
 
 from opaque_keys.edx.keys import CourseKey
-from rest_condition import C
 from rest_framework.permissions import BasePermission, IsAuthenticated
 
 from edx_rest_framework_extensions.auth.jwt.authentication import is_jwt_authenticated
@@ -161,15 +160,15 @@ class LoginRedirectIfUnauthenticated(IsAuthenticated):
     """
 
 
-_NOT_JWT_RESTRICTED_PERMISSIONS = C(NotJwtRestrictedApplication) & (C(IsStaff) | IsUserInUrl)
+_NOT_JWT_RESTRICTED_PERMISSIONS = NotJwtRestrictedApplication & (IsStaff | IsUserInUrl)
 _JWT_RESTRICTED_PERMISSIONS = (
-    C(JwtRestrictedApplication) &
+    JwtRestrictedApplication &
     JwtHasScope &
     JwtHasContentOrgFilterForRequestedCourse &
     JwtHasUserFilterForRequestedUser
 )
 JWT_RESTRICTED_APPLICATION_OR_USER_ACCESS = (
-    C(IsAuthenticated) &
+    IsAuthenticated &
     (_NOT_JWT_RESTRICTED_PERMISSIONS | _JWT_RESTRICTED_PERMISSIONS)
 )
 
