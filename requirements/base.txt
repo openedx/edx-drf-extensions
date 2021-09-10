@@ -14,8 +14,8 @@ cryptography==3.4.8
     # via pyjwt
 django==2.2.24
     # via
-    #   -c requirements/common_constraints.txt
-    #   -r requirements/base.in
+    #   -c common_constraints.txt
+    #   -r base.in
     #   django-crum
     #   djangorestframework
     #   drf-jwt
@@ -25,21 +25,21 @@ django-crum==0.7.9
     # via edx-django-utils
 django-waffle==2.2.1
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   edx-django-utils
 djangorestframework==3.12.4
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   drf-jwt
     #   rest-condition
 drf-jwt==1.19.0
     # via
-    #   -c requirements/common_constraints.txt
-    #   -r requirements/base.in
+    #   -c common_constraints.txt
+    #   -r base.in
 edx-django-utils==4.4.0
-    # via -r requirements/base.in
+    # via -r base.in
 edx-opaque-keys==2.2.2
-    # via -r requirements/base.in
+    # via -r base.in
 future==0.18.2
     # via pyjwkest
 idna==3.2
@@ -55,31 +55,31 @@ pycparser==2.20
 pycryptodomex==3.10.1
     # via pyjwkest
 pyjwkest==1.4.2
-    # via -r requirements/base.in
+    # via -r base.in
 pyjwt[crypto]==2.1.0
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   drf-jwt
 pymongo==3.12.0
     # via edx-opaque-keys
 python-dateutil==2.8.2
-    # via -r requirements/base.in
+    # via -r base.in
 pytz==2021.1
     # via django
 requests==2.26.0
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   pyjwkest
 rest-condition==1.0.3
-    # via -r requirements/base.in
+    # via -r base.in
 semantic-version==2.8.5
-    # via -r requirements/base.in
+    # via -r base.in
 six==1.16.0
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   pyjwkest
     #   python-dateutil
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
 stevedore==3.4.0
     # via
