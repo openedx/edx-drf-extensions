@@ -12,11 +12,11 @@ certifi==2021.5.30
     # via
     #   -c requirements/test.txt
     #   requests
-charset-normalizer==2.0.4
+charset-normalizer==2.0.5
     # via
     #   -c requirements/test.txt
     #   requests
-docutils==0.16
+docutils==0.17.1
     # via
     #   sphinx
     #   sphinx-rtd-theme
@@ -54,11 +54,11 @@ requests==2.26.0
     #   sphinx
 snowballstemmer==2.1.0
     # via sphinx
-sphinx==4.1.2
+sphinx==4.2.0
     # via
     #   -r requirements/docs.in
     #   sphinx-rtd-theme
-sphinx-rtd-theme==0.5.2
+sphinx-rtd-theme==1.0.0
     # via -r requirements/docs.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
