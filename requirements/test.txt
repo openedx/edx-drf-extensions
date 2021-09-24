@@ -20,7 +20,7 @@ cffi==1.14.6
     # via
     #   -r requirements/base.txt
     #   cryptography
-charset-normalizer==2.0.5
+charset-normalizer==2.0.6
     # via
     #   -r requirements/base.txt
     #   requests
@@ -43,7 +43,7 @@ cryptography==3.4.8
     #   pyjwt
 ddt==1.4.2
     # via -r requirements/test.in
-distlib==0.3.2
+distlib==0.3.3
     # via virtualenv
     # via
     #   -c requirements/common_constraints.txt
@@ -107,7 +107,7 @@ markupsafe==2.0.1
     # via jinja2
 mccabe==0.6.1
     # via pylint
-newrelic==6.10.0.165
+newrelic==7.0.0.166
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -233,7 +233,7 @@ typing-extensions==3.10.0.2
     # via
     #   astroid
     #   pylint
-urllib3==1.26.6
+urllib3==1.26.7
     # via
     #   -r requirements/base.txt
     #   requests
