@@ -8,7 +8,7 @@ alabaster==0.7.12
     # via
     #   -r requirements/docs.txt
     #   sphinx
-astroid==2.8.0
+astroid==2.8.2
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -56,16 +56,16 @@ code-annotations==1.2.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage==5.5
+coverage[toml]==6.0.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==3.4.8
+cryptography==35.0.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   pyjwt
-ddt==1.4.3
+ddt==1.4.4
     # via -r requirements/test.txt
 distlib==0.3.3
     # via
@@ -117,11 +117,11 @@ edx-opaque-keys==2.2.2
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==8.14.0
+faker==9.2.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
-filelock==3.2.0
+filelock==3.3.0
     # via
     #   -r requirements/test.txt
     #   tox
@@ -151,7 +151,7 @@ isort==5.9.3
     # via
     #   -r requirements/test.txt
     #   pylint
-jinja2==3.0.1
+jinja2==3.0.2
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -227,7 +227,7 @@ pyjwkest==1.4.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-pyjwt[crypto]==2.1.0
+pyjwt[crypto]==2.2.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -267,7 +267,7 @@ pytest==6.2.5
     #   -r requirements/test.txt
     #   pytest-cov
     #   pytest-django
-pytest-cov==2.12.1
+pytest-cov==3.0.0
     # via -r requirements/test.txt
 pytest-django==4.4.0
     # via -r requirements/test.txt
@@ -280,7 +280,7 @@ python-slugify==5.0.2
     # via
     #   -r requirements/test.txt
     #   code-annotations
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -367,8 +367,11 @@ toml==0.10.2
     #   -r requirements/test.txt
     #   pylint
     #   pytest
-    #   pytest-cov
     #   tox
+tomli==1.2.1
+    # via
+    #   -r requirements/test.txt
+    #   coverage
 tox==3.24.4
     # via -r requirements/test.txt
 typing-extensions==3.10.0.2
