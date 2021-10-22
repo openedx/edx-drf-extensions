@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.8.2
+astroid==2.8.3
     # via
     #   pylint
     #   pylint-celery
@@ -73,9 +73,9 @@ edx-opaque-keys==2.2.2
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==9.3.1
+faker==9.5.2
     # via factory-boy
-filelock==3.3.0
+filelock==3.3.1
     # via
     #   tox
     #   virtualenv
@@ -103,7 +103,7 @@ markupsafe==2.0.1
     # via jinja2
 mccabe==0.6.1
     # via pylint
-newrelic==7.2.1.168
+newrelic==7.2.2.169
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -143,7 +143,7 @@ pycryptodomex==3.11.0
     #   pyjwkest
 pyjwkest==1.4.2
     # via -r requirements/base.txt
-pyjwt[crypto]==2.2.0
+pyjwt[crypto]==2.3.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
@@ -161,7 +161,7 @@ pylint-plugin-utils==0.6
     # via
     #   pylint-celery
     #   pylint-django
-pymongo==3.12.0
+pymongo==3.12.1
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
@@ -205,7 +205,7 @@ sqlparse==0.4.2
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==3.4.0
+stevedore==3.5.0
     # via
     #   -r requirements/base.txt
     #   code-annotations
@@ -234,7 +234,7 @@ urllib3==1.26.7
     #   requests
 virtualenv==20.8.1
     # via tox
-wrapt==1.12.1
+wrapt==1.13.2
     # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
