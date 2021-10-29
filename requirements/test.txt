@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.8.3
+astroid==2.8.4
     # via
     #   pylint
     #   pylint-celery
@@ -67,13 +67,13 @@ drf-jwt==1.19.1
     # via -r requirements/base.txt
 edx-django-utils==4.4.0
     # via -r requirements/base.txt
-edx-lint==5.2.0
+edx-lint==5.2.1
     # via -r requirements/test.in
 edx-opaque-keys==2.2.2
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==9.5.2
+faker==9.7.1
     # via factory-boy
 filelock==3.3.1
     # via
@@ -165,7 +165,7 @@ pymongo==3.12.1
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
-pyparsing==2.4.7
+pyparsing==3.0.3
     # via packaging
 pytest==6.2.5
     # via
@@ -220,7 +220,7 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   tox
-tomli==1.2.1
+tomli==1.2.2
     # via coverage
 tox==3.24.4
     # via -r requirements/test.in
@@ -232,7 +232,7 @@ urllib3==1.26.7
     # via
     #   -r requirements/base.txt
     #   requests
-virtualenv==20.8.1
+virtualenv==20.9.0
     # via tox
 wrapt==1.13.2
     # via astroid
