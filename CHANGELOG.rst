@@ -12,6 +12,15 @@ Change Log
 Unreleased
 ----------
 
+[8.0.1] - 2021-11-01
+--------------------
+
+Changed
+~~~~~~~
+
+* Resolve RemovedInDjango4.0 warnings.
+
+
 [8.0.0] - 2021-09-30
 --------------------
 

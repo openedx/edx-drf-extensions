@@ -2,9 +2,9 @@
 URL definitions for the CSRF API endpoints.
 """
 
-from django.conf.urls import include, url
+from django.urls import include, re_path
 
 
 urlpatterns = [
-    url(r'^v1/', include('csrf.api.v1.urls'), name='csrf_api_v1'),
+    re_path(r'^v1/', include('csrf.api.v1.urls'), name='csrf_api_v1'),
 ]

@@ -2,9 +2,9 @@
 URLs for the CSRF application.
 """
 
-from django.conf.urls import include, url
+from django.urls import include, re_path
 
 
 urlpatterns = [
-    url(r'^csrf/api/', include('csrf.api.urls'), name='csrf_api'),
+    re_path(r'^csrf/api/', include('csrf.api.urls'), name='csrf_api'),
 ]
