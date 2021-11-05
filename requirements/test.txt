@@ -33,7 +33,7 @@ click-log==0.3.2
     # via edx-lint
 code-annotations==1.2.0
     # via edx-lint
-coverage[toml]==6.0.2
+coverage[toml]==6.1.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -73,9 +73,9 @@ edx-opaque-keys==2.2.2
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==9.7.1
+faker==9.8.0
     # via factory-boy
-filelock==3.3.1
+filelock==3.3.2
     # via
     #   tox
     #   virtualenv
@@ -91,7 +91,7 @@ idna==3.3
     #   requests
 iniconfig==1.1.1
     # via pytest
-isort==5.9.3
+isort==5.10.0
     # via
     #   -r requirements/test.in
     #   pylint
@@ -103,15 +103,15 @@ markupsafe==2.0.1
     # via jinja2
 mccabe==0.6.1
     # via pylint
-newrelic==7.2.2.169
+newrelic==7.2.3.170
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-packaging==21.0
+packaging==21.2
     # via
     #   pytest
     #   tox
-pbr==5.6.0
+pbr==5.7.0
     # via
     #   -r requirements/base.txt
     #   stevedore
@@ -127,7 +127,7 @@ psutil==5.8.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-py==1.10.0
+py==1.11.0
     # via
     #   pytest
     #   tox
@@ -165,7 +165,7 @@ pymongo==3.12.1
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
-pyparsing==3.0.3
+pyparsing==2.4.7
     # via packaging
 pytest==6.2.5
     # via
@@ -232,9 +232,9 @@ urllib3==1.26.7
     # via
     #   -r requirements/base.txt
     #   requests
-virtualenv==20.9.0
+virtualenv==20.10.0
     # via tox
-wrapt==1.13.2
+wrapt==1.13.3
     # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:

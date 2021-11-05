@@ -56,7 +56,7 @@ code-annotations==1.2.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==6.0.2
+coverage[toml]==6.1.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -116,11 +116,11 @@ edx-opaque-keys==2.2.2
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==9.7.1
+faker==9.8.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
-filelock==3.3.1
+filelock==3.3.2
     # via
     #   -r requirements/test.txt
     #   tox
@@ -146,7 +146,7 @@ iniconfig==1.1.1
     # via
     #   -r requirements/test.txt
     #   pytest
-isort==5.9.3
+isort==5.10.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -169,19 +169,19 @@ mccabe==0.6.1
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==7.2.2.169
+newrelic==7.2.3.170
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-packaging==21.0
+packaging==21.2
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   pytest
     #   sphinx
     #   tox
-pbr==5.6.0
+pbr==5.7.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -201,7 +201,7 @@ psutil==5.8.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-py==1.10.0
+py==1.11.0
     # via
     #   -r requirements/test.txt
     #   pytest
@@ -256,7 +256,7 @@ pymongo==3.12.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-opaque-keys
-pyparsing==3.0.3
+pyparsing==2.4.7
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -384,11 +384,11 @@ urllib3==1.26.7
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.9.0
+virtualenv==20.10.0
     # via
     #   -r requirements/test.txt
     #   tox
-wrapt==1.13.2
+wrapt==1.13.3
     # via
     #   -r requirements/test.txt
     #   astroid
