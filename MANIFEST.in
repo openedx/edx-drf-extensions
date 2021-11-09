@@ -4,3 +4,4 @@ include requirements/docs.in
 include LICENSE
 include README.rst
 test_settings.py
+include requirements/constraints.txt
