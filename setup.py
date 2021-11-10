@@ -29,12 +29,13 @@ def load_requirements(*requirements_paths):
     Returns a list of requirement strings.
     """
     # UPDATED VIA SEMGREP - if you need to remove/modify this method remove this line and add a comment specifying why.
+    # small change from original SEMGREP update to allow packages with [] in the name
 
     requirements = {}
     constraint_files = set()
 
     # groups "my-package-name<=x.y.z,..." into ("my-package-name", "<=x.y.z,...")
-    requirement_line_regex = re.compile(r"([a-zA-Z0-9-_.]+)([<>=][^#\s]+)?")
+    requirement_line_regex = re.compile(r"([a-zA-Z0-9-_.\[\]]+)([<>=][^#\s]+)?")
 
     def add_version_constraint_or_raise(current_line, current_requirements, add_if_not_present):
         regex_match = requirement_line_regex.match(current_line)
