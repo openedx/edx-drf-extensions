@@ -40,13 +40,13 @@ future==0.18.2
     # via pyjwkest
 idna==3.3
     # via requests
-newrelic==7.2.3.170
+newrelic==7.2.4.171
     # via edx-django-utils
 pbr==5.7.0
     # via stevedore
 psutil==5.8.0
     # via edx-django-utils
-pycparser==2.20
+pycparser==2.21
     # via cffi
 pycryptodomex==3.11.0
     # via pyjwkest
