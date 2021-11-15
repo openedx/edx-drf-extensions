@@ -4,8 +4,6 @@ import re
 
 from setuptools import find_packages, setup
 
-import edx_rest_framework_extensions
-
 
 def is_requirement(line):
     """
@@ -74,9 +72,26 @@ def load_requirements(*requirements_paths):
     return constrained_requirements
 
 
+def get_version(*file_paths):
+    """
+    Extract the version string from the file at the given relative path fragments.
+    """
+    filename = os.path.join(os.path.dirname(__file__), *file_paths)
+    with open(filename, encoding='utf-8') as opened_file:
+        version_file = opened_file.read()
+        version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                                  version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError('Unable to find version string.')
+
+
+VERSION = get_version("edx_rest_framework_extensions", "__init__.py")
+
+
 setup(
     name='edx-drf-extensions',
-    version=edx_rest_framework_extensions.__version__,
+    version=VERSION,
     description='edX extensions of Django REST Framework',
     author='edX',
     author_email='oscm@edx.org',
