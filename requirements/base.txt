@@ -4,6 +4,8 @@
 #
 #    make upgrade
 #
+asgiref==3.4.1
+    # via django
 certifi==2021.10.8
     # via requests
 cffi==1.15.0
@@ -12,7 +14,7 @@ charset-normalizer==2.0.7
     # via requests
 cryptography==35.0.0
     # via pyjwt
-django==2.2.24
+django==3.2.9
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -42,7 +44,7 @@ idna==3.3
     # via requests
 newrelic==7.2.4.171
     # via edx-django-utils
-pbr==5.7.0
+pbr==5.8.0
     # via stevedore
 psutil==5.8.0
     # via edx-django-utils
