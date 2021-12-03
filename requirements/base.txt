@@ -58,7 +58,7 @@ pyjwt[crypto]==2.3.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
-pymongo==3.12.1
+pymongo==4.0
     # via edx-opaque-keys
 python-dateutil==2.8.2
     # via -r requirements/base.in
