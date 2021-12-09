@@ -4,7 +4,11 @@
 #
 #    make upgrade
 #
-astroid==2.8.4
+asgiref==3.4.1
+    # via
+    #   -r requirements/base.txt
+    #   django
+astroid==2.9.0
     # via
     #   pylint
     #   pylint-celery
@@ -20,7 +24,7 @@ cffi==1.15.0
     # via
     #   -r requirements/base.txt
     #   cryptography
-charset-normalizer==2.0.7
+charset-normalizer==2.0.8
     # via
     #   -r requirements/base.txt
     #   requests
@@ -33,11 +37,11 @@ click-log==0.3.2
     # via edx-lint
 code-annotations==1.2.0
     # via edx-lint
-coverage[toml]==6.1.2
+coverage[toml]==6.2
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==35.0.0
+cryptography==36.0.0
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -73,9 +77,9 @@ edx-opaque-keys==2.2.2
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==9.8.0
+faker==9.9.0
     # via factory-boy
-filelock==3.3.2
+filelock==3.4.0
     # via
     #   tox
     #   virtualenv
@@ -107,11 +111,11 @@ newrelic==7.2.4.171
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-packaging==21.2
+packaging==21.3
     # via
     #   pytest
     #   tox
-pbr==5.7.0
+pbr==5.8.0
     # via
     #   -r requirements/base.txt
     #   stevedore
@@ -147,7 +151,7 @@ pyjwt[crypto]==2.3.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-pylint==2.11.1
+pylint==2.12.1
     # via
     #   edx-lint
     #   pylint-celery
@@ -161,11 +165,11 @@ pylint-plugin-utils==0.6
     # via
     #   pylint-celery
     #   pylint-django
-pymongo==3.12.1
+pymongo==4.0
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via packaging
 pytest==6.2.5
     # via
@@ -173,7 +177,7 @@ pytest==6.2.5
     #   pytest-django
 pytest-cov==3.0.0
     # via -r requirements/test.in
-pytest-django==4.4.0
+pytest-django==4.5.1
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via
@@ -224,7 +228,7 @@ tomli==1.2.2
     # via coverage
 tox==3.24.4
     # via -r requirements/test.in
-typing-extensions==3.10.0.2
+typing-extensions==4.0.1
     # via
     #   astroid
     #   pylint
