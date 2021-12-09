@@ -161,7 +161,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         Copied from SessionAuthentication.
         See https://github.com/encode/django-rest-framework/blob/3f19e66d9f2569895af6e91455e5cf53b8ce5640/rest_framework/authentication.py#L131-L141  # noqa E501 line too long
         """
-        check = CSRFCheck()
+        check = CSRFCheck()  # pylint: disable=no-value-for-parameter
         # populates request.META['CSRF_COOKIE'], which is used in process_view()
         check.process_request(request)
         reason = check.process_view(request, None, (), {})

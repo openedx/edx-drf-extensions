@@ -65,7 +65,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
     def setUp(self):
         super().setUp()
         self.request = RequestFactory().get('/')
-        self.middleware = EnsureJWTAuthSettingsMiddleware()
+        self.middleware = EnsureJWTAuthSettingsMiddleware()  # pylint: disable=no-value-for-parameter
 
     def _assert_included(self, item, iterator, should_be_included):
         if should_be_included:
@@ -379,7 +379,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
         super().setUp()
         self.request = RequestFactory().get('/')
         self.request.session = 'mock session'
-        self.middleware = JwtAuthCookieMiddleware()
+        self.middleware = JwtAuthCookieMiddleware()  # pylint: disable=no-value-for-parameter
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_do_not_use_jwt_cookies(self, mock_set_custom_attribute):
