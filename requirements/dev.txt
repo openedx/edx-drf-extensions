@@ -65,7 +65,7 @@ coverage[toml]==6.2
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==36.0.0
+cryptography==36.0.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -95,7 +95,7 @@ django-waffle==2.2.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-djangorestframework==3.12.4
+djangorestframework==3.13.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -161,7 +161,7 @@ jinja2==3.0.3
     #   -r requirements/test.txt
     #   code-annotations
     #   sphinx
-lazy-object-proxy==1.6.0
+lazy-object-proxy==1.7.1
     # via
     #   -r requirements/test.txt
     #   astroid
@@ -291,6 +291,7 @@ pytz==2021.3
     #   -r requirements/test.txt
     #   babel
     #   django
+    #   djangorestframework
 pyyaml==6.0
     # via
     #   -r requirements/test.txt
@@ -372,7 +373,7 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   tox
-tomli==1.2.2
+tomli==2.0.0
     # via
     #   -r requirements/test.txt
     #   coverage
