@@ -109,7 +109,7 @@ drf-jwt==1.19.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-django-utils==4.4.0
+edx-django-utils==4.4.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -320,7 +320,7 @@ snowballstemmer==2.2.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
-sphinx==4.3.1
+sphinx==4.3.2
     # via
     #   -r requirements/docs.txt
     #   sphinx-rtd-theme
