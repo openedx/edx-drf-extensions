@@ -24,7 +24,7 @@ django==3.2.11
     #   edx-django-utils
 django-crum==0.7.9
     # via edx-django-utils
-django-waffle==2.2.1
+django-waffle==2.3.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
@@ -32,7 +32,7 @@ djangorestframework==3.13.1
     # via
     #   -r requirements/base.in
     #   drf-jwt
-drf-jwt==1.19.1
+drf-jwt==1.19.2
     # via -r requirements/base.in
 edx-django-utils==4.4.1
     # via -r requirements/base.in
@@ -83,5 +83,5 @@ stevedore==3.5.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-urllib3==1.26.7
+urllib3==1.26.8
     # via requests

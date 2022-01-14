@@ -8,7 +8,7 @@ asgiref==3.4.1
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.9.2
+astroid==2.9.3
     # via
     #   pylint
     #   pylint-celery
@@ -58,14 +58,14 @@ django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-django-waffle==2.2.1
+django-waffle==2.3.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-drf-jwt==1.19.1
+drf-jwt==1.19.2
     # via -r requirements/base.txt
 edx-django-utils==4.4.1
     # via -r requirements/base.txt
@@ -231,7 +231,7 @@ typing-extensions==4.0.1
     # via
     #   astroid
     #   pylint
-urllib3==1.26.7
+urllib3==1.26.8
     # via
     #   -r requirements/base.txt
     #   requests
