@@ -10,11 +10,11 @@ certifi==2021.10.8
     # via requests
 cffi==1.15.0
     # via cryptography
-charset-normalizer==2.0.10
+charset-normalizer==2.0.11
     # via requests
 cryptography==36.0.1
     # via pyjwt
-django==3.2.11
+django==3.2.12
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -34,9 +34,9 @@ djangorestframework==3.13.1
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==4.4.2
+edx-django-utils==4.5.0
     # via -r requirements/base.in
-edx-opaque-keys==2.2.2
+edx-opaque-keys==2.3.0
     # via -r requirements/base.in
 future==0.18.2
     # via pyjwkest
@@ -44,13 +44,13 @@ idna==3.3
     # via requests
 newrelic==7.4.0.172
     # via edx-django-utils
-pbr==5.8.0
+pbr==5.8.1
     # via stevedore
 psutil==5.9.0
     # via edx-django-utils
 pycparser==2.21
     # via cffi
-pycryptodomex==3.13.0
+pycryptodomex==3.14.1
     # via pyjwkest
 pyjwkest==1.4.2
     # via -r requirements/base.in
@@ -58,7 +58,7 @@ pyjwt[crypto]==2.3.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
-pymongo==4.0.1
+pymongo==3.12.3
     # via edx-opaque-keys
 python-dateutil==2.8.2
     # via -r requirements/base.in
@@ -70,7 +70,7 @@ requests==2.27.1
     # via
     #   -r requirements/base.in
     #   pyjwkest
-semantic-version==2.8.5
+semantic-version==2.9.0
     # via -r requirements/base.in
 six==1.16.0
     # via
