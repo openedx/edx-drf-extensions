@@ -22,7 +22,7 @@ cffi==1.15.0
     # via
     #   -r requirements/base.txt
     #   cryptography
-charset-normalizer==2.0.11
+charset-normalizer==2.0.12
     # via
     #   -r requirements/base.txt
     #   requests
@@ -75,9 +75,9 @@ edx-opaque-keys==2.3.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==12.3.0
+faker==13.0.0
     # via factory-boy
-filelock==3.4.2
+filelock==3.6.0
     # via
     #   tox
     #   virtualenv
@@ -101,7 +101,7 @@ jinja2==3.0.3
     # via code-annotations
 lazy-object-proxy==1.7.1
     # via astroid
-markupsafe==2.0.1
+markupsafe==2.1.0
     # via jinja2
 mccabe==0.6.1
     # via pylint
@@ -157,7 +157,7 @@ pylint==2.12.2
     #   pylint-plugin-utils
 pylint-celery==0.3
     # via edx-lint
-pylint-django==2.5.0
+pylint-django==2.5.1
     # via edx-lint
 pylint-plugin-utils==0.7
     # via
@@ -169,7 +169,7 @@ pymongo==3.12.3
     #   edx-opaque-keys
 pyparsing==3.0.7
     # via packaging
-pytest==7.0.0
+pytest==7.0.1
     # via
     #   pytest-cov
     #   pytest-django
@@ -181,7 +181,7 @@ python-dateutil==2.8.2
     # via
     #   -r requirements/base.txt
     #   faker
-python-slugify==5.0.2
+python-slugify==6.0.1
     # via code-annotations
 pytz==2021.3
     # via
@@ -226,7 +226,7 @@ tomli==2.0.1
     #   pytest
 tox==3.24.5
     # via -r requirements/test.in
-typing-extensions==4.0.1
+typing-extensions==4.1.1
     # via
     #   astroid
     #   pylint
