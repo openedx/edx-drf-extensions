@@ -75,7 +75,7 @@ edx-opaque-keys==2.3.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==13.2.0
+faker==13.3.0
     # via factory-boy
 filelock==3.6.0
     # via
@@ -105,7 +105,7 @@ markupsafe==2.1.0
     # via jinja2
 mccabe==0.6.1
     # via pylint
-newrelic==7.4.0.172
+newrelic==7.6.0.173
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -181,7 +181,7 @@ python-dateutil==2.8.2
     # via
     #   -r requirements/base.txt
     #   faker
-python-slugify==6.1.0
+python-slugify==6.1.1
     # via code-annotations
 pytz==2021.3
     # via
