@@ -117,7 +117,7 @@ edx-opaque-keys==2.3.0
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==13.3.0
+faker==13.3.1
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -389,7 +389,7 @@ urllib3==1.26.8
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.13.2
+virtualenv==20.13.3
     # via
     #   -r requirements/test.txt
     #   tox
