@@ -13,7 +13,7 @@ asgiref==3.5.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-astroid==2.9.3
+astroid==2.11.2
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -43,7 +43,7 @@ charset-normalizer==2.0.12
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-click==8.0.4
+click==8.1.2
     # via
     #   -r requirements/test.txt
     #   click-log
@@ -68,6 +68,10 @@ cryptography==36.0.2
     #   pyjwt
 ddt==1.4.4
     # via -r requirements/test.txt
+dill==0.3.4
+    # via
+    #   -r requirements/test.txt
+    #   pylint
 distlib==0.3.4
     # via
     #   -r requirements/test.txt
@@ -86,7 +90,7 @@ django-crum==0.7.9
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-django-waffle==2.3.0
+django-waffle==2.4.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -109,7 +113,7 @@ edx-django-utils==4.6.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-lint==5.2.1
+edx-lint==5.2.2
     # via -r requirements/test.txt
 edx-opaque-keys==2.3.0
     # via
@@ -117,7 +121,7 @@ edx-opaque-keys==2.3.0
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==13.3.2
+faker==13.3.4
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -155,7 +159,7 @@ isort==5.10.1
     # via
     #   -r requirements/test.txt
     #   pylint
-jinja2==3.0.3
+jinja2==3.1.1
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -170,11 +174,11 @@ markupsafe==2.1.1
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   jinja2
-mccabe==0.6.1
+mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==7.6.0.173
+newrelic==7.8.0.174
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -236,7 +240,7 @@ pyjwt[crypto]==2.3.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==2.12.2
+pylint==2.13.4
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -247,7 +251,7 @@ pylint-celery==0.3
     # via
     #   -r requirements/test.txt
     #   edx-lint
-pylint-django==2.5.2
+pylint-django==2.5.3
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -284,7 +288,7 @@ python-slugify==6.1.1
     # via
     #   -r requirements/test.txt
     #   code-annotations
-pytz==2021.3
+pytz==2022.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -320,7 +324,7 @@ snowballstemmer==2.2.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
-sphinx==4.4.0
+sphinx==4.5.0
     # via
     #   -r requirements/docs.txt
     #   sphinx-rtd-theme
@@ -369,12 +373,12 @@ text-unidecode==1.3
 toml==0.10.2
     # via
     #   -r requirements/test.txt
-    #   pylint
     #   tox
 tomli==2.0.1
     # via
     #   -r requirements/test.txt
     #   coverage
+    #   pylint
     #   pytest
 tox==3.24.5
     # via -r requirements/test.txt
@@ -389,11 +393,11 @@ urllib3==1.26.9
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.13.3
+virtualenv==20.14.0
     # via
     #   -r requirements/test.txt
     #   tox
-wrapt==1.13.3
+wrapt==1.14.0
     # via
     #   -r requirements/test.txt
     #   astroid
