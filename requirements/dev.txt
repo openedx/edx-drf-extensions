@@ -178,7 +178,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==7.8.0.174
+newrelic==7.10.0.175
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -240,7 +240,7 @@ pyjwt[crypto]==2.3.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==2.13.4
+pylint==2.13.5
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -401,7 +401,7 @@ wrapt==1.14.0
     # via
     #   -r requirements/test.txt
     #   astroid
-zipp==3.7.0
+zipp==3.8.0
     # via
     #   -r requirements/docs.txt
     #   importlib-metadata
