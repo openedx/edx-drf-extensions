@@ -76,7 +76,7 @@ distlib==0.3.4
     # via
     #   -r requirements/test.txt
     #   virtualenv
-django==3.2.12
+django==3.2.13
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
@@ -265,7 +265,7 @@ pymongo==3.12.3
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-opaque-keys
-pyparsing==3.0.7
+pyparsing==3.0.8
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -380,7 +380,7 @@ tomli==2.0.1
     #   coverage
     #   pylint
     #   pytest
-tox==3.24.5
+tox==3.25.0
     # via -r requirements/test.txt
 typing-extensions==4.1.1
     # via
@@ -393,7 +393,7 @@ urllib3==1.26.9
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.14.0
+virtualenv==20.14.1
     # via
     #   -r requirements/test.txt
     #   tox
