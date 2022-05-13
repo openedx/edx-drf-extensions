@@ -38,7 +38,7 @@ djangorestframework==3.13.1
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==4.7.0
+edx-django-utils==4.8.1
     # via -r requirements/base.in
 edx-opaque-keys==2.3.0
     # via -r requirements/base.in
@@ -58,7 +58,7 @@ pycryptodomex==3.14.1
     # via pyjwkest
 pyjwkest==1.4.2
     # via -r requirements/base.in
-pyjwt[crypto]==2.3.0
+pyjwt[crypto]==2.4.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
