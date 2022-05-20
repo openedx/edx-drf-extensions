@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-asgiref==3.5.1
+asgiref==3.5.2
     # via django
-certifi==2021.10.8
+certifi==2022.5.18.1
     # via requests
 cffi==1.15.0
     # via
@@ -38,7 +38,7 @@ djangorestframework==3.13.1
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==4.8.1
+edx-django-utils==5.0.0
     # via -r requirements/base.in
 edx-opaque-keys==2.3.0
     # via -r requirements/base.in

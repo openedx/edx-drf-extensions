@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-asgiref==3.5.1
+asgiref==3.5.2
     # via
     #   -r requirements/base.txt
     #   django
@@ -14,7 +14,7 @@ astroid==2.11.5
     #   pylint-celery
 attrs==21.4.0
     # via pytest
-certifi==2021.10.8
+certifi==2022.5.18.1
     # via
     #   -r requirements/base.txt
     #   requests
@@ -48,7 +48,7 @@ cryptography==37.0.2
     #   pyjwt
 ddt==1.4.4
     # via -r requirements/test.in
-dill==0.3.4
+dill==0.3.5
     # via pylint
 distlib==0.3.4
     # via virtualenv
@@ -72,7 +72,7 @@ django-waffle==2.4.1
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.txt
-edx-django-utils==4.8.1
+edx-django-utils==5.0.0
     # via -r requirements/base.txt
 edx-lint==5.2.2
     # via -r requirements/test.in
@@ -80,7 +80,7 @@ edx-opaque-keys==2.3.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==13.11.0
+faker==13.11.1
     # via factory-boy
 filelock==3.7.0
     # via
@@ -154,7 +154,7 @@ pyjwt[crypto]==2.4.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-pylint==2.13.8
+pylint==2.13.9
     # via
     #   edx-lint
     #   pylint-celery
