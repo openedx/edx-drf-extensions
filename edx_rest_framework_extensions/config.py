@@ -9,6 +9,6 @@ Application configuration constants and code.
 # .. toggle_use_cases: temporary
 # .. toggle_creation_date: 2019-10-15
 # .. toggle_target_removal_date: 2019-12-31
-# .. toggle_warnings: This feature fixed ecommerce, but broke edx-platform. The toggle enables us to fix over time.
+# .. toggle_warning: This feature fixed ecommerce, but broke edx-platform. The toggle enables us to fix over time.
 # .. toggle_tickets: ARCH-1210, ARCH-1199, ARCH-1197
 ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE = 'ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE'

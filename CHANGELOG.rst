@@ -12,6 +12,8 @@ Change Log
 Unreleased
 ----------
 
+* Rename toggle_warnings to toggle_warning for consistency with setting_warning.
+
 [8.1.0] - 2022-01-28
 --------------------
 
@@ -35,7 +37,7 @@ Changed
 Changed
 ~~~~~~~
 
-* **BREAKING CHANGE:** Updated ``EnsureJWTAuthSettingsMiddleware`` to understand and work with permissions combined using DRF's in-built support. This allows switching away from ``rest_condition``. Any view that still uses ``rest_condition`` will cause the middleware to throw an error. 
+* **BREAKING CHANGE:** Updated ``EnsureJWTAuthSettingsMiddleware`` to understand and work with permissions combined using DRF's in-built support. This allows switching away from ``rest_condition``. Any view that still uses ``rest_condition`` will cause the middleware to throw an error.
 
 
 [7.0.1] - 2021-08-10
