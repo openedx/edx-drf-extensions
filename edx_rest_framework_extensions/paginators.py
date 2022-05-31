@@ -78,11 +78,11 @@ class NamespacedPageNumberPagination(pagination.PageNumberPagination):
 
 def paginate_search_results(object_class, search_results, page_size, page):
     """
-    Takes edx-search results and returns a Page object populated
+    Takes search results and returns a Page object populated
     with db objects for that page.
 
     :param object_class: Model class to use when querying the db for objects.
-    :param search_results: edX-search results.
+    :param search_results: search results.
     :param page_size: Number of results per page.
     :param page: Page number.
     :return: Paginator object with model objects
