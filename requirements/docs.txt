@@ -56,7 +56,7 @@ requests==2.27.1
     #   sphinx
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==4.5.0
+sphinx==5.0.1
     # via
     #   -r requirements/docs.in
     #   sphinx-rtd-theme

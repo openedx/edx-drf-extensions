@@ -38,7 +38,7 @@ click-log==0.4.0
     # via edx-lint
 code-annotations==1.3.0
     # via edx-lint
-coverage[toml]==6.4
+coverage[toml]==6.4.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -82,7 +82,7 @@ factory-boy==2.12.0
     # via -r requirements/test.in
 faker==13.12.0
     # via factory-boy
-filelock==3.7.0
+filelock==3.7.1
     # via
     #   tox
     #   virtualenv
@@ -154,7 +154,7 @@ pyjwt[crypto]==2.4.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-pylint==2.13.9
+pylint==2.14.0
     # via
     #   edx-lint
     #   pylint-celery
@@ -232,6 +232,8 @@ tomli==2.0.1
     #   coverage
     #   pylint
     #   pytest
+tomlkit==0.11.0
+    # via pylint
 tox==3.25.0
     # via -r requirements/test.in
 typing-extensions==4.2.0
