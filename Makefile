@@ -28,10 +28,15 @@ $(COMMON_CONSTRAINTS_TXT):
 
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
 upgrade: $(COMMON_CONSTRAINTS_TXT)
-upgrade: upgrade-piptools piptools ## upgrade requirement pins.
+upgrade:
+	pip install -qr requirements/pip-tools.txt
+	## upgrade requirement pins.
 	sed 's/pyjwt\[crypto\]<2.0.0//g' requirements/common_constraints.txt > requirements/common_constraints.tmp
 	mv requirements/common_constraints.tmp requirements/common_constraints.txt
-	pip-compile --allow-unsafe --rebuild -o requirements/pip.txt requirements/pip.in
+	pip-compile --allow-unsafe --rebuild --upgrade -o requirements/pip.txt requirements/pip.in
+	pip-compile --upgrade -o requirements/pip-tools.txt requirements/pip-tools.in
+	pip install -qr requirements/pip.txt
+	pip install -qr requirements/pip-tools.txt
 	pip-compile requirements/base.in --upgrade -o requirements/base.txt
 	pip-compile requirements/test.in --upgrade -o requirements/test.txt
 	pip-compile requirements/docs.in --upgrade -o requirements/docs.txt

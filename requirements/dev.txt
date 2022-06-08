@@ -13,7 +13,7 @@ asgiref==3.5.2
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-astroid==2.11.5
+astroid==2.11.6
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -22,7 +22,7 @@ attrs==21.4.0
     # via
     #   -r requirements/test.txt
     #   pytest
-babel==2.10.1
+babel==2.10.2
     # via
     #   -r requirements/docs.txt
     #   sphinx
