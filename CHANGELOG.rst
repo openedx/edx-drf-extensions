@@ -12,7 +12,17 @@ Change Log
 Unreleased
 ----------
 
+
+[8.2.0] - 2022-06-15
+--------------------
+
+Changed
+~~~~~~~
+
 * Rename toggle_warnings to toggle_warning for consistency with setting_warning.
+* Enhanced get_decoded_jwt to also call get_decoded_jwt_from_auth,
+so it doesn't need to be called separately and can use the cached
+Jwt.
 
 [8.1.0] - 2022-01-28
 --------------------

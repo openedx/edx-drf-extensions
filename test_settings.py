@@ -37,6 +37,8 @@ JWT_AUTH = {
 
     'JWT_AUDIENCE': 'test-aud',
 
+    'JWT_AUTH_COOKIE': 'edx-jwt-cookie',
+
     'JWT_DECODE_HANDLER': 'edx_rest_framework_extensions.auth.jwt.decoder.jwt_decode_handler',
 
     'JWT_ISSUER': 'test-iss',
