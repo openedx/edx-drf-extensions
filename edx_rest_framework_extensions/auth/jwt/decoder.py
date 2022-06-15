@@ -1,4 +1,10 @@
-""" JWT decoder utility functions. """
+"""
+JWT decoder utility functions.
+
+In most of this module, "decode" refers to both verifying and unpacking a JWT,
+as a unified operation. (Reading the contents of an unverified JWT would be
+a security risk in the general case.)
+"""
 import logging
 import sys
 
@@ -24,7 +30,7 @@ class JwtTokenVersion:
 
 def jwt_decode_handler(token):
     """
-    Decodes a JSON Web Token (JWT).
+    Decodes (and verifies) a JSON Web Token (JWT).
 
     Notes:
         * Requires "exp" and "iat" claims to be present in the token's payload.
@@ -161,6 +167,10 @@ def _verify_jwt_signature(token, jwt_issuer):
 
 
 def _decode_and_verify_token(token, jwt_issuer):
+    """
+    Part of the verification implementation; must not be used in isolation,
+    as the signature is actually checked in a different function.
+    """
     options = {
         'require': ["exp", "iat"],
 

@@ -23,7 +23,7 @@ def get_decoded_jwt(request):
     """
     Grab jwt from jwt cookie in request if possible.
 
-    Returns a decoded jwt dict if it can be found.
+    Returns a decoded (verified) jwt dict if it can be found.
     Returns None if the jwt is not found.
     """
     jwt_cookie = request.COOKIES.get(jwt_cookie_name(), None)
