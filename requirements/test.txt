@@ -42,7 +42,7 @@ coverage[toml]==6.4.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==37.0.2
+cryptography==37.0.4
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -80,7 +80,7 @@ edx-opaque-keys==2.3.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==13.14.0
+faker==13.15.0
     # via factory-boy
 filelock==3.7.1
     # via
@@ -232,15 +232,15 @@ tomli==2.0.1
     #   coverage
     #   pylint
     #   pytest
-tomlkit==0.11.0
+tomlkit==0.11.1
     # via pylint
 tox==3.25.1
     # via -r requirements/test.in
-typing-extensions==4.2.0
+typing-extensions==4.3.0
     # via
     #   astroid
     #   pylint
-urllib3==1.26.9
+urllib3==1.26.10
     # via
     #   -r requirements/base.txt
     #   requests
