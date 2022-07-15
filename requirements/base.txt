@@ -16,9 +16,9 @@ charset-normalizer==2.1.0
     # via requests
 click==8.1.3
     # via edx-django-utils
-cryptography==37.0.2
+cryptography==37.0.4
     # via pyjwt
-django==3.2.13
+django==3.2.14
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -85,9 +85,9 @@ six==1.16.0
     #   python-dateutil
 sqlparse==0.4.2
     # via django
-stevedore==3.5.0
+stevedore==4.0.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-urllib3==1.26.9
+urllib3==1.26.10
     # via requests
