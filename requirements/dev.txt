@@ -93,7 +93,7 @@ django-crum==0.7.9
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-django-waffle==2.5.0
+django-waffle==2.6.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -181,7 +181,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==7.14.0.177
+newrelic==7.16.0.178
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -243,7 +243,7 @@ pyjwt[crypto]==2.4.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==2.14.4
+pylint==2.14.5
     # via
     #   -r requirements/test.txt
     #   edx-lint
