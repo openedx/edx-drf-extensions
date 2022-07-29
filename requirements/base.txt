@@ -89,5 +89,5 @@ stevedore==4.0.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-urllib3==1.26.10
+urllib3==1.26.11
     # via requests

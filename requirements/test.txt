@@ -12,7 +12,7 @@ astroid==2.11.7
     # via
     #   pylint
     #   pylint-celery
-attrs==21.4.0
+attrs==22.1.0
     # via pytest
 certifi==2022.6.15
     # via
@@ -80,7 +80,7 @@ edx-opaque-keys==2.3.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==13.15.0
+faker==13.15.1
     # via factory-boy
 filelock==3.7.1
     # via
@@ -212,7 +212,6 @@ six==1.16.0
     #   pyjwkest
     #   python-dateutil
     #   tox
-    #   virtualenv
 sqlparse==0.4.2
     # via
     #   -r requirements/base.txt
@@ -240,11 +239,11 @@ typing-extensions==4.3.0
     # via
     #   astroid
     #   pylint
-urllib3==1.26.10
+urllib3==1.26.11
     # via
     #   -r requirements/base.txt
     #   requests
-virtualenv==20.15.1
+virtualenv==20.16.2
     # via tox
 wrapt==1.14.1
     # via astroid
