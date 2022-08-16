@@ -14,6 +14,9 @@ from edx_rest_framework_extensions.auth.jwt.decoder import configured_jwt_decode
 from edx_rest_framework_extensions.settings import get_setting
 
 
+JWT_USER_DISABLED_ERROR = 'user_is_disabled'
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -66,6 +69,18 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # Unauthenticated, CSRF validation not required
             if not user_and_auth:
                 return user_and_auth
+
+            # Fail authentication if user disabled
+            try:
+                user = user_and_auth[0]
+            except IndexError:
+                user = None
+            if user:
+                if not user.has_usable_password():
+                    msg = 'User disabled by admin: %s' % user.get_username()
+                    raise exceptions.AuthenticationFailed({
+                        'error_code': JWT_USER_DISABLED_ERROR,
+                        'developer_message': msg})
 
             # Not using JWT cookies, CSRF validation not required
             use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
