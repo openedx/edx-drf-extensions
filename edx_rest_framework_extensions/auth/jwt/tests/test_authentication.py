@@ -9,7 +9,7 @@ from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt import authentication
-from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
+from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication, JWT_USER_DISABLED_ERROR
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
@@ -207,8 +207,9 @@ class JwtAuthenticationTests(TestCase):
 
         with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=(user, "mock-auth")):
             with mock.patch.object(User, 'has_usable_password', return_value=False):
-                with self.assertRaises(AuthenticationFailed):
+                with self.assertRaises(AuthenticationFailed) as auth_failed_exception:
                     JwtAuthentication().authenticate(request)
+                self.assertEqual(auth_failed_exception.exception.detail.code, JWT_USER_DISABLED_ERROR)
 
     @ddt.data(True, False)
     def test_get_decoded_jwt_from_auth(self, is_jwt_authentication):
