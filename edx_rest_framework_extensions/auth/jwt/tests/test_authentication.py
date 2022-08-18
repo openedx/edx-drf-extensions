@@ -9,7 +9,10 @@ from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt import authentication
-from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication, JWT_USER_DISABLED_ERROR
+from edx_rest_framework_extensions.auth.jwt.authentication import (
+    JWT_USER_DISABLED_ERROR,
+    JwtAuthentication,
+)
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
