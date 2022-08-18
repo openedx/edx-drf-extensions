@@ -71,11 +71,8 @@ class JwtAuthentication(JSONWebTokenAuthentication):
                 return user_and_auth
 
             # Fail authentication if user disabled
-            try:
-                user = user_and_auth[0]
-            except IndexError:
-                user = None
-            if user:
+            user = user_and_auth[0]
+            if user and isinstance(user, get_user_model()):
                 if not user.has_usable_password():
                     msg = 'User disabled by admin: %s' % user.get_username()
                     raise exceptions.AuthenticationFailed({

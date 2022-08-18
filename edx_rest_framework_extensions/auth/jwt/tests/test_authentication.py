@@ -196,14 +196,6 @@ class JwtAuthenticationTests(TestCase):
             "Exception:PermissionDenied('CSRF Failed: CSRF cookie not set.')",
         )
 
-    def test_authenticate_no_user_returned(self):
-        """"""
-        jwt_token = self._get_test_jwt_token()
-        request = RequestFactory().get('/', HTTP_AUTHORIZATION=jwt_token)
-
-        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=(None, "mock-auth")):
-            JwtAuthentication().authenticate(request)
-
     def test_authenticate_with_disabled_user(self):
         """"""
         jwt_token = self._get_test_jwt_token()
