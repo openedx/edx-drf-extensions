@@ -46,7 +46,7 @@ future==0.18.2
     # via pyjwkest
 idna==3.3
     # via requests
-newrelic==7.16.0.178
+newrelic==8.0.0.179
     # via edx-django-utils
 pbr==5.10.0
     # via stevedore
@@ -68,7 +68,7 @@ pynacl==1.5.0
     # via edx-django-utils
 python-dateutil==2.8.2
     # via -r requirements/base.in
-pytz==2022.2
+pytz==2022.2.1
     # via
     #   django
     #   djangorestframework
