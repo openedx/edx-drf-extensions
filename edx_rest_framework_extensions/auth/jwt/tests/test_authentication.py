@@ -210,9 +210,9 @@ class JwtAuthenticationTests(TestCase):
 
         with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=(user, "mock-auth")):
             with mock.patch.object(User, 'has_usable_password', return_value=False):
-                with self.assertRaises(AuthenticationFailed) as auth_failed_exception:
+                with self.assertRaises(AuthenticationFailed) as auth_failure:
                     JwtAuthentication().authenticate(request)
-                self.assertEqual(auth_failed_exception.exception.detail.code, JWT_USER_DISABLED_ERROR)
+                self.assertEqual(auth_failure.exception.detail.get('error_code').code, JWT_USER_DISABLED_ERROR)
 
     @ddt.data(True, False)
     def test_get_decoded_jwt_from_auth(self, is_jwt_authentication):
