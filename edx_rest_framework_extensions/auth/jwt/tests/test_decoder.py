@@ -177,8 +177,21 @@ class JWTDecodeHandlerTests(TestCase):
             # Decode to see if MissingRequiredClaimError exception is raised or not
             jwt_decode_handler(token)
 
+    def test_failure_decode_symmetric_set_as_False(self):
+        """
+        Verifies the function logs decode failures with symmetric tken set as false,
+        and raises an InvalidTokenError if token is symmetric
+        """
+        # Create valid token symmetric jwt token and set decode_symmetric_token as False .
+        with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
+            with self.assertRaises(jwt.InvalidTokenError):
+                token = generate_jwt_token(self.payload)
+                jwt_decode_handler(token, decode_symmetric_token=False)
 
-def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument
+            patched_log.exception.assert_any_call("Token verification failed.")
+
+
+def _jwt_decode_handler_with_defaults(token, decode_symmetric_token):  # pylint: disable=unused-argument
     """
     Accepts anything as a token and returns a fake JWT payload with defaults.
     """
@@ -189,7 +202,7 @@ def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument
     }
 
 
-def _jwt_decode_handler_no_defaults(token):  # pylint: disable=unused-argument
+def _jwt_decode_handler_no_defaults(token, decode_symmetric_token):  # pylint: disable=unused-argument
     """
     Accepts anything as a token and returns a fake JWT payload with no defaults.
     """

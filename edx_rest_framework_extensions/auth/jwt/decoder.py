@@ -28,7 +28,7 @@ class JwtTokenVersion:
     added_version = '1.1.0'
 
 
-def jwt_decode_handler(token):
+def jwt_decode_handler(token, decode_symmetric_token=True):
     """
     Decodes (and verifies) a JSON Web Token (JWT).
 
@@ -56,6 +56,7 @@ def jwt_decode_handler(token):
 
     Args:
         token (str): JWT to be decoded.
+        decode_symmetric_token (bool): Whether to decode symmetric tokens or not. Pass False for asymmetric tokens only
 
     Returns:
         dict: Decoded JWT payload.
@@ -65,17 +66,17 @@ def jwt_decode_handler(token):
         InvalidTokenError: Decoding fails.
     """
     jwt_issuer = get_first_jwt_issuer()
-    _verify_jwt_signature(token, jwt_issuer)
+    _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token=decode_symmetric_token)
     decoded_token = _decode_and_verify_token(token, jwt_issuer)
     return _set_token_defaults(decoded_token)
 
 
-def configured_jwt_decode_handler(token):
+def configured_jwt_decode_handler(token, decode_symmetric_token=True):
     """
     Calls the ``jwt_decode_handler`` configured in the ``JWT_DECODE_HANDLER`` setting.
     """
     api_setting_jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
-    return api_setting_jwt_decode_handler(token)
+    return api_setting_jwt_decode_handler(token, decode_symmetric_token)
 
 
 def decode_jwt_scopes(token):
@@ -155,8 +156,8 @@ def _set_token_defaults(token):
     return token
 
 
-def _verify_jwt_signature(token, jwt_issuer):
-    key_set = _get_signing_jwk_key_set(jwt_issuer)
+def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
+    key_set = _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=decode_symmetric_token)
 
     try:
         _ = JWS().verify_compact(token, key_set)
@@ -200,7 +201,7 @@ def _decode_and_verify_token(token, jwt_issuer):
     return decoded_token
 
 
-def _get_signing_jwk_key_set(jwt_issuer):
+def _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=True):
     """
     Returns a JWK Keyset containing all active keys that are configured
     for verifying signatures.
@@ -212,7 +213,8 @@ def _get_signing_jwk_key_set(jwt_issuer):
     if signing_jwk_set:
         key_set.load_jwks(signing_jwk_set)
 
-    # symmetric key
-    key_set.add({'key': jwt_issuer['SECRET_KEY'], 'kty': 'oct'})
+    if add_symmetric_keys:
+        # symmetric key
+        key_set.add({'key': jwt_issuer['SECRET_KEY'], 'kty': 'oct'})
 
     return key_set
