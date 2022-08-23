@@ -191,7 +191,7 @@ class JWTDecodeHandlerTests(TestCase):
             patched_log.exception.assert_any_call("Token verification failed.")
 
 
-def _jwt_decode_handler_with_defaults(token, decode_symmetric_token):  # pylint: disable=unused-argument
+def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument
     """
     Accepts anything as a token and returns a fake JWT payload with defaults.
     """
@@ -202,7 +202,7 @@ def _jwt_decode_handler_with_defaults(token, decode_symmetric_token):  # pylint:
     }
 
 
-def _jwt_decode_handler_no_defaults(token, decode_symmetric_token):  # pylint: disable=unused-argument
+def _jwt_decode_handler_no_defaults(token):  # pylint: disable=unused-argument
     """
     Accepts anything as a token and returns a fake JWT payload with no defaults.
     """

@@ -35,6 +35,8 @@ def jwt_decode_handler(token, decode_symmetric_token=True):
     Notes:
         * Requires "exp" and "iat" claims to be present in the token's payload.
         * Aids debugging by logging InvalidTokenError log entries when decoding fails.
+        * Setting for JWT_DECODE_HANDLER expects a single argument, token. The new argument i.e. decode_symmetric_token
+          is for internal use only.
 
     Examples:
         Use with `djangorestframework-jwt <https://getblimp.github.io/django-rest-framework-jwt/>`_, by changing
@@ -71,12 +73,26 @@ def jwt_decode_handler(token, decode_symmetric_token=True):
     return _set_token_defaults(decoded_token)
 
 
-def configured_jwt_decode_handler(token, decode_symmetric_token=True):
+def configured_jwt_decode_handler(token):
     """
     Calls the ``jwt_decode_handler`` configured in the ``JWT_DECODE_HANDLER`` setting.
     """
     api_setting_jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
-    return api_setting_jwt_decode_handler(token, decode_symmetric_token)
+    return api_setting_jwt_decode_handler(token)
+
+
+def get_asymmetric_only_jwt_decode_handler(token):
+    """
+    Returns a jwt_decode_handler that will only validate asymmetrically signed JWTs.
+
+    WARNING: This will only work with a service that is configured to use the
+       jwt_decode_handler from this library. This can be used to decode an
+       already decoded JWT, to ensure it is asymmetrically signed. This check
+       can go away once the DEPR for symmetrically signed JWTs is complete:
+       https://github.com/openedx/public-engineering/issues/83
+    """
+    api_setting_jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
+    return api_setting_jwt_decode_handler(token, decode_symmetric_token=False)
 
 
 def decode_jwt_scopes(token):

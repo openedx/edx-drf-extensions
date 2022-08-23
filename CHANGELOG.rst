@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[8.1.1] - 2022-08-24
+--------------------
+
+Added
+~~~~~
+
+* Added only asymmetric jwt decoding functionality in decoder
+
 * Rename toggle_warnings to toggle_warning for consistency with setting_warning.
 
 [8.1.0] - 2022-01-28
