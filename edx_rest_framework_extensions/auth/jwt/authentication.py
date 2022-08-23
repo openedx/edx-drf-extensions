@@ -183,7 +183,7 @@ def is_jwt_authenticated(request):
     return True
 
 
-def get_decoded_jwt_from_auth(request, decode_symmetric_token=True):
+def get_decoded_jwt_from_auth(request):
     """
     Grab jwt from request.auth in request if possible.
 
@@ -193,4 +193,4 @@ def get_decoded_jwt_from_auth(request, decode_symmetric_token=True):
     if not is_jwt_authenticated(request):
         return None
 
-    return configured_jwt_decode_handler(request.auth, decode_symmetric_token)
+    return configured_jwt_decode_handler(request.auth)
