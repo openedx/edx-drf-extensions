@@ -15,6 +15,7 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
     jwt_decode_handler,
 )
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
+    generate_asymmetric_jwt_token,
     generate_jwt_token,
     generate_latest_version_payload,
     generate_unversioned_payload,
@@ -191,18 +192,12 @@ class JWTDecodeHandlerTests(TestCase):
 
             patched_log.exception.assert_any_call("Token verification failed.")
 
-    def test_failure_decode_asymmetric(self):
+    def test_success_asymmetric_jwt_decode(self):
         """
-        Verifies the function logs decode failures when provided a symmetric token to asymmetric decode method,
-        and raises an InvalidTokenError if token is symmetric
+        Validates that a valid asymmetric token is properly decoded
         """
-        # Create valid token symmetric jwt token and use asymmetric method to decode.
-        with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
-            with self.assertRaises(jwt.InvalidTokenError):
-                token = generate_jwt_token(self.payload)
-                get_asymmetric_only_jwt_decode_handler(token)
-
-            patched_log.exception.assert_any_call("Token verification failed.")
+        token = generate_asymmetric_jwt_token(self.payload)
+        self.assertEqual(get_asymmetric_only_jwt_decode_handler(token), self.payload)
 
 
 def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument

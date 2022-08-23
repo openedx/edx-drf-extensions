@@ -2,6 +2,9 @@
 from time import time
 
 import jwt
+import json
+from jwkest import jwk
+from jwkest.jws import JWS
 from django.conf import settings
 
 
@@ -24,6 +27,20 @@ def generate_jwt_token(payload, signing_key=None):
     """
     signing_key = signing_key or settings.JWT_AUTH['JWT_ISSUERS'][0]['SECRET_KEY']
     return jwt.encode(payload, signing_key)
+
+
+def generate_asymmetric_jwt_token(payload):
+    """
+    Generate a valid asymmetric JWT token for authenticated requests.
+    """
+    keys = jwk.KEYS()
+    serialized_keypair = json.loads(settings.JWT_AUTH['JWT_PRIVATE_SIGNING_JWK'])
+    keys.add(serialized_keypair)
+    algorithm = settings.JWT_AUTH['JWT_SIGNING_ALGORITHM']
+
+    data = json.dumps(payload)
+    jws = JWS(data, alg=algorithm)
+    return jws.sign_compact(keys=keys)
 
 
 def generate_latest_version_payload(user, scopes=None, filters=None, version=None,

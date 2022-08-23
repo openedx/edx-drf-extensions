@@ -35,7 +35,7 @@ def jwt_decode_handler(token, decode_symmetric_token=True):
     Notes:
         * Requires "exp" and "iat" claims to be present in the token's payload.
         * Aids debugging by logging InvalidTokenError log entries when decoding fails.
-        * Setting for JWT_DECODE_HANDLER expects a single argument, token. The new argument i.e. decode_symmetric_token
+        * Setting for JWT_DECODE_HANDLER expects a single argument, token. The argument decode_symmetric_token
           is for internal use only.
 
     Examples:
@@ -91,8 +91,7 @@ def get_asymmetric_only_jwt_decode_handler(token):
        can go away once the DEPR for symmetrically signed JWTs is complete:
        https://github.com/openedx/public-engineering/issues/83
     """
-    api_setting_jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
-    return api_setting_jwt_decode_handler(token, decode_symmetric_token=False)
+    return jwt_decode_handler(token, decode_symmetric_token=False)
 
 
 def decode_jwt_scopes(token):
