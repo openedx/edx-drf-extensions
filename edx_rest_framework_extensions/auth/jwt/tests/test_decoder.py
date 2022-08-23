@@ -11,6 +11,7 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
     decode_jwt_filters,
     decode_jwt_is_restricted,
     decode_jwt_scopes,
+    get_asymmetric_only_jwt_decode_handler,
     jwt_decode_handler,
 )
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
@@ -179,14 +180,27 @@ class JWTDecodeHandlerTests(TestCase):
 
     def test_failure_decode_symmetric_set_as_False(self):
         """
-        Verifies the function logs decode failures with symmetric tken set as false,
+        Verifies the function logs decode failures with symmetric token set as false,
         and raises an InvalidTokenError if token is symmetric
         """
-        # Create valid token symmetric jwt token and set decode_symmetric_token as False .
+        # Create valid token symmetric jwt token and set decode_symmetric_token as False.
         with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
             with self.assertRaises(jwt.InvalidTokenError):
                 token = generate_jwt_token(self.payload)
                 jwt_decode_handler(token, decode_symmetric_token=False)
+
+            patched_log.exception.assert_any_call("Token verification failed.")
+
+    def test_failure_decode_asymmetric(self):
+        """
+        Verifies the function logs decode failures when provided a symmetric token to asymmetric decode method,
+        and raises an InvalidTokenError if token is symmetric
+        """
+        # Create valid token symmetric jwt token and use asymmetric method to decode.
+        with mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.logger') as patched_log:
+            with self.assertRaises(jwt.InvalidTokenError):
+                token = generate_jwt_token(self.payload)
+                get_asymmetric_only_jwt_decode_handler(token)
 
             patched_log.exception.assert_any_call("Token verification failed.")
 
