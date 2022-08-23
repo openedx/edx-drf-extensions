@@ -1,11 +1,11 @@
 """ Utility functions for tests. """
+import json
 from time import time
 
 import jwt
-import json
+from django.conf import settings
 from jwkest import jwk
 from jwkest.jws import JWS
-from django.conf import settings
 
 
 def generate_jwt(user, scopes=None, filters=None, is_restricted=None):
