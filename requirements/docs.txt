@@ -12,7 +12,7 @@ certifi==2022.6.15
     # via
     #   -c requirements/test.txt
     #   requests
-charset-normalizer==2.1.0
+charset-normalizer==2.1.1
     # via
     #   -c requirements/test.txt
     #   requests
@@ -74,7 +74,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==1.26.11
+urllib3==1.26.12
     # via
     #   -c requirements/test.txt
     #   requests
