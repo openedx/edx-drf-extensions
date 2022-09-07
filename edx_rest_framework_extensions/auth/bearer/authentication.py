@@ -107,7 +107,7 @@ class BearerAuthentication(BaseAuthentication):
 
         try:
             headers = {'Authorization': f'Bearer {token}'}
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers)  # pylint: disable=missing-timeout
         except requests.RequestException as error:
             logger.exception('Failed to retrieve user info due to a request exception.')
             raise UserInfoRetrievalFailed from error
