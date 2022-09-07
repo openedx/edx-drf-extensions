@@ -197,13 +197,10 @@ class JwtAuthenticationTests(TestCase):
         )
 
     def test_authenticate_with_disabled_user(self):
-        """"""
+        """ Verify an AuthenticationFailed exception is raised if user is disabled. """
         jwt_token = self._get_test_jwt_token()
         request = RequestFactory().get('/', HTTP_AUTHORIZATION=jwt_token)
-
-        username = 'ckramer'
-        email = 'ckramer@hotmail.com'
-        user = factories.UserFactory(email=email, username=username, is_staff=False)
+        user = factories.UserFactory()
 
         with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=(user, "mock-auth")):
             with mock.patch.object(User, 'has_usable_password', return_value=False):
