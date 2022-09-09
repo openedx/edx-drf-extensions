@@ -177,16 +177,11 @@ class JwtAuthenticationTests(TestCase):
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_csrf_protected(self, mock_set_custom_attribute):
         """ Verify authenticate exception for CSRF protected cases. """
-
-        username = 'ckramer'
-        email = 'ckramer@hotmail.com'
-        user = factories.UserFactory(email=email, username=username, is_staff=False)
-
         request = RequestFactory().post('/')
 
         request.META[USE_JWT_COOKIE_HEADER] = 'true'
 
-        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=(user, "mock-auth")):
+        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=('mock-user', "mock-auth")):
             with self.assertRaises(PermissionDenied) as context_manager:
                 JwtAuthentication().authenticate(request)
 
@@ -195,18 +190,6 @@ class JwtAuthenticationTests(TestCase):
             'jwt_auth_failed',
             "Exception:PermissionDenied('CSRF Failed: CSRF cookie not set.')",
         )
-
-    def test_authenticate_with_disabled_user(self):
-        """ Verify an AuthenticationFailed exception is raised if user is disabled. """
-        jwt_token = self._get_test_jwt_token()
-        request = RequestFactory().get('/', HTTP_AUTHORIZATION=jwt_token)
-        user = factories.UserFactory()
-
-        with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=(user, "mock-auth")):
-            with mock.patch.object(User, 'has_usable_password', return_value=False):
-                with self.assertRaises(AuthenticationFailed) as auth_failure:
-                    JwtAuthentication().authenticate(request)
-                self.assertEqual(auth_failure.exception.detail, 'User is disabled.')
 
     @ddt.data(True, False)
     def test_get_decoded_jwt_from_auth(self, is_jwt_authentication):

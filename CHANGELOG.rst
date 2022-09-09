@@ -12,6 +12,22 @@ Change Log
 Unreleased
 ----------
 
+[8.3.1] - 2022-09-09
+--------------------
+
+Fixed
+~~~~~~~
+
+* Fixed disabled user error by reverting change to JwtAuthentication.
+
+[8.3.0] - 2022-09-07
+--------------------
+
+Changed
+~~~~~~~
+
+* JwtAuthentication will fail for disabled users (with unusable password).
+
 [8.2.0] - 2022-08-24
 --------------------
 

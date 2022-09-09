@@ -67,15 +67,6 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             if not user_and_auth:
                 return user_and_auth
 
-            # Fail authentication if user disabled
-            user = user_and_auth[0]
-            if user and isinstance(user, get_user_model()):
-                if not user.has_usable_password():
-                    log_message = 'User id {} attempted JWT authentication after being disabled by ' \
-                                  'an admin.'.format(user.id)
-                    logger.exception(log_message)
-                    raise exceptions.AuthenticationFailed('User is disabled.')
-
             # Not using JWT cookies, CSRF validation not required
             use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
             if not use_jwt_cookie_requested:
