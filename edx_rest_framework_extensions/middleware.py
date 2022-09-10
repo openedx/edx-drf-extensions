@@ -127,7 +127,7 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
             if user_agent:
                 # Example agent string from edx-rest-api-client:
                 #    python-requests/2.9.1 edx-rest-api-client/1.7.2 ecommerce
-                #    See https://github.com/edx/edx-rest-api-client/commit/692903c30b157f7a4edabc2f53aae1742db3a019
+                #    See https://github.com/openedx/edx-rest-api-client/commit/692903c30b157f7a4edabc2f53aae1742db3a019
                 user_agent_parts = user_agent.split()
                 if len(user_agent_parts) == 3 and user_agent_parts[1].startswith('edx-rest-api-client/'):
                     monitoring.set_custom_attribute('request_client_name', user_agent_parts[2])

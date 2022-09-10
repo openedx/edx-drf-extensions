@@ -129,7 +129,7 @@ Updated
 
   * Deprecated RequestMetricsMiddleware due to rename.  Use RequestCustomAttributesMiddleware instead.
 
-.. _`decision (ADR) captured in edx-django-utils`: https://github.com/edx/edx-django-utils/blob/master/edx_django_utils/monitoring/docs/decisions/0002-custom-monitoring-language.rst
+.. _`decision (ADR) captured in edx-django-utils`: https://github.com/openedx/edx-django-utils/blob/master/edx_django_utils/monitoring/docs/decisions/0002-custom-monitoring-language.rst
 
 [6.1.2] - 2020-07-19
 --------------------

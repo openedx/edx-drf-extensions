@@ -110,7 +110,7 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
     - This middleware must be added before JwtAuthCookieMiddleware.
     - Only affects endpoints using the LoginRedirectIfUnauthenticated permission class.
 
-    See https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions/0009-jwt-in-session-cookie.rst  # noqa E501 line too long
+    See https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions/0009-jwt-in-session-cookie.rst  # noqa E501 line too long
     """
     def get_login_url(self, request):  # pylint: disable=unused-argument
         """
@@ -181,7 +181,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
     by the JwtAuthentication class.
 
     See the full decision here:
-        https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions/0009-jwt-in-session-cookie.rst
+        https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions/0009-jwt-in-session-cookie.rst
 
     Also, sets the custom attribute 'request_jwt_cookie' with one of the following values:
         'success': Value when reconstitution is successful.
