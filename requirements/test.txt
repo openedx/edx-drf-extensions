@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.12.9
+astroid==2.12.10
     # via
     #   pylint
     #   pylint-celery
@@ -72,7 +72,7 @@ django-waffle==3.0.0
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.txt
-edx-django-utils==5.0.1
+edx-django-utils==5.1.0
     # via -r requirements/base.txt
 edx-lint==5.3.0
     # via -r requirements/test.in
@@ -80,7 +80,7 @@ edx-opaque-keys==2.3.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==14.2.0
+faker==14.2.1
     # via factory-boy
 filelock==3.8.0
     # via
@@ -150,11 +150,11 @@ pycryptodomex==3.15.0
     #   pyjwkest
 pyjwkest==1.4.2
     # via -r requirements/base.txt
-pyjwt[crypto]==2.4.0
+pyjwt[crypto]==2.5.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-pylint==2.15.2
+pylint==2.15.3
     # via
     #   edx-lint
     #   pylint-celery
@@ -234,6 +234,10 @@ tomlkit==0.11.4
     # via pylint
 tox==3.26.0
     # via -r requirements/test.in
+types-cryptography==3.3.23
+    # via
+    #   -r requirements/base.txt
+    #   pyjwt
 typing-extensions==4.3.0
     # via
     #   astroid
