@@ -6,7 +6,7 @@
 #
 asgiref==3.5.2
     # via django
-certifi==2022.9.14
+certifi==2022.9.24
     # via requests
 cffi==1.15.1
     # via
@@ -46,7 +46,7 @@ future==0.18.2
     # via pyjwkest
 idna==3.4
     # via requests
-newrelic==8.1.0.180
+newrelic==8.2.0.181
     # via edx-django-utils
 pbr==5.10.0
     # via stevedore
@@ -83,7 +83,7 @@ six==1.16.0
     #   -r requirements/base.in
     #   pyjwkest
     #   python-dateutil
-sqlparse==0.4.2
+sqlparse==0.4.3
     # via django
 stevedore==4.0.0
     # via
