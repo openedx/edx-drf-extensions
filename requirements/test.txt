@@ -192,7 +192,7 @@ python-dateutil==2.8.2
     #   faker
 python-slugify==6.1.2
     # via code-annotations
-pytz==2022.2.1
+pytz==2022.4
     # via
     #   -r requirements/base.txt
     #   django
@@ -238,7 +238,7 @@ types-cryptography==3.3.23
     # via
     #   -r requirements/base.txt
     #   pyjwt
-typing-extensions==4.3.0
+typing-extensions==4.4.0
     # via
     #   astroid
     #   pylint
