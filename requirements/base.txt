@@ -38,7 +38,7 @@ djangorestframework==3.14.0
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==5.1.0
+edx-django-utils==5.2.0
     # via -r requirements/base.in
 edx-opaque-keys==2.3.0
     # via -r requirements/base.in
@@ -46,7 +46,7 @@ future==0.18.2
     # via pyjwkest
 idna==3.4
     # via requests
-newrelic==8.2.0.181
+newrelic==8.2.1
     # via edx-django-utils
 pbr==5.10.0
     # via stevedore
@@ -85,7 +85,7 @@ six==1.16.0
     #   python-dateutil
 sqlparse==0.4.3
     # via django
-stevedore==4.0.0
+stevedore==4.0.1
     # via
     #   edx-django-utils
     #   edx-opaque-keys
