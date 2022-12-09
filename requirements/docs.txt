@@ -8,7 +8,7 @@ alabaster==0.7.12
     # via sphinx
 babel==2.11.0
     # via sphinx
-certifi==2022.9.24
+certifi==2022.12.7
     # via
     #   -c requirements/test.txt
     #   requests
@@ -36,16 +36,12 @@ markupsafe==2.1.1
     # via
     #   -c requirements/test.txt
     #   jinja2
-packaging==21.3
+packaging==22.0
     # via
     #   -c requirements/test.txt
     #   sphinx
 pygments==2.13.0
     # via sphinx
-pyparsing==3.0.9
-    # via
-    #   -c requirements/test.txt
-    #   packaging
 pytz==2022.6
     # via
     #   -c requirements/test.txt
