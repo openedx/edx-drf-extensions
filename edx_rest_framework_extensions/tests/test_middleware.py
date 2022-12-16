@@ -112,7 +112,7 @@ class TestRequestCustomAttributesMiddleware(TestCase):
         mock_set_custom_attribute.assert_any_call('request_auth_type_guess', 'session-or-other')
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
-    def test_request_user_id_attribute(self, mock_set_custom_attribute):
+    def test_enduser_id_attribute(self, mock_set_custom_attribute):
         self.request.user = UserFactory()
 
         self.middleware.process_response(self.request, None)
@@ -125,7 +125,7 @@ class TestRequestCustomAttributesMiddleware(TestCase):
         mock_set_custom_attribute.assert_has_calls(expected_calls, any_order=True)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
-    def test_request_user_id_attribute_with_exception(self, mock_set_custom_attribute):
+    def test_enduser_id_attribute_with_exception(self, mock_set_custom_attribute):
         self.request.user = UserFactory()
 
         self.middleware.process_exception(self.request, None)
