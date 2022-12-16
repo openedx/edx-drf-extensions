@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[8.4.0] - 2022-12-16
+--------------------
+
+Added
+~~~~~
+
+* Added custom attribute enduser.id, following OpenTelemetry convention. This works with some New Relic automatic tooling around users. The old custom attribute request_user_id should be considered deprecated.
+
 [8.3.1] - 2022-09-09
 --------------------
 

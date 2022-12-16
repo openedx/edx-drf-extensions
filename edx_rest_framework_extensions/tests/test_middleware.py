@@ -116,20 +116,26 @@ class TestRequestCustomAttributesMiddleware(TestCase):
         self.request.user = UserFactory()
 
         self.middleware.process_response(self.request, None)
-        mock_set_custom_attribute.assert_any_call('request_user_id', self.request.user.id)
-        mock_set_custom_attribute.assert_any_call(
-            'request_authenticated_user_found_in_middleware', 'process_response'
-        )
+
+        expected_calls = [
+            call('enduser.id', self.request.user.id),
+            call('request_user_id', self.request.user.id),
+            call('request_authenticated_user_found_in_middleware', 'process_response'),
+        ]
+        mock_set_custom_attribute.assert_has_calls(expected_calls, any_order=True)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_user_id_attribute_with_exception(self, mock_set_custom_attribute):
         self.request.user = UserFactory()
 
         self.middleware.process_exception(self.request, None)
-        mock_set_custom_attribute.assert_any_call('request_user_id', self.request.user.id)
-        mock_set_custom_attribute.assert_any_call(
-            'request_authenticated_user_found_in_middleware', 'process_exception'
-        )
+
+        expected_calls = [
+            call('enduser.id', self.request.user.id),
+            call('request_user_id', self.request.user.id),
+            call('request_authenticated_user_found_in_middleware', 'process_exception'),
+        ]
+        mock_set_custom_attribute.assert_has_calls(expected_calls, any_order=True)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_authenticated_user_found_in_process_request(self, mock_set_custom_attribute):

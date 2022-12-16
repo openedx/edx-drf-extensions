@@ -98,12 +98,17 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
 
     def _set_request_user_id_attribute(self, request):
         """
-        Add request_user_id custom attribute
-
-        Custom Attributes:
-             request_user_id
+        Add enduser.id (and request_user_id) custom attributes.
         """
         if hasattr(request, 'user') and hasattr(request.user, 'id') and request.user.id:
+            # .. custom_attribute_name: enduser.id
+            # .. custom_attribute_description: The user's id when available. The name enduser.id is an
+            #   OpenTelemetry convention that works with some of New Relic's tooling. See
+            #   https://docs.newrelic.com/docs/errors-inbox/error-users-impacted/
+            monitoring.set_custom_attribute('enduser.id', request.user.id)
+            # .. custom_attribute_name: request_user_id
+            # .. custom_attribute_description: The user's id when available. This duplicates enduser.id,
+            #   and could be deprecated/removed.
             monitoring.set_custom_attribute('request_user_id', request.user.id)
 
     def _set_request_referer_attribute(self, request):
