@@ -100,7 +100,7 @@ idna==3.4
     #   requests
 iniconfig==1.1.1
     # via pytest
-isort==5.10.1
+isort==5.11.2
     # via
     #   -r requirements/test.in
     #   pylint
