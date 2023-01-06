@@ -2,6 +2,7 @@
 
 # Make sure we don't generate requirements that conflict
 # with test.txt, otherwise dev.txt will fail to generate.
+-c constraints.txt
 -c test.txt
 
 Sphinx>=1.3.6

@@ -26,7 +26,7 @@ idna==3.4
     #   requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==5.2.0
+importlib-metadata==6.0.0
     # via sphinx
 jinja2==3.1.2
     # via
@@ -40,7 +40,7 @@ packaging==22.0
     # via
     #   -c requirements/test.txt
     #   sphinx
-pygments==2.13.0
+pygments==2.14.0
     # via sphinx
 pytz==2022.7
     # via
@@ -54,6 +54,7 @@ snowballstemmer==2.2.0
     # via sphinx
 sphinx==5.3.0
     # via
+    #   -c requirements/constraints.txt
     #   -r requirements/docs.in
     #   sphinx-rtd-theme
 sphinx-rtd-theme==1.1.1
