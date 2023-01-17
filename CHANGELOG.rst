@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[8.4.1] - 2022-12-18
+--------------------
+
+Added
+~~~~~
+
+* Additional logging in `authenticate_credentials` within the JWT authentication middleware for debugging purposes.
+
 [8.4.0] - 2022-12-16
 --------------------
 

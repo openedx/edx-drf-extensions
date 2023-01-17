@@ -167,7 +167,7 @@ class JwtAuthenticationTests(TestCase):
                     JwtAuthentication().authenticate_credentials,
                     {'username': 'test', 'email': 'test@example.com'}
                 )
-                logger.assert_called_with('User retrieval failed.')
+                logger.assert_called_with('[edx-drf-extensions] User retrieval failed for username test.')
 
     def test_authenticate_credentials_no_usernames(self):
         """ Verify an AuthenticationFailed exception is raised if the payload contains no username claim. """
