@@ -98,8 +98,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         if username is None:
             raise exceptions.AuthenticationFailed('JWT must include a preferred_username or username claim!')
         try:
-            user, created = get_user_model().objects.get_or_create(username=username)
-            logger.info(f"User {user.id} found for username {username} (created?: {created}")
+            user, __ = get_user_model().objects.get_or_create(username=username)
             attributes_updated = False
             attribute_map = self.get_jwt_claim_attribute_map()
             attributes_to_merge = self.get_jwt_claim_mergeable_attributes()
