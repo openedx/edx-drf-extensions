@@ -60,7 +60,7 @@ code-annotations==1.3.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==7.0.5
+coverage[toml]==7.1.0
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -128,7 +128,7 @@ exceptiongroup==1.1.0
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==16.6.0
+faker==16.6.1
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -337,7 +337,7 @@ sphinx==5.3.0
     #   sphinx-rtd-theme
 sphinx-rtd-theme==1.1.1
     # via -r requirements/docs.txt
-sphinxcontrib-applehelp==1.0.3
+sphinxcontrib-applehelp==1.0.4
     # via
     #   -r requirements/docs.txt
     #   sphinx
