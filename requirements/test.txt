@@ -8,7 +8,7 @@ asgiref==3.6.0
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.13.3
+astroid==2.14.1
     # via
     #   pylint
     #   pylint-celery
@@ -100,7 +100,7 @@ idna==3.4
     #   requests
 iniconfig==2.0.0
     # via pytest
-isort==5.11.4
+isort==5.12.0
     # via
     #   -r requirements/test.in
     #   pylint
@@ -144,7 +144,7 @@ pycparser==2.21
     # via
     #   -r requirements/base.txt
     #   cffi
-pycryptodomex==3.16.0
+pycryptodomex==3.17
     # via
     #   -r requirements/base.txt
     #   pyjwkest
@@ -154,7 +154,7 @@ pyjwt[crypto]==2.6.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-pylint==2.15.10
+pylint==2.16.1
     # via
     #   edx-lint
     #   pylint-celery
@@ -188,7 +188,7 @@ python-dateutil==2.8.2
     # via
     #   -r requirements/base.txt
     #   faker
-python-slugify==7.0.0
+python-slugify==8.0.0
     # via code-annotations
 pytz==2022.7.1
     # via
