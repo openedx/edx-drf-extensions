@@ -5,15 +5,13 @@ In most of this module, "decode" refers to both verifying and unpacking a JWT,
 as a unified operation. (Reading the contents of an unverified JWT would be
 a security risk in the general case.)
 """
-import json
 import logging
 import sys
 
 import jwt
-from cryptojwt.jwk.hmac import SYMKey
-from cryptojwt.jws.jws import JWS
-from cryptojwt.key_bundle import KeyBundle
 from django.conf import settings
+from jwkest.jwk import KEYS
+from jwkest.jws import JWS
 from rest_framework_jwt.settings import api_settings
 from semantic_version import Version
 
@@ -177,7 +175,7 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     key_set = _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=decode_symmetric_token)
 
     try:
-        _ = JWS().verify_compact(token, key_set.keys())
+        _ = JWS().verify_compact(token, key_set)
     except Exception as token_error:
         logger.exception('Token verification failed.')
         exc_info = sys.exc_info()
@@ -223,16 +221,15 @@ def _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=True):
     Returns a JWK Keyset containing all active keys that are configured
     for verifying signatures.
     """
-    key_set = KeyBundle()
+    key_set = KEYS()
 
     # asymmetric keys
     signing_jwk_set = settings.JWT_AUTH.get('JWT_PUBLIC_SIGNING_JWK_SET')
     if signing_jwk_set:
-        key_set.append(KeyBundle(json.loads(signing_jwk_set)))
+        key_set.load_jwks(signing_jwk_set)
 
     if add_symmetric_keys:
         # symmetric key
-        _sym = SYMKey(**{'key': jwt_issuer['SECRET_KEY'], 'kty': 'oct', 'use': 'sig'})
-        key_set.append(_sym)
+        key_set.add({'key': jwt_issuer['SECRET_KEY'], 'kty': 'oct'})
 
     return key_set
