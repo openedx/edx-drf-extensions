@@ -1,5 +1,6 @@
 -c constraints.txt
 
+cryptojwt
 Django>=2.2
 djangorestframework>=3.9.0
 drf-jwt
