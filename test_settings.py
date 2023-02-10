@@ -43,7 +43,7 @@ JWT_AUTH = {
 
     'JWT_LEEWAY': 1,
 
-    'JWT_SECRET_KEY': 'test-key',
+    'JWT_SECRET_KEY': 'secure-jwt-test-key',
 
     'JWT_PUBLIC_SIGNING_JWK_SET': (
         '{"keys": [{"kid": "BTZ9HA6K", "e": "AQAB", "kty": "RSA", "n": "o5cn3ljSRi6FaDEKTn0PS-oL9EFyv1pI7dRgffQLD1qf5D6'
@@ -81,12 +81,12 @@ JWT_AUTH = {
     'JWT_ISSUERS': [
         {
             'ISSUER': 'test-issuer-1',
-            'SECRET_KEY': 'test-secret-key',
+            'SECRET_KEY': 'secure-test-secret-key',
             'AUDIENCE': 'test-audience',
         },
         {
             'ISSUER': 'test-issuer-2',
-            'SECRET_KEY': 'test-secret-key',
+            'SECRET_KEY': 'secure-test-secret-key',
             'AUDIENCE': 'test-audience',
         }
     ],

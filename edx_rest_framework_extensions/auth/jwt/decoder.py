@@ -176,8 +176,10 @@ def _set_token_defaults(token):
 def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     key_set = _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=decode_symmetric_token)
 
+    alg = 'HS256' if decode_symmetric_token else 'RS512'
+
     try:
-        _ = JWS().verify_compact(token, key_set.keys())
+        _ = JWS(alg=alg).verify_compact(token, key_set.keys())
     except Exception as token_error:
         logger.exception('Token verification failed.')
         exc_info = sys.exc_info()
@@ -228,7 +230,7 @@ def _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=True):
     # asymmetric keys
     signing_jwk_set = settings.JWT_AUTH.get('JWT_PUBLIC_SIGNING_JWK_SET')
     if signing_jwk_set:
-        key_set.append(KeyBundle(json.loads(signing_jwk_set)))
+        key_set.extend(KeyBundle(json.loads(signing_jwk_set)))
 
     if add_symmetric_keys:
         # symmetric key
