@@ -16,7 +16,7 @@ charset-normalizer==3.0.1
     # via
     #   -c requirements/test.txt
     #   requests
-docutils==0.17.1
+docutils==0.18.1
     # via
     #   sphinx
     #   sphinx-rtd-theme
@@ -58,14 +58,16 @@ sphinx==5.3.0
     #   -c requirements/constraints.txt
     #   -r requirements/docs.in
     #   sphinx-rtd-theme
-sphinx-rtd-theme==1.1.1
+sphinx-rtd-theme==1.2.0
     # via -r requirements/docs.in
 sphinxcontrib-applehelp==1.0.4
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
     # via sphinx
-sphinxcontrib-htmlhelp==2.0.0
+sphinxcontrib-htmlhelp==2.0.1
     # via sphinx
+sphinxcontrib-jquery==2.0.0
+    # via sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-qthelp==1.0.3
@@ -76,5 +78,8 @@ urllib3==1.26.14
     # via
     #   -c requirements/test.txt
     #   requests
-zipp==3.11.0
+zipp==3.13.0
     # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools

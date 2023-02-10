@@ -8,7 +8,7 @@ asgiref==3.6.0
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.13.3
+astroid==2.14.1
     # via
     #   pylint
     #   pylint-celery
@@ -42,7 +42,7 @@ coverage[toml]==7.1.0
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==39.0.0
+cryptography==39.0.1
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -82,7 +82,7 @@ exceptiongroup==1.1.0
     # via pytest
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==16.6.1
+faker==16.8.1
     # via factory-boy
 filelock==3.9.0
     # via
@@ -100,7 +100,7 @@ idna==3.4
     #   requests
 iniconfig==2.0.0
     # via pytest
-isort==5.11.4
+isort==5.12.0
     # via
     #   -r requirements/test.in
     #   pylint
@@ -112,7 +112,7 @@ markupsafe==2.1.2
     # via jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==8.5.0
+newrelic==8.6.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -124,7 +124,7 @@ pbr==5.11.1
     # via
     #   -r requirements/base.txt
     #   stevedore
-platformdirs==2.6.2
+platformdirs==3.0.0
     # via
     #   pylint
     #   virtualenv
@@ -144,7 +144,7 @@ pycparser==2.21
     # via
     #   -r requirements/base.txt
     #   cffi
-pycryptodomex==3.16.0
+pycryptodomex==3.17
     # via
     #   -r requirements/base.txt
     #   pyjwkest
@@ -154,7 +154,7 @@ pyjwt[crypto]==2.6.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-pylint==2.15.10
+pylint==2.16.1
     # via
     #   edx-lint
     #   pylint-celery
@@ -188,7 +188,7 @@ python-dateutil==2.8.2
     # via
     #   -r requirements/base.txt
     #   faker
-python-slugify==7.0.0
+python-slugify==8.0.0
     # via code-annotations
 pytz==2022.7.1
     # via
@@ -242,7 +242,7 @@ urllib3==1.26.14
     # via
     #   -r requirements/base.txt
     #   requests
-virtualenv==20.17.1
+virtualenv==20.19.0
     # via tox
 wrapt==1.14.1
     # via astroid

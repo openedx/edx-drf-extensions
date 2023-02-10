@@ -60,7 +60,9 @@ class IsUserInUrlTests(TestCase):
         request = RequestFactory().get(url)
         request.user = user
         if username_in_resource:
-            request.parser_context = dict(kwargs=dict(username=username_in_resource))
+            request.parser_context = {
+                "kwargs": {"username": username_in_resource}
+            }
         return request
 
     @ddt.data(True, False)
@@ -290,32 +292,32 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
 
     @ddt.data(
         # unrestricted
-        dict(
-            is_restricted=False,
-            is_user_in_url=True,
-            expected_response=200,
-            expected_log=JwtIsUnrestrictedDebugLog
-        ),
-        dict(
-            is_restricted=False,
-            is_user_in_url=False,
-            expected_response=403,
-            expected_log=IsUserInUrlLog
-        ),
+        {
+            "is_restricted": False,
+            "is_user_in_url": True,
+            "expected_response": 200,
+            "expected_log": JwtIsUnrestrictedDebugLog
+        },
+        {
+            "is_restricted": False,
+            "is_user_in_url": False,
+            "expected_response": 403,
+            "expected_log": IsUserInUrlLog
+        },
 
         # restricted (note: further test cases for scopes and filters are in tests below)
-        dict(
-            is_restricted=True,
-            is_user_in_url=True,
-            expected_response=403,
-            expected_log=JwtScopesErrorLog
-        ),
-        dict(
-            is_restricted=True,
-            is_user_in_url=False,
-            expected_response=403,
-            expected_log=JwtScopesErrorLog
-        ),
+        {
+            "is_restricted": True,
+            "is_user_in_url": True,
+            "expected_response": 403,
+            "expected_log": JwtScopesErrorLog
+        },
+        {
+            "is_restricted": True,
+            "is_user_in_url": False,
+            "expected_response": 403,
+            "expected_log": JwtScopesErrorLog
+        },
     )
     @ddt.unpack
     def test_jwt_without_scopes_and_filters(
@@ -340,12 +342,24 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
 
     @ddt.data(
         # valid scopes
-        dict(scopes=['required_scope'], expected_response=200, expected_log=JwtIsRestrictedDebugLog),
-        dict(scopes=['required_scope', 'another_scope'], expected_response=200, expected_log=JwtIsRestrictedDebugLog),
+        {
+            "scopes": ['required_scope'], "expected_response": 200,
+            "expected_log": JwtIsRestrictedDebugLog
+        },
+        {
+            "scopes": ['required_scope', 'another_scope'],
+            "expected_response": 200, "expected_log": JwtIsRestrictedDebugLog
+        },
 
         # invalid scopes
-        dict(scopes=[], expected_response=403, expected_log=JwtScopesErrorLog),
-        dict(scopes=['another_scope'], expected_response=403, expected_log=JwtScopesErrorLog),
+        {
+            "scopes": [], "expected_response": 403,
+            "expected_log": JwtScopesErrorLog
+        },
+        {
+            "scopes": ['another_scope'], "expected_response": 403,
+            "expected_log": JwtScopesErrorLog
+        },
     )
     @ddt.unpack
     def test_jwt_scopes(self, scopes, expected_response, expected_log):
@@ -359,23 +373,23 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
 
     @ddt.data(
         # valid org filters
-        dict(
-            filters=['content_org:some_org', 'content_org:another_org'],
-            expected_response=200,
-            expected_log=JwtIsRestrictedDebugLog
-        ),
+        {
+            "filters": ['content_org:some_org', 'content_org:another_org'],
+            "expected_response": 200,
+            "expected_log": JwtIsRestrictedDebugLog
+        },
 
         # invalid org filters
-        dict(
-            filters=['content_org:another_org'],
-            expected_response=403,
-            expected_log=JwtOrgFilterErrorLog
-        ),
-        dict(
-            filters=[],
-            expected_response=403,
-            expected_log=JwtOrgFilterErrorLog
-        ),
+        {
+            "filters": ['content_org:another_org'],
+            "expected_response": 403,
+            "expected_log": JwtOrgFilterErrorLog
+        },
+        {
+            "filters": [],
+            "expected_response": 403,
+            "expected_log": JwtOrgFilterErrorLog
+        },
     )
     @ddt.unpack
     def test_jwt_org_filters(self, filters, expected_response, expected_log):
@@ -389,23 +403,23 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
 
     @ddt.data(
         # valid user filters
-        dict(
-            user_filters=['user:me'], is_user_in_url=True,
-            expected_response=200,
-            expected_log=JwtIsRestrictedDebugLog,
-        ),
+        {
+            "user_filters": ['user:me'], "is_user_in_url": True,
+            "expected_response": 200,
+            "expected_log": JwtIsRestrictedDebugLog,
+        },
 
         # invalid user filters
-        dict(
-            user_filters=['user:me'], is_user_in_url=False,
-            expected_response=403,
-            expected_log=JwtUserFilterErrorLog,
-        ),
-        dict(
-            user_filters=['user:another'], is_user_in_url=True,
-            expected_response=403,
-            expected_log=JwtUserFilterErrorLog,
-        ),
+        {
+            "user_filters": ['user:me'], "is_user_in_url": False,
+            "expected_response": 403,
+            "expected_log": JwtUserFilterErrorLog,
+        },
+        {
+            "user_filters": ['user:another'], "is_user_in_url": True,
+            "expected_response": 403,
+            "expected_log": JwtUserFilterErrorLog,
+        },
     )
     @ddt.unpack
     def test_jwt_user_filters(self, user_filters, is_user_in_url, expected_response, expected_log):
