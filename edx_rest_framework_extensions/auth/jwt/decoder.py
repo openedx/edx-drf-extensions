@@ -13,6 +13,7 @@ import jwt
 from cryptojwt.jwk.hmac import SYMKey
 from cryptojwt.jws.jws import JWS
 from cryptojwt.key_bundle import KeyBundle
+from cryptojwt.simple_jwt import SimpleJWT
 from django.conf import settings
 from rest_framework_jwt.settings import api_settings
 from semantic_version import Version
@@ -175,11 +176,10 @@ def _set_token_defaults(token):
 
 def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     key_set = _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=decode_symmetric_token)
-
-    alg = 'HS256' if decode_symmetric_token else 'RS512'
-
     try:
-        _ = JWS(alg=alg).verify_compact(token, key_set.keys())
+        _jwt = SimpleJWT()
+        _jwt.unpack(token)
+        _ = JWS(alg=_jwt.headers['alg']).verify_compact(token, key_set.keys())
     except Exception as token_error:
         logger.exception('Token verification failed.')
         exc_info = sys.exc_info()
