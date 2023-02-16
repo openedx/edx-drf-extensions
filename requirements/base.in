@@ -12,3 +12,4 @@ python-dateutil>=2.0
 requests>=2.7.0
 semantic_version
 six
+Authlib
