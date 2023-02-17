@@ -13,7 +13,7 @@ asgiref==3.6.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-astroid==2.14.1
+astroid==2.14.2
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -79,7 +79,7 @@ distlib==0.3.6
     # via
     #   -r requirements/test.txt
     #   virtualenv
-django==3.2.17
+django==3.2.18
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
@@ -116,7 +116,7 @@ edx-django-utils==5.2.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-lint==5.3.0
+edx-lint==5.3.2
     # via -r requirements/test.txt
 edx-opaque-keys==2.3.0
     # via
@@ -128,7 +128,7 @@ exceptiongroup==1.1.0
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==16.8.1
+faker==17.0.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -185,7 +185,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==8.6.0
+newrelic==8.7.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -246,7 +246,7 @@ pyjwt[crypto]==2.6.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==2.16.1
+pylint==2.16.2
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -370,7 +370,7 @@ sqlparse==0.4.3
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-stevedore==4.1.1
+stevedore==5.0.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -396,7 +396,7 @@ tox==3.28.0
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/test.txt
-typing-extensions==4.4.0
+typing-extensions==4.5.0
     # via
     #   -r requirements/test.txt
     #   astroid
