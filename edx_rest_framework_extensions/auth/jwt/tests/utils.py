@@ -3,10 +3,9 @@ import json
 from time import time
 
 import jwt
+from authlib.jose.rfc7518.jws_algs import RSAAlgorithm
+from authlib.jose.rfc7518.rsa_key import RSAKey
 from django.conf import settings
-from jwkest import jwk
-from jwkest.jws import JWS
-
 
 def generate_jwt(user, scopes=None, filters=None, is_restricted=None):
     """
@@ -33,14 +32,14 @@ def generate_asymmetric_jwt_token(payload):
     """
     Generate a valid asymmetric JWT token for authenticated requests.
     """
-    keys = jwk.KEYS()
+    import pdb; pdb.set_trace()
     serialized_keypair = json.loads(settings.JWT_AUTH['JWT_PRIVATE_SIGNING_JWK'])
-    keys.add(serialized_keypair)
+    key = RSAKey(serialized_keypair)
     algorithm = settings.JWT_AUTH['JWT_SIGNING_ALGORITHM']
+    rsa_alg = RSAAlgorithm(algorithm[2:])
 
     data = json.dumps(payload)
-    jws = JWS(data, alg=algorithm)
-    return jws.sign_compact(keys=keys)
+    return rsa_alg.sign(data, key)
 
 
 def generate_latest_version_payload(user, scopes=None, filters=None, version=None,
