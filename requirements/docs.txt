@@ -78,7 +78,7 @@ urllib3==1.26.14
     # via
     #   -c requirements/test.txt
     #   requests
-zipp==3.13.0
+zipp==3.14.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
