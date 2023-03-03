@@ -22,7 +22,7 @@ attrs==22.2.0
     # via
     #   -r requirements/test.txt
     #   pytest
-babel==2.11.0
+babel==2.12.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -60,11 +60,11 @@ code-annotations==1.3.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==7.2.0
+coverage[toml]==7.2.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==39.0.1
+cryptography==39.0.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -128,7 +128,7 @@ exceptiongroup==1.1.0
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==17.0.0
+faker==17.5.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -290,7 +290,7 @@ python-dateutil==2.8.2
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   faker
-python-slugify==8.0.0
+python-slugify==8.0.1
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -407,15 +407,15 @@ urllib3==1.26.14
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.19.0
+virtualenv==20.20.0
     # via
     #   -r requirements/test.txt
     #   tox
-wrapt==1.14.1
+wrapt==1.15.0
     # via
     #   -r requirements/test.txt
     #   astroid
-zipp==3.14.0
+zipp==3.15.0
     # via
     #   -r requirements/docs.txt
     #   importlib-metadata
