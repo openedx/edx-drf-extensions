@@ -1,11 +1,9 @@
 """ Utility functions for tests. """
-import json
 from time import time
 
 import jwt
 from django.conf import settings
-from jwkest import jwk
-from jwkest.jws import JWS
+from jwt.api_jwk import PyJWK
 
 
 def generate_jwt(user, scopes=None, filters=None, is_restricted=None):
@@ -33,14 +31,9 @@ def generate_asymmetric_jwt_token(payload):
     """
     Generate a valid asymmetric JWT token for authenticated requests.
     """
-    keys = jwk.KEYS()
-    serialized_keypair = json.loads(settings.JWT_AUTH['JWT_PRIVATE_SIGNING_JWK'])
-    keys.add(serialized_keypair)
+    private_key = PyJWK.from_json(settings.JWT_AUTH['JWT_PRIVATE_SIGNING_JWK'])
     algorithm = settings.JWT_AUTH['JWT_SIGNING_ALGORITHM']
-
-    data = json.dumps(payload)
-    jws = JWS(data, alg=algorithm)
-    return jws.sign_compact(keys=keys)
+    return jwt.encode(payload, key=private_key.key, algorithm=algorithm)
 
 
 def generate_latest_version_payload(user, scopes=None, filters=None, version=None,
