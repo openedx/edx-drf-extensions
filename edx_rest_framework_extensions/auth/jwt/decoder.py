@@ -10,8 +10,8 @@ import sys
 
 import jwt
 from django.conf import settings
-from jwkest.jwk import KEYS
-from jwkest.jws import JWS
+from jwt.api_jwk import PyJWK, PyJWKSet
+from jwt.utils import base64url_encode
 from rest_framework_jwt.settings import api_settings
 from semantic_version import Version
 
@@ -173,9 +173,26 @@ def _set_token_defaults(token):
 
 def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     key_set = _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=decode_symmetric_token)
-
     try:
-        _ = JWS().verify_compact(token, key_set)
+        for i in range(0, len(key_set)):
+            try:
+                algorithms = None
+                if key_set[i].key_type == 'RSA':
+                    algorithms = ['RS512',]
+                elif key_set[i].key_type == 'oct':
+                    algorithms = ['HS256',]
+
+                _ = jwt.decode(
+                        token,
+                        key=key_set[i].key,
+                        algorithms=algorithms,
+                        audience=jwt_issuer['AUDIENCE'],
+                        options={'verify_signature': True}
+                    )
+                break
+            except Exception:  # pylint: disable=broad-except
+                if i == len(key_set) - 1:
+                    raise
     except Exception as token_error:
         logger.exception('Token verification failed.')
         exc_info = sys.exc_info()
@@ -221,15 +238,16 @@ def _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=True):
     Returns a JWK Keyset containing all active keys that are configured
     for verifying signatures.
     """
-    key_set = KEYS()
+    key_set = []
 
     # asymmetric keys
     signing_jwk_set = settings.JWT_AUTH.get('JWT_PUBLIC_SIGNING_JWK_SET')
     if signing_jwk_set:
-        key_set.load_jwks(signing_jwk_set)
+        key_set.extend(PyJWKSet.from_json(signing_jwk_set).keys)
 
     if add_symmetric_keys:
-        # symmetric key
-        key_set.add({'key': jwt_issuer['SECRET_KEY'], 'kty': 'oct'})
+        # symmetric_key
+        encoded_secret_key = base64url_encode(jwt_issuer['SECRET_KEY'].encode('utf-8'))
+        key_set.append(PyJWK({'k': encoded_secret_key, 'kty': 'oct'}))
 
     return key_set
