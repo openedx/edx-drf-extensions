@@ -179,7 +179,7 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
                 _ = jwt.decode(
                         token,
                         key=key_set[i].key,
-                        algorithms=['HS256', 'RS512'],
+                        algorithms=['HS256',],
                         audience=jwt_issuer['AUDIENCE'],
                         options={'verify_signature': True}
                     )
