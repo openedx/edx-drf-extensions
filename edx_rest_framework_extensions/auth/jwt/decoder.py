@@ -178,7 +178,7 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
             try:
                 algorithms = None
                 if key_set[i].key_type == 'RSA':
-                    algorithms = ['RS512',]
+                    algorithms = ['RS256', 'RS512',]
                 elif key_set[i].key_type == 'oct':
                     algorithms = ['HS256',]
 
