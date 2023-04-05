@@ -199,6 +199,23 @@ class JWTDecodeHandlerTests(TestCase):
         token = generate_asymmetric_jwt_token(self.payload)
         self.assertEqual(get_asymmetric_only_jwt_decode_handler(token), self.payload)
 
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.set_custom_attribute')
+    def test_keyset_size_monitoring(self, mock_set_custom_attribute):
+        """
+        Validates that a custom attribute is recorded for the keyset size.
+        """
+        token = generate_asymmetric_jwt_token(self.payload)
+
+        # The secret key is included by default making a list of length 2, but for
+        # asymmetric-only there is only 1 key in the keyset.
+        self.assertEqual(jwt_decode_handler(token), self.payload)
+        self.assertEqual(get_asymmetric_only_jwt_decode_handler(token), self.payload)
+
+        assert mock_set_custom_attribute.call_args_list == [
+            mock.call('jwt_auth_verify_keys_count', 2),
+            mock.call('jwt_auth_verify_keys_count', 1),
+        ]
+
 
 def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument
     """

@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[8.5.0] - 2023-04-05
+--------------------
+
+Added
+~~~~~
+
+* Added ``jwt_auth_verify_keys_count`` custom attribute to aid in key rotations
+
 [8.4.1] - 2022-12-18
 --------------------
 

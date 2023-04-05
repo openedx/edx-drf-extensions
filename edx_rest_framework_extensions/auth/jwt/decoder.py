@@ -10,6 +10,7 @@ import sys
 
 import jwt
 from django.conf import settings
+from edx_django_utils.monitoring import set_custom_attribute
 from jwkest.jwk import KEYS
 from jwkest.jws import JWS
 from rest_framework_jwt.settings import api_settings
@@ -173,6 +174,9 @@ def _set_token_defaults(token):
 
 def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     key_set = _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=decode_symmetric_token)
+    # Reporting the size of the public key list will aid in key rotations: Once all
+    # servers are reporting a larger list, the private key can be changed.
+    set_custom_attribute('jwt_auth_verify_keys_count', len(key_set))
 
     try:
         _ = JWS().verify_compact(token, key_set)
