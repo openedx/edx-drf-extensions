@@ -174,8 +174,12 @@ def _set_token_defaults(token):
 
 def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     key_set = _get_signing_jwk_key_set(jwt_issuer, add_symmetric_keys=decode_symmetric_token)
-    # Reporting the size of the public key list will aid in key rotations: Once all
-    # servers are reporting a larger list, the private key can be changed.
+    # .. custom_attribute_name: jwt_auth_verify_keys_count
+    # .. custom_attribute_description: Number of JWT verification keys in use for this
+    #   verification. Should be same as number of asymmetric public keys, plus one if
+    #   a symmetric key secret is set. This is intended to aid in key rotations; once
+    #   the average count stabilizes at a higher number after adding a public key, it
+    #   should be safe to change the secret key.
     set_custom_attribute('jwt_auth_verify_keys_count', len(key_set))
 
     try:
