@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[8.5.1] - 2023-04-11
+--------------------
+
+Fixed
+~~~~~
+
+* (Hopefully) fixed the ability to publish edx-drf-extensions, but adding a ``long_description`` to setup.py.
+
 [8.5.0] - 2023-04-05
 --------------------
 

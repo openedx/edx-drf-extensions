@@ -88,11 +88,15 @@ def get_version(*file_paths):
 
 VERSION = get_version("edx_rest_framework_extensions", "__init__.py")
 
+README = open(os.path.join(os.path.dirname(__file__), 'README.rst'), encoding="utf8").read()
+CHANGELOG = open(os.path.join(os.path.dirname(__file__), 'CHANGELOG.rst'), encoding="utf8").read()
+
 
 setup(
     name='edx-drf-extensions',
     version=VERSION,
     description='edX extensions of Django REST Framework',
+    long_description=README + '\n\n' + CHANGELOG,
     author='edX',
     author_email='oscm@edx.org',
     url='https://github.com/openedx/edx-drf-extensions',
