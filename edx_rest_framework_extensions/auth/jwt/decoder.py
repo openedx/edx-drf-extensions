@@ -173,6 +173,14 @@ def _set_token_defaults(token):
 
 
 def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
+    """
+    Verifies the JWT signature. Raises InvalidTokenError in the event of an error.
+
+    Arguments:
+        token (str): JWT to be decoded.
+        jwt_issuer (dict): A dict of JWT issuer related settings, containing the symmetric key.
+        decode_symmetric_token (bool): Whether to decode symmetric tokens or not. Pass False for asymmetric tokens only
+    """
     # .. custom_attribute_name: jwt_auth_decode_symmetric_token
     # .. custom_attribute_description: True if symmetric keys will also be used for checking
     #   the JWT signature, and False if only asymmetric keys will be used.
@@ -201,7 +209,7 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
         #   using an asymmetric key.
         set_custom_attribute('jwt_auth_asymmetric_verified', True)
         return
-    except Exception as token_error:
+    except Exception:  # pylint: disable=broad-except
         # Continue to the old code path of trying all keys
         pass
 
