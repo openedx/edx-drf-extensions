@@ -12,6 +12,19 @@ Change Log
 Unreleased
 ----------
 
+[8.6.0] - 2023-04-11
+--------------------
+
+Added
+~~~~~
+
+* Added ``jwt_auth_decode_symmetric_token``, ``jwt_auth_asymmetric_verified``, ``jwt_auth_symmetric_verified``, and ``jwt_auth_verification_failed`` custom attributes to aid in deprecation and removal of symmetric keys.
+
+Changed
+~~~~~~~
+
+* Changed ``jwt_auth_verify_keys_count`` custom attribute to aid in key rotations, to instead be ``jwt_auth_verify_asymmetric_keys_count`` and ``jwt_auth_verify_all_keys_count``. The latter count is only used in the case that the token can't be verified with the asymmetric keys alone.
+
 [8.5.3] - 2023-04-11
 --------------------
 

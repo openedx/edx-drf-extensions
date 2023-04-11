@@ -200,20 +200,32 @@ class JWTDecodeHandlerTests(TestCase):
         self.assertEqual(get_asymmetric_only_jwt_decode_handler(token), self.payload)
 
     @mock.patch('edx_rest_framework_extensions.auth.jwt.decoder.set_custom_attribute')
-    def test_keyset_size_monitoring(self, mock_set_custom_attribute):
+    def test_keyset_size_and_other_monitoring(self, mock_set_custom_attribute):
         """
-        Validates that a custom attribute is recorded for the keyset size.
+        Validates a variety of custom attributes are recorded, including the keyset size.
         """
-        token = generate_asymmetric_jwt_token(self.payload)
+        asymmetric_token = generate_asymmetric_jwt_token(self.payload)
+        symmetric_token = generate_jwt_token(self.payload)
 
         # The secret key is included by default making a list of length 2, but for
         # asymmetric-only there is only 1 key in the keyset.
-        self.assertEqual(jwt_decode_handler(token), self.payload)
-        self.assertEqual(get_asymmetric_only_jwt_decode_handler(token), self.payload)
+        self.assertEqual(jwt_decode_handler(asymmetric_token), self.payload)
+        self.assertEqual(get_asymmetric_only_jwt_decode_handler(asymmetric_token), self.payload)
+        self.assertEqual(jwt_decode_handler(symmetric_token), self.payload)
 
         assert mock_set_custom_attribute.call_args_list == [
-            mock.call('jwt_auth_verify_keys_count', 2),
-            mock.call('jwt_auth_verify_keys_count', 1),
+            mock.call('jwt_auth_decode_symmetric_token', True),
+            mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
+            mock.call('jwt_auth_asymmetric_verified', True),
+
+            mock.call('jwt_auth_decode_symmetric_token', False),
+            mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
+            mock.call('jwt_auth_asymmetric_verified', True),
+
+            mock.call('jwt_auth_decode_symmetric_token', True),
+            mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
+            mock.call('jwt_auth_verify_all_keys_count', 2),
+            mock.call('jwt_auth_symmetric_verified', True),
         ]
 
 
