@@ -19,6 +19,7 @@ Added
 ~~~~~
 
 * Added ``jwt_auth_check_symmetric_key``, ``jwt_auth_asymmetric_verified``, ``jwt_auth_symmetric_verified``, and ``jwt_auth_verification_failed`` custom attributes to aid in deprecation and removal of symmetric keys.
+* Added ``jwt_auth_issuer`` and ``jwt_auth_issuer_verification`` custom attributes.
 
 Changed
 ~~~~~~~
