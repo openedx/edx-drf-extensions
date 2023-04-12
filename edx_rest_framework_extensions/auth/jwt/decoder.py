@@ -205,7 +205,7 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     try:
         _ = JWS().verify_compact(token, key_set)
         # .. custom_attribute_name: jwt_auth_asymmetric_verified
-        # .. custom_attribute_description: The count of JWTs successfully verified
+        # .. custom_attribute_description: Whether the JWT was successfully verified
         #   using an asymmetric key.
         set_custom_attribute('jwt_auth_asymmetric_verified', True)
         return
@@ -230,7 +230,7 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     try:
         _ = JWS().verify_compact(token, key_set)
         # .. custom_attribute_name: jwt_auth_symmetric_verified
-        # .. custom_attribute_description: The count of JWTs successfully verified
+        # .. custom_attribute_description: Whether the JWT was successfully verified
         #   using a symmetric key.
         # Note: A separate custom attribute is used in case there are different JWTs decoded
         #   in the same request.
