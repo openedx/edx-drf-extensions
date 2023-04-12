@@ -285,7 +285,7 @@ def _decode_and_verify_token(token, jwt_issuer):
         set_custom_attribute('jwt_auth_issuer_verification', 'matches-first-issuer')
     elif issuer_matched:
         set_custom_attribute('jwt_auth_issuer_verification', 'matches-later-issuer')
-    if not issuer_matched:
+    else:
         set_custom_attribute('jwt_auth_issuer_verification', 'no-match')
         logger.info('Token decode failed due to mismatched issuer [%s]', token_issuer)
         raise jwt.InvalidTokenError('%s is not a valid issuer.' % token_issuer)
