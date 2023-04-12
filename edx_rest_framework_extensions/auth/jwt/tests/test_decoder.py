@@ -214,15 +214,15 @@ class JWTDecodeHandlerTests(TestCase):
         self.assertEqual(jwt_decode_handler(symmetric_token), self.payload)
 
         assert mock_set_custom_attribute.call_args_list == [
-            mock.call('jwt_auth_decode_symmetric_token', True),
+            mock.call('jwt_auth_check_symmetric_key', True),
             mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
             mock.call('jwt_auth_asymmetric_verified', True),
 
-            mock.call('jwt_auth_decode_symmetric_token', False),
+            mock.call('jwt_auth_check_symmetric_key', False),
             mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
             mock.call('jwt_auth_asymmetric_verified', True),
 
-            mock.call('jwt_auth_decode_symmetric_token', True),
+            mock.call('jwt_auth_check_symmetric_key', True),
             mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
             mock.call('jwt_auth_verify_all_keys_count', 2),
             mock.call('jwt_auth_symmetric_verified', True),

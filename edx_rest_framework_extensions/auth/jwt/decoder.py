@@ -181,10 +181,10 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
         jwt_issuer (dict): A dict of JWT issuer related settings, containing the symmetric key.
         decode_symmetric_token (bool): Whether to decode symmetric tokens or not. Pass False for asymmetric tokens only
     """
-    # .. custom_attribute_name: jwt_auth_decode_symmetric_token
+    # .. custom_attribute_name: jwt_auth_check_symmetric_key
     # .. custom_attribute_description: True if symmetric keys will also be used for checking
     #   the JWT signature, and False if only asymmetric keys will be used.
-    set_custom_attribute('jwt_auth_decode_symmetric_token', decode_symmetric_token)
+    set_custom_attribute('jwt_auth_check_symmetric_key', decode_symmetric_token)
 
     # For observability purposes, we will first try asymmetric keys only to verify
     #   that we no longer need the symmetric key. However, if this fails, we will
