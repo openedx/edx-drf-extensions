@@ -217,15 +217,21 @@ class JWTDecodeHandlerTests(TestCase):
             mock.call('jwt_auth_check_symmetric_key', True),
             mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
             mock.call('jwt_auth_asymmetric_verified', True),
+            mock.call('jwt_auth_issuer', 'test-issuer-1'),
+            mock.call('jwt_auth_issuer_verification', 'matches-first-issuer'),
 
             mock.call('jwt_auth_check_symmetric_key', False),
             mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
             mock.call('jwt_auth_asymmetric_verified', True),
+            mock.call('jwt_auth_issuer', 'test-issuer-1'),
+            mock.call('jwt_auth_issuer_verification', 'matches-first-issuer'),
 
             mock.call('jwt_auth_check_symmetric_key', True),
             mock.call('jwt_auth_verify_asymmetric_keys_count', 1),
             mock.call('jwt_auth_verify_all_keys_count', 2),
             mock.call('jwt_auth_symmetric_verified', True),
+            mock.call('jwt_auth_issuer', 'test-issuer-1'),
+            mock.call('jwt_auth_issuer_verification', 'matches-first-issuer'),
         ]
 
 
