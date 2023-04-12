@@ -232,8 +232,11 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
         # .. custom_attribute_name: jwt_auth_symmetric_verified
         # .. custom_attribute_description: Whether the JWT was successfully verified
         #   using a symmetric key.
-        # Note: A separate custom attribute is used in case there are different JWTs decoded
-        #   in the same request.
+        # Note: Rather than using a single custom attribute like ``jwt_auth_verified``
+        #   with values of 'symmetric' or 'asymmetric', we use two separate custom
+        #   attribute names (e.g. jwt_auth_symmetric_verified and jwt_auth_asymmetric_verified),
+        #   so that if each of these were set separately in the same request, they
+        #   wouldn't clobber each other.
         set_custom_attribute('jwt_auth_symmetric_verified', True)
         return
     except Exception as token_error:
