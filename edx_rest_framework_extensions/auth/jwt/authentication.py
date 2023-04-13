@@ -2,7 +2,6 @@
 
 import logging
 
-import jwt
 from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from edx_django_utils.monitoring import set_custom_attribute
