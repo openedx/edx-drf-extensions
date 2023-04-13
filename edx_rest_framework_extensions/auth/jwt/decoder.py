@@ -258,7 +258,8 @@ def _decode_and_verify_token(token, jwt_issuer):
 
         'verify_exp': api_settings.JWT_VERIFY_EXPIRATION,
         'verify_aud': settings.JWT_AUTH.get('JWT_VERIFY_AUDIENCE', True),
-        'verify_iss': False,  # TODO (ARCH-204): manually verify until issuer is configured correctly.
+        # See https://github.com/openedx/edx-drf-extensions/issues/327 for removing manual issuer verification.
+        'verify_iss': False,  # Verified manually below
         'verify_signature': False,  # Verified with JWS already
     }
 
@@ -272,7 +273,7 @@ def _decode_and_verify_token(token, jwt_issuer):
         algorithms=[api_settings.JWT_ALGORITHM],
     )
 
-    # TODO (ARCH-204): verify issuer manually until it is properly configured.
+    # See https://github.com/openedx/edx-drf-extensions/issues/327 for removing this manual issuer validation.
     token_issuer = decoded_token.get('iss')
     # .. custom_attribute_name: jwt_auth_issuer
     # .. custom_attribute_description: Value set to the JWT auth issuer.
