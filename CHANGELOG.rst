@@ -12,6 +12,11 @@ Change Log
 Unreleased
 ----------
 
+Removed
+~~~~~~~
+
+* Removed exception case for ``InvalidTokenError`` that was never invoked.
+
 [8.6.0] - 2023-04-12
 --------------------
 
@@ -161,7 +166,7 @@ Added
 --------------------
 
 Removed
-~~~~~~~~
+~~~~~~~
 
 * Drop support for Python 3.5
 
