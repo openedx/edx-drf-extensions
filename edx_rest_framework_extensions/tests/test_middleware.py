@@ -1,6 +1,7 @@
 """
 Unit tests for middlewares.
 """
+import re
 from unittest.mock import call, patch
 
 import ddt
@@ -24,6 +25,18 @@ class TestRequestCustomAttributesMiddleware(TestCase):
         RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
         self.middleware = RequestCustomAttributesMiddleware()  # pylint: disable=no-value-for-parameter
+
+    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    def test_edx_drf_extensions_version_attribute(self, mock_set_custom_attribute):
+        self.request.user = AnonymousUser()
+
+        self.middleware.process_response(self.request, None)
+        # if call_args_list contains call('edx_drf_extensions_version', '8.7.0'), then version_list = ['8.7.0']
+        version_list = [
+            x.args[1] for x in mock_set_custom_attribute.call_args_list if x.args[0] == 'edx_drf_extensions_version'
+        ]
+        assert len(version_list) == 1
+        assert re.search('\d+\.\d+\.\d+', version_list[0])
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_auth_type_guess_anonymous_attribute(self, mock_set_custom_attribute):
