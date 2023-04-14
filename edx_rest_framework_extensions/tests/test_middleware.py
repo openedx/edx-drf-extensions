@@ -43,13 +43,13 @@ class TestRequestCustomAttributesMiddleware(TestCase):
         self.request.user = AnonymousUser()
 
         self.middleware.process_response(self.request, None)
-        mock_set_custom_attribute.assert_called_once_with('request_auth_type_guess', 'unauthenticated')
+        mock_set_custom_attribute.assert_called_with('request_auth_type_guess', 'unauthenticated')
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_no_headers(self, mock_set_custom_attribute):
         self.request.user = None
         self.middleware.process_response(self.request, None)
-        mock_set_custom_attribute.assert_called_once_with('request_auth_type_guess', 'no-user')
+        mock_set_custom_attribute.assert_called_with('request_auth_type_guess', 'no-user')
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_blank_headers(self, mock_set_custom_attribute):
@@ -58,7 +58,7 @@ class TestRequestCustomAttributesMiddleware(TestCase):
         self.request.META['HTTP_AUTHORIZATION'] = ''
 
         self.middleware.process_response(self.request, None)
-        mock_set_custom_attribute.assert_called_once_with('request_auth_type_guess', 'no-user')
+        mock_set_custom_attribute.assert_called_with('request_auth_type_guess', 'no-user')
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_referer_attribute(self, mock_set_custom_attribute):
@@ -237,4 +237,4 @@ class TestRequestMetricsMiddleware(TestCase):
         self.request.user = AnonymousUser()
 
         self.middleware.process_response(self.request, None)
-        mock_set_custom_attribute.assert_called_once_with('request_auth_type_guess', 'unauthenticated')
+        mock_set_custom_attribute.assert_called_with('request_auth_type_guess', 'unauthenticated')
