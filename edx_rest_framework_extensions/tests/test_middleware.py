@@ -36,7 +36,7 @@ class TestRequestCustomAttributesMiddleware(TestCase):
             x.args[1] for x in mock_set_custom_attribute.call_args_list if x.args[0] == 'edx_drf_extensions_version'
         ]
         assert len(version_list) == 1
-        assert re.search('\d+\.\d+\.\d+', version_list[0])
+        assert re.search(r'\d+\.\d+\.\d+', version_list[0])
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_auth_type_guess_anonymous_attribute(self, mock_set_custom_attribute):
