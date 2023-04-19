@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[8.7.0] - 2023-04-14
+--------------------
+
+Added
+~~~~~
+
+* Add ``edx_drf_extensions_version`` to help with rollout of changes in this library across services.
+
 Removed
 ~~~~~~~
 

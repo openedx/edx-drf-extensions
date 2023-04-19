@@ -7,6 +7,7 @@ from django.utils.deprecation import MiddlewareMixin
 from edx_django_utils import monitoring
 from edx_django_utils.cache import DEFAULT_REQUEST_CACHE
 
+import edx_rest_framework_extensions
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 
@@ -72,6 +73,13 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
         """
         Sets all the request custom attributes
         """
+        # .. custom_attribute_name: edx_drf_extensions_version
+        # .. custom_attribute_description: The version of the edx-drf-extensions library installed, which may be
+        #   useful when trying to rollout important changes to all services. Note that RequestCustomAttributesMiddleware
+        #   must be installed for this to work. Also, versions before 8.7.0 will not include this attribute, but
+        #   should have ``request_auth_type_guess``.
+        monitoring.set_custom_attribute('edx_drf_extensions_version', edx_rest_framework_extensions.__version__)
+
         self._set_request_auth_type_guess_attribute(request)
         self._set_request_user_agent_attributes(request)
         self._set_request_referer_attribute(request)
