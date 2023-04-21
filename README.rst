@@ -1,7 +1,3 @@
-Part of `edX code`__.
-
-__ https://code.edx.org/
-
 edX Django REST Framework Extensions  |CI|_ |Codecov|_
 ==========================================================
 .. |CI| image:: https://github.com/openedx/edx-drf-extensions/workflows/Python%20CI/badge.svg?branch=master
@@ -55,9 +51,8 @@ How To Contribute
 
 Contributions are very welcome.
 
-Please read `How To Contribute <https://github.com/openedx/edx-platform/blob/master/CONTRIBUTING.rst>`_ for details.
+Please read `How To Contribute <https://github.com/openedx/.github/blob/master/CONTRIBUTING.md>`_ for details.
 
-Even though they were written with ``edx-platform`` in mind, the guidelines should be followed for Open edX code in general.
 
 Reporting Security Issues
 -------------------------
