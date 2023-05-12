@@ -6,7 +6,7 @@
 #
 asgiref==3.6.0
     # via django
-certifi==2022.12.7
+certifi==2023.5.7
     # via requests
 cffi==1.15.1
     # via
@@ -58,7 +58,7 @@ pycryptodomex==3.17
     # via pyjwkest
 pyjwkest==1.4.2
     # via -r requirements/base.in
-pyjwt[crypto]==2.6.0
+pyjwt[crypto]==2.7.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
