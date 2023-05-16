@@ -133,11 +133,6 @@ filelock==3.12.0
     #   -r requirements/test.txt
     #   tox
     #   virtualenv
-future==0.18.3
-    # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
-    #   pyjwkest
 httpretty==1.1.4
     # via -r requirements/test.txt
 idna==3.4
@@ -224,19 +219,10 @@ pycparser==2.21
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   cffi
-pycryptodomex==3.17
-    # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
-    #   pyjwkest
 pygments==2.15.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-pyjwkest==1.4.2
-    # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
 pyjwt[crypto]==2.6.0
     # via
     #   -r requirements/base.txt
@@ -307,7 +293,6 @@ requests==2.30.0
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
-    #   pyjwkest
     #   sphinx
 semantic-version==2.10.0
     # via
@@ -318,7 +303,6 @@ six==1.16.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-lint
-    #   pyjwkest
     #   python-dateutil
     #   tox
 snowballstemmer==2.2.0
