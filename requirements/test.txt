@@ -86,10 +86,6 @@ filelock==3.12.0
     # via
     #   tox
     #   virtualenv
-future==0.18.3
-    # via
-    #   -r requirements/base.txt
-    #   pyjwkest
 httpretty==1.1.4
     # via -r requirements/test.in
 idna==3.4
@@ -142,12 +138,6 @@ pycparser==2.21
     # via
     #   -r requirements/base.txt
     #   cffi
-pycryptodomex==3.17
-    # via
-    #   -r requirements/base.txt
-    #   pyjwkest
-pyjwkest==1.4.2
-    # via -r requirements/base.txt
 pyjwt[crypto]==2.6.0
     # via
     #   -r requirements/base.txt
@@ -196,16 +186,13 @@ pytz==2023.3
 pyyaml==6.0
     # via code-annotations
 requests==2.30.0
-    # via
-    #   -r requirements/base.txt
-    #   pyjwkest
+    # via -r requirements/base.txt
 semantic-version==2.10.0
     # via -r requirements/base.txt
 six==1.16.0
     # via
     #   -r requirements/base.txt
     #   edx-lint
-    #   pyjwkest
     #   python-dateutil
     #   tox
 sqlparse==0.4.4

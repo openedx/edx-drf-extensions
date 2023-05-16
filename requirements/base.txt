@@ -42,8 +42,6 @@ edx-django-utils==5.4.0
     # via -r requirements/base.in
 edx-opaque-keys==2.3.0
     # via -r requirements/base.in
-future==0.18.3
-    # via pyjwkest
 idna==3.4
     # via requests
 newrelic==8.8.0
@@ -54,10 +52,6 @@ psutil==5.9.5
     # via edx-django-utils
 pycparser==2.21
     # via cffi
-pycryptodomex==3.17
-    # via pyjwkest
-pyjwkest==1.4.2
-    # via -r requirements/base.in
 pyjwt[crypto]==2.6.0
     # via
     #   -r requirements/base.in
@@ -73,15 +67,12 @@ pytz==2023.3
     #   django
     #   djangorestframework
 requests==2.30.0
-    # via
-    #   -r requirements/base.in
-    #   pyjwkest
+    # via -r requirements/base.in
 semantic-version==2.10.0
     # via -r requirements/base.in
 six==1.16.0
     # via
     #   -r requirements/base.in
-    #   pyjwkest
     #   python-dateutil
 sqlparse==0.4.4
     # via django
