@@ -20,6 +20,39 @@ Removed
 
 * Removed dependency on ``pyjwkest``. Uses existing PyJWT dependency instead.
 
+**Warning:** This change causes edx-drf-extensions to become a bit more strict about how it handles unexpected whitespace inside of Base64-encoded keys. For example, the following JSON is hard-wrapped inside a YAML single-quoted string, and edx-drf-extensions will start failing to load this in version 8.8.0::
+
+    JWT_PUBLIC_SIGNING_JWK_SET: '{
+      "keys": [
+        {
+          "e": "AQAB",
+          "kid": "prod-key-001",
+          "kty": "RSA",
+          "n": "VGhpcyBpcyBqdXN0IHNvbWUgZGVtb25zdHJhd
+             GlvbiB0ZXh0IHJhdGhlciB0aGFuIGFjdHVhbCBrZ
+             XkgbWF0ZXJpYWwuICAK"
+          }
+        ]
+      }'
+
+Newlines are ignored within Base64, but are illegal inside JSON strings. However, the YAML parser actually replaces the newlines with single spaces due to the single-quoting, so the JSON will actually contain a modulus (``n``) value with two spaces breaking up the Base64. Spaces are in turn not allowed in Base64. Due to interactions between various Base64 parsers, URL-safe encoding, and how padding is handled by the Python base64 standard library, this will be read as intended by pyjwkest but not by PyJWT. This is not a bug, just a difference in how malformed inputs are handled.
+
+The safe way to encode this JSON is without hard wrapping::
+
+    JWT_PUBLIC_SIGNING_JWK_SET: |
+      {
+        "keys": [
+          {
+            "e": "AQAB",
+            "kid": "prod-key-001",
+            "kty": "RSA",
+            "n": "VGhpcyBpcyBqdXN0IHNvbWUgZGVtb25zdHJhdGlvbiB0ZXh0IHJhdGhlciB0aGFuIGFjdHVhbCBrZXkgbWF0ZXJpYWwuICAK"
+          }
+        ]
+      }
+
+Before upgrading to version 8.8.0, ensure your keys are properly encoded with no line breaks inside JSON strings.
+
 [8.7.0] - 2023-04-14
 --------------------
 
