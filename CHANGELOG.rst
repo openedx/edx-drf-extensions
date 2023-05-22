@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[8.8.0] - 2023-05-16
+--------------------
+
+Removed
+~~~~~~~
+
+* Removed dependency on ``pyjwkest``. Uses existing PyJWT dependency instead.
+
 [8.7.0] - 2023-04-14
 --------------------
 

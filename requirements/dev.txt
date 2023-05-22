@@ -13,7 +13,7 @@ asgiref==3.6.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-astroid==2.15.4
+astroid==2.15.5
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -22,7 +22,7 @@ babel==2.12.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-certifi==2022.12.7
+certifi==2023.5.7
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -124,7 +124,7 @@ exceptiongroup==1.1.1
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==18.6.2
+faker==18.9.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -133,11 +133,6 @@ filelock==3.12.0
     #   -r requirements/test.txt
     #   tox
     #   virtualenv
-future==0.18.3
-    # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
-    #   pyjwkest
 httpretty==1.1.4
     # via -r requirements/test.txt
 idna==3.4
@@ -198,7 +193,7 @@ pbr==5.11.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==3.5.0
+platformdirs==3.5.1
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -224,25 +219,16 @@ pycparser==2.21
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   cffi
-pycryptodomex==3.17
-    # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
-    #   pyjwkest
 pygments==2.15.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-pyjwkest==1.4.2
-    # via
-    #   -r requirements/base.txt
-    #   -r requirements/test.txt
-pyjwt[crypto]==2.6.0
+pyjwt[crypto]==2.7.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==2.17.3
+pylint==2.17.4
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -257,7 +243,7 @@ pylint-django==2.5.3
     # via
     #   -r requirements/test.txt
     #   edx-lint
-pylint-plugin-utils==0.7
+pylint-plugin-utils==0.8.1
     # via
     #   -r requirements/test.txt
     #   pylint-celery
@@ -307,7 +293,6 @@ requests==2.30.0
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
-    #   pyjwkest
     #   sphinx
 semantic-version==2.10.0
     # via
@@ -318,7 +303,6 @@ six==1.16.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-lint
-    #   pyjwkest
     #   python-dateutil
     #   tox
 snowballstemmer==2.2.0
@@ -367,7 +351,7 @@ sqlparse==0.4.4
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-stevedore==5.0.0
+stevedore==5.1.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
