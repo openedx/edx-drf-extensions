@@ -8,8 +8,8 @@ from edx_django_utils.monitoring import set_custom_attribute
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
+from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.auth.jwt.decoder import configured_jwt_decode_handler
 from edx_rest_framework_extensions.config import ENABLE_FORGIVING_JWT_COOKIES
 from edx_rest_framework_extensions.settings import get_setting

@@ -23,7 +23,10 @@ from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_name,
     jwt_cookie_signature_name,
 )
-from edx_rest_framework_extensions.config import ENABLE_FORGIVING_JWT_COOKIES, ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
+from edx_rest_framework_extensions.config import (
+    ENABLE_FORGIVING_JWT_COOKIES,
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
+)
 from edx_rest_framework_extensions.permissions import (
     LoginRedirectIfUnauthenticated,
     NotJwtRestrictedApplication,
@@ -304,6 +307,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
             # DRF does not set request.user until process_response. This makes it available in process_view.
             # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
             request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
+
 
 def _get_user_from_jwt(request, view_func):
     user = get_user(request)

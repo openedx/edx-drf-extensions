@@ -8,7 +8,6 @@ from edx_django_utils import monitoring
 from edx_django_utils.cache import DEFAULT_REQUEST_CACHE
 
 import edx_rest_framework_extensions
-from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 
 
