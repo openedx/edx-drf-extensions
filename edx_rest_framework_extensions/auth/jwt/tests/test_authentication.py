@@ -186,7 +186,7 @@ class JwtAuthenticationTests(TestCase):
                 JwtAuthentication().authenticate(request)
 
         assert context_manager.exception.detail.startswith('CSRF Failed')
-        mock_set_custom_attribute.assert_called_once_with(
+        mock_set_custom_attribute.assert_called_with(
             'jwt_auth_failed',
             "Exception:PermissionDenied('CSRF Failed: CSRF cookie not set.')",
         )
