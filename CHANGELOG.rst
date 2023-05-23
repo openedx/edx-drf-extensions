@@ -51,7 +51,7 @@ The safe way to encode this JSON is without hard wrapping::
         ]
       }
 
-Before upgrading to version 8.8.0, ensure your keys are properly encoded with no line breaks inside JSON strings.
+Before upgrading to version 8.8.0, ensure your keys are properly encoded with no whitespace of any sort inside of runs of Base64.
 
 [8.7.0] - 2023-04-14
 --------------------
