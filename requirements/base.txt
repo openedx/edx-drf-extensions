@@ -82,5 +82,5 @@ stevedore==5.1.0
     #   edx-opaque-keys
 typing-extensions==4.6.3
     # via asgiref
-urllib3==2.0.2
+urllib3==2.0.3
     # via requests
