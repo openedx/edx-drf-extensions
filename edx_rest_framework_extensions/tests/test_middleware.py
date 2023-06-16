@@ -25,7 +25,7 @@ class TestRequestCustomAttributesMiddleware(TestCase):
         RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
         self.mock_response = Mock()
-        self.middleware = RequestCustomAttributesMiddleware(self.mock_response) # pylint: disable=no-value-for-parameter
+        self.middleware = RequestCustomAttributesMiddleware(self.mock_response)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_edx_drf_extensions_version_attribute(self, mock_set_custom_attribute):
