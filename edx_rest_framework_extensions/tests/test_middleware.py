@@ -2,7 +2,7 @@
 Unit tests for middlewares.
 """
 import re
-from unittest.mock import call, patch
+from unittest.mock import Mock, call, patch
 
 import ddt
 from django.contrib.auth.models import AnonymousUser
@@ -230,6 +230,7 @@ class TestRequestMetricsMiddleware(TestCase):
         super().setUp()
         RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
+        self.mock_response = Mock()
         self.middleware = RequestMetricsMiddleware(self.mock_response)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
