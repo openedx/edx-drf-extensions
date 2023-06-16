@@ -230,7 +230,7 @@ class TestRequestMetricsMiddleware(TestCase):
         super().setUp()
         RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
-        self.middleware = RequestMetricsMiddleware()
+        self.middleware = RequestMetricsMiddleware(self.mock_response)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_auth_type_guess_anonymous_attribute(self, mock_set_custom_attribute):
