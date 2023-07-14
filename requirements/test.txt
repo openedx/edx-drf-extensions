@@ -8,7 +8,7 @@ asgiref==3.7.2
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.15.5
+astroid==2.15.6
     # via
     #   pylint
     #   pylint-celery
@@ -21,11 +21,11 @@ cffi==1.15.1
     #   -r requirements/base.txt
     #   cryptography
     #   pynacl
-charset-normalizer==3.1.0
+charset-normalizer==3.2.0
     # via
     #   -r requirements/base.txt
     #   requests
-click==8.1.4
+click==8.1.5
     # via
     #   -r requirements/base.txt
     #   click-log
@@ -40,7 +40,7 @@ coverage[toml]==7.2.7
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==41.0.1
+cryptography==41.0.2
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -80,7 +80,7 @@ exceptiongroup==1.1.2
     # via pytest
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==18.11.2
+faker==19.1.0
     # via factory-boy
 filelock==3.12.2
     # via
@@ -224,6 +224,7 @@ typing-extensions==4.7.1
     #   -r requirements/base.txt
     #   asgiref
     #   astroid
+    #   faker
     #   pylint
 urllib3==2.0.3
     # via

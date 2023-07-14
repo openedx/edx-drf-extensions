@@ -12,7 +12,7 @@ certifi==2023.5.7
     # via
     #   -c requirements/test.txt
     #   requests
-charset-normalizer==3.1.0
+charset-normalizer==3.2.0
     # via
     #   -c requirements/test.txt
     #   requests
@@ -26,7 +26,7 @@ idna==3.4
     #   requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.7.0
+importlib-metadata==6.8.0
     # via sphinx
 jinja2==3.1.2
     # via
@@ -78,5 +78,5 @@ urllib3==2.0.3
     # via
     #   -c requirements/test.txt
     #   requests
-zipp==3.15.0
+zipp==3.16.1
     # via importlib-metadata
