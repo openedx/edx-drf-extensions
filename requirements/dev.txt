@@ -40,7 +40,7 @@ charset-normalizer==3.2.0
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-click==8.1.5
+click==8.1.6
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -71,7 +71,7 @@ dill==0.3.6
     # via
     #   -r requirements/test.txt
     #   pylint
-distlib==0.3.6
+distlib==0.3.7
     # via
     #   -r requirements/test.txt
     #   virtualenv
@@ -124,7 +124,7 @@ exceptiongroup==1.1.2
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==19.1.0
+faker==19.2.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -193,7 +193,7 @@ pbr==5.11.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==3.8.1
+platformdirs==3.9.1
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -223,7 +223,7 @@ pygments==2.15.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-pyjwt[crypto]==2.7.0
+pyjwt[crypto]==2.8.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -284,7 +284,7 @@ pytz==2023.3
     #   babel
     #   django
     #   djangorestframework
-pyyaml==6.0
+pyyaml==6.0.1
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -384,13 +384,13 @@ typing-extensions==4.7.1
     #   astroid
     #   faker
     #   pylint
-urllib3==2.0.3
+urllib3==2.0.4
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.23.1
+virtualenv==20.24.1
     # via
     #   -r requirements/test.txt
     #   tox
@@ -398,7 +398,7 @@ wrapt==1.15.0
     # via
     #   -r requirements/test.txt
     #   astroid
-zipp==3.16.1
+zipp==3.16.2
     # via
     #   -r requirements/docs.txt
     #   importlib-metadata

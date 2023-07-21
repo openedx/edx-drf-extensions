@@ -14,7 +14,7 @@ cffi==1.15.1
     #   pynacl
 charset-normalizer==3.2.0
     # via requests
-click==8.1.5
+click==8.1.6
     # via edx-django-utils
 cryptography==41.0.2
     # via pyjwt
@@ -52,7 +52,7 @@ psutil==5.9.5
     # via edx-django-utils
 pycparser==2.21
     # via cffi
-pyjwt[crypto]==2.7.0
+pyjwt[crypto]==2.8.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
@@ -82,5 +82,5 @@ stevedore==5.1.0
     #   edx-opaque-keys
 typing-extensions==4.7.1
     # via asgiref
-urllib3==2.0.3
+urllib3==2.0.4
     # via requests
