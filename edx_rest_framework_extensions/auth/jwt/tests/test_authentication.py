@@ -224,8 +224,8 @@ class JwtAuthenticationTests(TestCase):
         Note: CSRF protection should be skipped for this case, with no PermissionDenied.
         """
         jwt_token = self._get_test_jwt_token()
-        request = RequestFactory().get('/', HTTP_AUTHORIZATION=jwt_token)
-        JwtAuthentication().authenticate(request)
+        request = RequestFactory().get('/', HTTP_AUTHORIZATION=f"JWT {jwt_token}")
+        assert JwtAuthentication().authenticate(request)
 
     def test_authenticate_with_incorrect_jwt_authorization(self):
         """ With JWT header it continues and validates the credentials and throws error. """
