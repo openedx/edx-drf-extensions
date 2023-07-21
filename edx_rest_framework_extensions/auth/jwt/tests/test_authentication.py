@@ -11,11 +11,14 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from edx_rest_framework_extensions.auth.jwt import authentication
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
+from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.auth.jwt.decoder import jwt_decode_handler
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
     generate_latest_version_payload,
 )
+from edx_rest_framework_extensions.config import ENABLE_FORGIVING_JWT_COOKIES
+from edx_rest_framework_extensions.settings import get_setting
 from edx_rest_framework_extensions.tests import factories
 
 
@@ -180,12 +183,20 @@ class JwtAuthenticationTests(TestCase):
         request = RequestFactory().post('/')
 
         request.META[USE_JWT_COOKIE_HEADER] = 'true'
+        # Set a sample JWT cookie. We mock the auth response but we still want
+        # to ensure that there is jwt set because there is other logic that
+        # checks for the jwt to be set before moving forward with CSRF checks.
+        request.COOKIES[jwt_cookie_name()] = 'foo'
 
         with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=('mock-user', "mock-auth")):
-            with self.assertRaises(PermissionDenied) as context_manager:
-                JwtAuthentication().authenticate(request)
+            if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+                assert JwtAuthentication().authenticate(request) is None
+            else:
+                with self.assertRaises(PermissionDenied) as context_manager:
+                    JwtAuthentication().authenticate(request)
 
-        assert context_manager.exception.detail.startswith('CSRF Failed')
+                assert context_manager.exception.detail.startswith('CSRF Failed')
+
         mock_set_custom_attribute.assert_called_with(
             'jwt_auth_failed',
             "Exception:PermissionDenied('CSRF Failed: CSRF cookie not set.')",
@@ -235,3 +246,10 @@ class JwtAuthenticationTests(TestCase):
         payload = generate_latest_version_payload(user)
         jwt_token = generate_jwt_token(payload)
         return jwt_token
+
+
+# We want to duplicate these tests for now while we have two major code paths.  It will get unified once we have a
+# single way of doing JWT authentication again.
+@override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
+class ForgivingJwtAuthenticationTests(JwtAuthenticationTests):  # pylint: disable=test-inherits-tests
+    pass
