@@ -232,7 +232,8 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
         if is_forgiving_jwt_cookies_enabled:
             self._process_view_forgiving_jwt_cookies(request, view_func)
-        self._process_view_original(request, view_func)
+        else:
+            self._process_view_original(request, view_func)
 
     def _process_view_original(self, request, view_func):
         use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
