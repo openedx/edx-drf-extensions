@@ -29,7 +29,10 @@ from edx_rest_framework_extensions.auth.jwt.middleware import (
     JwtAuthCookieMiddleware,
     JwtRedirectToLoginIfUnauthenticatedMiddleware,
 )
-from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
+from edx_rest_framework_extensions.config import (
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
+    ENABLE_FORGIVING_JWT_COOKIES,
+)
 from edx_rest_framework_extensions.permissions import (
     IsStaff,
     IsSuperuser,
@@ -37,6 +40,7 @@ from edx_rest_framework_extensions.permissions import (
     LoginRedirectIfUnauthenticated,
     NotJwtRestrictedApplication,
 )
+from edx_rest_framework_extensions.settings import get_setting
 from edx_rest_framework_extensions.tests.factories import UserFactory
 
 
@@ -385,7 +389,10 @@ class TestJwtAuthCookieMiddleware(TestCase):
     def test_do_not_use_jwt_cookies(self, mock_set_custom_attribute):
         self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
-        mock_set_custom_attribute.assert_called_once_with('request_jwt_cookie', 'not-requested')
+        if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+            mock_set_custom_attribute.assert_called_once_with("request_jwt_cookie", "missing-both")
+        else:
+            mock_set_custom_attribute.assert_called_once_with('request_jwt_cookie', 'not-requested')
 
     @ddt.data(
         (jwt_cookie_header_payload_name(), jwt_cookie_signature_name()),
@@ -479,6 +486,12 @@ class TestJwtAuthCookieMiddleware(TestCase):
             else:
                 mock_log.warn.assert_not_called()
 
+# We want to duplicate these tests for now while we have two major code paths.  It will get unified once we have a
+# single way of doing JWT authentication again.
+@ddt.ddt
+@override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
+class TestForgivingJwtAuthCookieMiddleware(TestJwtAuthCookieMiddleware):  # pylint: disable=test-inherits-tests
+    pass
 
 def _get_test_cookie(is_cookie_valid=True):
     header_payload_value = 'header.payload' if is_cookie_valid else 'header.payload.invalid'
