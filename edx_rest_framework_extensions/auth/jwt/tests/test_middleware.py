@@ -30,8 +30,8 @@ from edx_rest_framework_extensions.auth.jwt.middleware import (
     JwtRedirectToLoginIfUnauthenticatedMiddleware,
 )
 from edx_rest_framework_extensions.config import (
-    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
     ENABLE_FORGIVING_JWT_COOKIES,
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
 )
 from edx_rest_framework_extensions.permissions import (
     IsStaff,
@@ -325,6 +325,8 @@ class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
     def test_login_required_middleware(self, url, has_jwt_cookies, expected_status):
         if has_jwt_cookies:
             self.client.cookies = _get_test_cookie()
+            if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+                expected_status = 200
         response = self.client.get(url)
         self.assertEqual(expected_status, response.status_code)
         if response.status_code == 302:
@@ -353,10 +355,20 @@ class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
     def test_login_required_overridden_middleware(self, url, has_jwt_cookies, expected_status):
         if has_jwt_cookies:
             self.client.cookies = _get_test_cookie()
+            if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+                expected_status = 200
         response = self.client.get(url)
         self.assertEqual(expected_status, response.status_code)
         if response.status_code == 302:
             self.assertEqual('/overridden/login/?next=' + url, response.url)
+
+
+# We want to duplicate these tests for now while we have two major code paths.  It will get unified once we have a
+# single way of doing JWT authentication again.
+@ddt.ddt
+@override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
+class TestForgiingJwtRedirectToLoginIfUnauthenticatedMiddleware(TestJwtRedirectToLoginIfUnauthenticatedMiddleware):  # pylint: disable=test-inherits-tests # noqa E501 line too long
+    pass
 
 
 class CheckRequestUserForJwtAuthMiddleware(MiddlewareMixin):
@@ -486,12 +498,14 @@ class TestJwtAuthCookieMiddleware(TestCase):
             else:
                 mock_log.warn.assert_not_called()
 
+
 # We want to duplicate these tests for now while we have two major code paths.  It will get unified once we have a
 # single way of doing JWT authentication again.
 @ddt.ddt
 @override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
 class TestForgivingJwtAuthCookieMiddleware(TestJwtAuthCookieMiddleware):  # pylint: disable=test-inherits-tests
     pass
+
 
 def _get_test_cookie(is_cookie_valid=True):
     header_payload_value = 'header.payload' if is_cookie_valid else 'header.payload.invalid'
