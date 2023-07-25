@@ -106,8 +106,8 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         Authenticate using a JWT token.
 
         If the JWT is in the authorization header, and authentication fails, we will raise
-            an exception which will halt additional authentication methods, and is the default
-            behavior of DRF authentication classes.
+        an exception which will halt additional authentication methods, and is the default
+        behavior of DRF authentication classes.
 
         If the JWT token is found in the JWT cookie, we've had issues with the cookie sometimes
         containing an expired token. For failed authentication, instead of raising an exception,
