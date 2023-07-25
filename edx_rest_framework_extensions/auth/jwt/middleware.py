@@ -225,7 +225,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         """
         Reconstitute the full JWT and add a new cookie on the request object.
 
-        Additionally, may adds the user to the request to make it available in process_view. (See below.)
+        Additionally, may add the user to the request to make it available in process_view. (See below.)
         """
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
 
