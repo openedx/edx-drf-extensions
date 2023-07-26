@@ -27,8 +27,6 @@ By returning None from JwtAuthentication, rather than raising an authentication 
 
 Rather than checking for the `HTTP_USE_JWT_COOKIE`, the `JwtAuthCookieMiddleware`_ would always reconstitute the JWT cookie if the parts were available.
 
-Although this would ultimately be a breaking API change for JwtAuthentication (where enabled), the plan would be for the backward incompatibility to be encapsulated and fixed in ``edx-drf-extensions``.
-
 The proposal includes protecting all changes with a temporary rollout feature toggle ``ENABLE_FORGIVING_JWT_COOKIES``. This can be used to ensure no harm is done for each service before cleaning up the old header.
 
 .. _JwtAuthCookieMiddleware: https://github.com/edx/edx-drf-extensions/blob/270cf521a72b506d7df595c4c479c7ca232b4bec/edx_rest_framework_extensions/auth/jwt/middleware.py#L164
