@@ -18,7 +18,7 @@ ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE = 'ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 # .. toggle_default: False
 # .. toggle_description: If True, return None rather than an exception when authentication fails with JWT cookies.
 # .. toggle_use_cases: temporary
-# .. toggle_creation_date: 2020-08-12
-# .. toggle_target_removal_date: 2021-12-31
-# .. toggle_tickets: https://openedx.atlassian.net/browse/ARCHBOM-1218
+# .. toggle_creation_date: 2023-08-01
+# .. toggle_target_removal_date: 2023-10-01
+# .. toggle_tickets: https://github.com/openedx/edx-drf-extensions/issues/365
 ENABLE_FORGIVING_JWT_COOKIES = 'ENABLE_FORGIVING_JWT_COOKIES'

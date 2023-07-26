@@ -141,6 +141,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # Useful monitoring for debugging various types of failures.
             set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
             if has_jwt_cookie:
+                # Returning None is how a JWT cookie failure becomes forgiving.
                 # See docs/decisions/0002-remove-use-jwt-cookie-header.rst for details.
                 return None
             raise

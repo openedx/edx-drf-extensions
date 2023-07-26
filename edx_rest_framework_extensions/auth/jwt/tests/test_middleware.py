@@ -367,7 +367,7 @@ class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
 # single way of doing JWT authentication again.
 @ddt.ddt
 @override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
-class TestForgiingJwtRedirectToLoginIfUnauthenticatedMiddleware(TestJwtRedirectToLoginIfUnauthenticatedMiddleware):  # pylint: disable=test-inherits-tests # noqa E501 line too long
+class TestForgivingJwtRedirectToLoginIfUnauthenticatedMiddleware(TestJwtRedirectToLoginIfUnauthenticatedMiddleware):  # pylint: disable=test-inherits-tests # noqa E501 line too long
     pass
 
 
