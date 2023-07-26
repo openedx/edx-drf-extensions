@@ -17,10 +17,8 @@ jobs:
         toxenv: [
           quality,
           docs,
-          django32-drf312,
+          django32-drf314,
           django32-drflatest,
-          django40-drflatest,
-          django41-drflatest,
           django42-drflatest
         ]
 
