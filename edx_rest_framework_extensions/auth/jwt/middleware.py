@@ -232,16 +232,14 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         #   This is a temporary attribute, because this header is being deprecated/removed.
         monitoring.set_custom_attribute('use_jwt_cookie_requested', bool(request.META.get(USE_JWT_COOKIE_HEADER)))
 
-        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
-        use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
-        proceed_with_reconstitute_cookie = is_forgiving_jwt_cookies_enabled or use_jwt_cookie_requested
+        if not get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+            if not request.META.get(USE_JWT_COOKIE_HEADER):
+                return
 
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
-        if not proceed_with_reconstitute_cookie:
-            pass
-        elif header_payload_cookie and signature_cookie:
+        if header_payload_cookie and signature_cookie:
             # Reconstitute JWT auth cookie if split cookies are available.
             request.COOKIES[jwt_cookie_name()] = '{}{}{}'.format(
                 header_payload_cookie,
@@ -256,12 +254,8 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
                 log_message = self._get_missing_cookie_message(jwt_cookie_signature_name())
             log.warning(log_message)
 
-        if is_forgiving_jwt_cookies_enabled:
-            proceed_with_set_request_user = jwt_cookie_name() in request.COOKIES
-        else:
-            proceed_with_set_request_user = use_jwt_cookie_requested
-
-        if proceed_with_set_request_user and get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE):
+        has_reconstituted_jwt_cookie = jwt_cookie_name() in request.COOKIES
+        if has_reconstituted_jwt_cookie and get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE):
             # DRF does not set request.user until process_response. This makes it available in process_view.
             # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
             request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
