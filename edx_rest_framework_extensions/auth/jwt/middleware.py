@@ -259,7 +259,6 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
             log.warning(log_message)
         else:
             attribute_value = 'missing-both'
-            log.warning('Both JWT auth cookies missing. JWT auth cookies will not be reconstituted.')
         monitoring.set_custom_attribute('request_jwt_cookie', attribute_value)
 
         if is_forgiving_jwt_cookies_enabled:
