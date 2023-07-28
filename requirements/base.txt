@@ -6,7 +6,7 @@
 #
 asgiref==3.7.2
     # via django
-certifi==2023.5.7
+certifi==2023.7.22
     # via requests
 cffi==1.15.1
     # via
@@ -14,7 +14,7 @@ cffi==1.15.1
     #   pynacl
 charset-normalizer==3.2.0
     # via requests
-click==8.1.5
+click==8.1.6
     # via edx-django-utils
 cryptography==41.0.2
     # via pyjwt
@@ -23,12 +23,13 @@ django==3.2.20
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
     #   django-crum
+    #   django-waffle
     #   djangorestframework
     #   drf-jwt
     #   edx-django-utils
 django-crum==0.7.9
     # via edx-django-utils
-django-waffle==3.0.0
+django-waffle==4.0.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
@@ -38,13 +39,13 @@ djangorestframework==3.14.0
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==5.5.0
+edx-django-utils==5.6.0
     # via -r requirements/base.in
 edx-opaque-keys==2.3.0
     # via -r requirements/base.in
 idna==3.4
     # via requests
-newrelic==8.8.1
+newrelic==8.9.0
     # via edx-django-utils
 pbr==5.11.1
     # via stevedore
@@ -52,7 +53,7 @@ psutil==5.9.5
     # via edx-django-utils
 pycparser==2.21
     # via cffi
-pyjwt[crypto]==2.7.0
+pyjwt[crypto]==2.8.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
@@ -82,5 +83,5 @@ stevedore==5.1.0
     #   edx-opaque-keys
 typing-extensions==4.7.1
     # via asgiref
-urllib3==2.0.3
+urllib3==2.0.4
     # via requests
