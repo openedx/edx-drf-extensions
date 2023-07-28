@@ -211,13 +211,11 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
 
     """
 
-    def _get_missing_cookie_message_and_attribute(self, cookie_name):
-        """ Returns tuple with missing cookie (log_message, custom_attribute_value) """
-        cookie_missing_message = '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
+    def _get_missing_cookie_message(self, cookie_name):
+        """ Returns missing cookie log_message """
+        return '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
                 cookie_name
         )
-        request_jwt_cookie = f'missing-{cookie_name}'
-        return cookie_missing_message, request_jwt_cookie
 
     # Note: Using `process_view` over `process_request` so JwtRedirectToLoginIfUnauthenticatedMiddleware which
     # uses `process_view` can update the request before this middleware. Method `process_request` happened too early.
@@ -229,6 +227,11 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         """
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
 
+        # .. custom_attribute_name: use_jwt_cookie_requested
+        # .. custom_attribute_description: True if USE_JWT_COOKIE_HEADER was found.
+        #   This is a temporary attribute, because this header is being deprecated/removed.
+        monitoring.set_custom_attribute('use_jwt_cookie_requested', bool(request.META.get(USE_JWT_COOKIE_HEADER)))
+
         is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
         use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
         proceed_with_reconstitute_cookie = is_forgiving_jwt_cookies_enabled or use_jwt_cookie_requested
@@ -237,7 +240,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
         if not proceed_with_reconstitute_cookie:
-            attribute_value = 'not-requested'
+            pass
         elif header_payload_cookie and signature_cookie:
             # Reconstitute JWT auth cookie if split cookies are available.
             request.COOKIES[jwt_cookie_name()] = '{}{}{}'.format(
@@ -245,21 +248,13 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
                 JWT_DELIMITER,
                 signature_cookie,
             )
-            attribute_value = 'success'
         elif header_payload_cookie or signature_cookie:
             # Log unexpected case of only finding one cookie.
             if not header_payload_cookie:
-                log_message, attribute_value = self._get_missing_cookie_message_and_attribute(
-                    jwt_cookie_header_payload_name()
-                )
+                log_message = self._get_missing_cookie_message(jwt_cookie_header_payload_name())
             if not signature_cookie:
-                log_message, attribute_value = self._get_missing_cookie_message_and_attribute(
-                    jwt_cookie_signature_name()
-                )
+                log_message = self._get_missing_cookie_message(jwt_cookie_signature_name())
             log.warning(log_message)
-        else:
-            attribute_value = 'missing-both'
-        monitoring.set_custom_attribute('request_jwt_cookie', attribute_value)
 
         if is_forgiving_jwt_cookies_enabled:
             proceed_with_set_request_user = jwt_cookie_name() in request.COOKIES
