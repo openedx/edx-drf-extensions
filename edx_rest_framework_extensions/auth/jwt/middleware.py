@@ -267,8 +267,7 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         else:
             proceed_with_set_request_user = use_jwt_cookie_requested
 
-        is_set_request_user_for_jwt_cookie_enabled = get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE)
-        if proceed_with_set_request_user and is_set_request_user_for_jwt_cookie_enabled:
+        if proceed_with_set_request_user and get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE):
             # DRF does not set request.user until process_response. This makes it available in process_view.
             # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
             request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
