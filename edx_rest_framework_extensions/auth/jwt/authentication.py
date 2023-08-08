@@ -138,7 +138,9 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # Errors in production do not need to be logged (as they may be noisy),
             # but debug logging can help quickly resolve issues during development.
             logger.debug('Failed JWT Authentication,', exc_info=exception)
-            # Useful monitoring for debugging various types of failures.
+            # .. custom_attribute_name: jwt_auth_failed
+            # .. custom_attribute_description: Includes a summary of the JWT failure exception
+            #       for debugging.
             set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
             if has_jwt_cookie:
                 # Returning None is how a JWT cookie failure becomes forgiving.
