@@ -65,55 +65,9 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         # .. custom_attribute_name: is_forgiving_jwt_cookies_enabled
         # .. custom_attribute_description: This is temporary custom attribute to show
         #      whether ENABLE_FORGIVING_JWT_COOKIES is toggled on or off.
+        #      See docs/decisions/0002-remove-use-jwt-cookie-header.rst
         set_custom_attribute('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
 
-        # TODO: Robert: Refactor back into this single method in a separate commit
-        if is_forgiving_jwt_cookies_enabled:
-            return self._authenticate_forgiving_jwt_cookies(request)
-        return self._authenticate_original(request)
-
-    def _authenticate_original(self, request):
-        try:
-            user_and_auth = super().authenticate(request)
-
-            # Unauthenticated, CSRF validation not required
-            if not user_and_auth:
-                return user_and_auth
-
-            # Not using JWT cookies, CSRF validation not required
-            use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
-            if not use_jwt_cookie_requested:
-                return user_and_auth
-
-            self.enforce_csrf(request)
-
-            # CSRF passed validation with authenticated user
-            return user_and_auth
-
-        except Exception as exception:
-            # Errors in production do not need to be logged (as they may be noisy),
-            # but debug logging can help quickly resolve issues during development.
-            logger.debug('Failed JWT Authentication,', exc_info=exception)
-            # Useful monitoring for debugging various types of failures.
-            set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
-            raise
-
-    def _authenticate_forgiving_jwt_cookies(self, request):
-        """
-        Authenticate using a JWT token.
-
-        If the JWT is in the authorization header, and authentication fails, we will raise
-        an exception which will halt additional authentication methods, and is the default
-        behavior of DRF authentication classes.
-
-        If the JWT token is found in the JWT cookie, we've had issues with the cookie sometimes
-        containing an expired token. For failed authentication, instead of raising an exception,
-        we will return None which will enable other authentication classes to be attempted where
-        defined (e.g. SessionAuthentication).
-
-        See docs/decisions/0002-remove-use-jwt-cookie-header.rst
-
-        """
         has_jwt_cookie = jwt_cookie_name() in request.COOKIES
         try:
             user_and_auth = super().authenticate(request)
@@ -139,15 +93,18 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # .. custom_attribute_description: Includes a summary of the JWT failure exception
             #       for debugging.
             set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
+
+            is_jwt_failure_forgiven = is_forgiving_jwt_cookies_enabled and has_jwt_cookie
             # .. custom_attribute_name: jwt_auth_failure_forgiven
             # .. custom_attribute_description: This attribute will be True if the JWT failure
-            #      is forgiven. Only JWT cookie failures will be forgiven. In the case of a
-            #      forgiven failure, authenticate will return None rather than raise an
-            #      exception, allowing other authentication classes to process. This attribute
-            #      will be False for failures that are not forgiven.
+            #      is forgiven, and False if it was not forgiven. We will forgive JWT cookie
+            #      failures to handle the case where expired cookies would prevent
+            #      authentication in a case where another authentication class, like
+            #      SessionAuthentication, would have succeeded. In this case we return None
+            #      instead of raising an exception to allow authentication to continue.
             #      See docs/decisions/0002-remove-use-jwt-cookie-header.rst for details.
-            set_custom_attribute('jwt_auth_failure_forgiven', has_jwt_cookie)
-            if has_jwt_cookie:
+            set_custom_attribute('jwt_auth_failure_forgiven', is_jwt_failure_forgiven)
+            if is_jwt_failure_forgiven:
                 return None
             raise
 

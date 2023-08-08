@@ -201,6 +201,7 @@ class JwtAuthenticationTests(TestCase):
                 with self.assertRaises(PermissionDenied) as context_manager:
                     JwtAuthentication().authenticate(request)
                 assert context_manager.exception.detail.startswith('CSRF Failed')
+                mock_set_custom_attribute.assert_any_call('jwt_auth_failure_forgiven', False)
 
         mock_set_custom_attribute.assert_any_call(
             'jwt_auth_failed',
