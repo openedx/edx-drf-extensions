@@ -401,7 +401,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
     def test_do_not_use_jwt_cookies(self, mock_set_custom_attribute):
         self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
-        mock_set_custom_attribute.assert_called_once_with('use_jwt_cookie_requested', False)
+        mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', False)
 
     @ddt.data(
         (jwt_cookie_header_payload_name(), jwt_cookie_signature_name()),
@@ -421,14 +421,18 @@ class TestJwtAuthCookieMiddleware(TestCase):
             '%s cookie is missing. JWT auth cookies will not be reconstituted.' %
             missing_cookie_name
         )
-        mock_set_custom_attribute.assert_called_once_with('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('has_jwt_cookie', False)
+
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_no_cookies(self, mock_set_custom_attribute):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
-        mock_set_custom_attribute.assert_called_once_with('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('has_jwt_cookie', False)
+
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_success(self, mock_set_custom_attribute):
@@ -437,7 +441,8 @@ class TestJwtAuthCookieMiddleware(TestCase):
         self.request.COOKIES[jwt_cookie_signature_name()] = 'signature'
         self.middleware.process_view(self.request, None, None, None)
         self.assertEqual(self.request.COOKIES[jwt_cookie_name()], 'header.payload.signature')
-        mock_set_custom_attribute.assert_called_once_with('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('has_jwt_cookie', True)
 
     _LOG_WARN_AUTHENTICATION_FAILED = 0
     _LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS = 1

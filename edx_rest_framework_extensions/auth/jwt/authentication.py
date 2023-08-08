@@ -61,18 +61,15 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         return get_setting('JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES')
 
     def authenticate(self, request):
-        # Add monitoring to help resolve issues with JWT cookies.
-        # Note: In the very exceptional case that a JWT authorization header is also used
-        #   and takes precedence over the JWT cookies, this custom attribute
-        #   could be slightly misleading.
-        has_jwt_cookie = jwt_cookie_name() in request.COOKIES
-        set_custom_attribute('jwt_auth_has_jwt_cookie', has_jwt_cookie)
-
         is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        # .. custom_attribute_name: is_forgiving_jwt_cookies_enabled
+        # .. custom_attribute_description: This is temporary custom attribute to show
+        #      whether ENABLE_FORGIVING_JWT_COOKIES is toggled on or off.
+        set_custom_attribute('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
+
+        # TODO: Robert: Refactor back into this single method in a separate commit
         if is_forgiving_jwt_cookies_enabled:
-            set_custom_attribute('jwt_auth_forgiving_jwt_cookies', True)
             return self._authenticate_forgiving_jwt_cookies(request)
-        set_custom_attribute('jwt_auth_forgiving_jwt_cookies', False)
         return self._authenticate_original(request)
 
     def _authenticate_original(self, request):
@@ -142,9 +139,15 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # .. custom_attribute_description: Includes a summary of the JWT failure exception
             #       for debugging.
             set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
+            # .. custom_attribute_name: jwt_auth_failure_forgiven
+            # .. custom_attribute_description: This attribute will be True if the JWT failure
+            #      is forgiven. Only JWT cookie failures will be forgiven. In the case of a
+            #      forgiven failure, authenticate will return None rather than raise an
+            #      exception, allowing other authentication classes to process. This attribute
+            #      will be False for failures that are not forgiven.
+            #      See docs/decisions/0002-remove-use-jwt-cookie-header.rst for details.
+            set_custom_attribute('jwt_auth_failure_forgiven', has_jwt_cookie)
             if has_jwt_cookie:
-                # Returning None is how a JWT cookie failure becomes forgiving.
-                # See docs/decisions/0002-remove-use-jwt-cookie-header.rst for details.
                 return None
             raise
 

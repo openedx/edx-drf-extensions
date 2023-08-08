@@ -255,6 +255,11 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
             log.warning(log_message)
 
         has_reconstituted_jwt_cookie = jwt_cookie_name() in request.COOKIES
+        # .. custom_attribute_name: has_jwt_cookie
+        # .. custom_attribute_description: Enables us to see requests which have the full reconstituted
+        #      JWT cookie. If this attribute is missing, it is assumed to be False.
+        monitoring.set_custom_attribute('has_jwt_cookie', has_reconstituted_jwt_cookie)
+
         if has_reconstituted_jwt_cookie and get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE):
             # DRF does not set request.user until process_response. This makes it available in process_view.
             # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
