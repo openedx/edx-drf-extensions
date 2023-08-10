@@ -8,6 +8,11 @@ from edx_rest_framework_extensions.auth.jwt.decoder import configured_jwt_decode
 
 
 def jwt_cookie_name():
+    # Warning: This method should probably not supply a default outside
+    # of JWT_AUTH_COOKIE, because JwtAuthentication will never see
+    # the cookie without the setting. This default should probably be
+    # removed, but that would take some further investigation. In the
+    # meantime, this default has been duplicated to test_settings.py.
     return settings.JWT_AUTH.get('JWT_AUTH_COOKIE') or 'edx-jwt-cookie'
 
 
