@@ -177,6 +177,24 @@ class JwtAuthenticationTests(TestCase):
         with self.assertRaises(AuthenticationFailed):
             JwtAuthentication().authenticate_credentials({'email': 'test@example.com'})
 
+    @mock.patch.object(JwtAuthentication, 'enforce_csrf')
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_with_correct_jwt_cookie(self, mock_set_custom_attribute, mock_enforce_csrf):
+        """ Verify authenticate succeeds with a valid JWT cookie. """
+        request = RequestFactory().post('/')
+
+        request.META[USE_JWT_COOKIE_HEADER] = 'true'
+
+        request.COOKIES[jwt_cookie_name()] = self._get_test_jwt_token()
+
+        assert JwtAuthentication().authenticate(request)
+        mock_enforce_csrf.assert_called_with(request)
+        mock_set_custom_attribute.assert_any_call(
+            'is_forgiving_jwt_cookies_enabled',
+            get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        )
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
+
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_csrf_protected(self, mock_set_custom_attribute):
         """
@@ -196,12 +214,12 @@ class JwtAuthenticationTests(TestCase):
         with mock.patch.object(JSONWebTokenAuthentication, 'authenticate', return_value=('mock-user', "mock-auth")):
             if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
                 assert JwtAuthentication().authenticate(request) is None
-                mock_set_custom_attribute.assert_any_call('jwt_auth_failure_forgiven', True)
+                mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'forgiven-failure')
             else:
                 with self.assertRaises(PermissionDenied) as context_manager:
                     JwtAuthentication().authenticate(request)
                 assert context_manager.exception.detail.startswith('CSRF Failed')
-                mock_set_custom_attribute.assert_any_call('jwt_auth_failure_forgiven', False)
+                mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-cookie')
 
         mock_set_custom_attribute.assert_any_call(
             'jwt_auth_failed',
@@ -237,19 +255,24 @@ class JwtAuthenticationTests(TestCase):
             'is_forgiving_jwt_cookies_enabled',
             get_setting(ENABLE_FORGIVING_JWT_COOKIES)
         )
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-auth-header')
 
-    def test_authenticate_with_incorrect_jwt_authorization(self):
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_with_incorrect_jwt_authorization(self, mock_set_custom_attribute):
         """ With JWT header it continues and validates the credentials and throws error. """
         auth_header = '{token_name} {token}'.format(token_name='JWT', token='wrongvalue')
         request = RequestFactory().get('/', HTTP_AUTHORIZATION=auth_header)
         with self.assertRaises(AuthenticationFailed):
             JwtAuthentication().authenticate(request)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-auth-header')
 
-    def test_authenticate_with_bearer_token(self):
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_with_bearer_token(self, mock_set_custom_attribute):
         """ Returns a None for bearer header request. """
         auth_header = '{token_name} {token}'.format(token_name='Bearer', token='abc123')
         request = RequestFactory().get('/', HTTP_AUTHORIZATION=auth_header)
         self.assertIsNone(JwtAuthentication().authenticate(request))
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'skipped')
 
     def _get_test_jwt_token(self):
         """ Returns a user and jwt token """

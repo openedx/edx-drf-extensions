@@ -68,21 +68,39 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         #      See docs/decisions/0002-remove-use-jwt-cookie-header.rst
         set_custom_attribute('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
 
+        # .. custom_attribute_name: jwt_auth_result
+        # .. custom_attribute_description: The result of the JWT authenticate process,
+        #      which can having the following values:
+        #        'skipped': When JWT Authentication doesn't apply.
+        #        'success-auth-header': Successfully authenticated using the Authorization header.
+        #        'success-cookie': Successfully authenticated using a JWT cookie.
+        #        'forgiven-failure': Returns None instead of failing for JWT cookies. This handles
+        #          the case where expired cookies won't prevent another authentication class, like
+        #          SessionAuthentication, from having a chance to succeed.
+        #          See docs/decisions/0002-remove-use-jwt-cookie-header.rst for details.
+        #        'failed-auth-header': JWT Authorization header authentication failed. This prevents
+        #          other authentication classes from attempting authentication.
+        #        'failed-cookie': JWT cookie authentication failed. This prevents other
+        #          authentication classes from attempting authentication.
+
         has_jwt_cookie = jwt_cookie_name() in request.COOKIES
         try:
             user_and_auth = super().authenticate(request)
 
             # Unauthenticated, CSRF validation not required
             if not user_and_auth:
+                set_custom_attribute('jwt_auth_result', 'skipped')
                 return user_and_auth
 
             # Not using JWT cookie, CSRF validation not required
             if not has_jwt_cookie:
+                set_custom_attribute('jwt_auth_result', 'success-auth-header')
                 return user_and_auth
 
             self.enforce_csrf(request)
 
             # CSRF passed validation with authenticated user
+            set_custom_attribute('jwt_auth_result', 'success-cookie')
             return user_and_auth
 
         except Exception as exception:
@@ -95,17 +113,13 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
 
             is_jwt_failure_forgiven = is_forgiving_jwt_cookies_enabled and has_jwt_cookie
-            # .. custom_attribute_name: jwt_auth_failure_forgiven
-            # .. custom_attribute_description: This attribute will be True if the JWT failure
-            #      is forgiven, and False if it was not forgiven. We will forgive JWT cookie
-            #      failures to handle the case where expired cookies would prevent
-            #      authentication in a case where another authentication class, like
-            #      SessionAuthentication, would have succeeded. In this case we return None
-            #      instead of raising an exception to allow authentication to continue.
-            #      See docs/decisions/0002-remove-use-jwt-cookie-header.rst for details.
-            set_custom_attribute('jwt_auth_failure_forgiven', is_jwt_failure_forgiven)
             if is_jwt_failure_forgiven:
+                set_custom_attribute('jwt_auth_result', 'forgiven-failure')
                 return None
+            if has_jwt_cookie:
+                set_custom_attribute('jwt_auth_result', 'failed-cookie')
+            else:
+                set_custom_attribute('jwt_auth_result', 'failed-auth-header')
             raise
 
     def authenticate_credentials(self, payload):
