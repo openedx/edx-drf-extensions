@@ -17,6 +17,7 @@ Unreleased
 
 Added
 ~~~~~
+
 * Added capability to forgive JWT cookie authentication failures as a replacement for the now deprecated ``USE-JWT-COOKIE`` header. See DEPR https://github.com/openedx/edx-drf-extensions/issues/371.
   * For now, this capability must be enabled using the ``ENABLE_FORGIVING_JWT_COOKIES`` toggle.
   * Added temporary custom attributes ``is_forgiving_jwt_cookies_enabled`` and ``use_jwt_cookie_requested`` to help with this deprecation.
