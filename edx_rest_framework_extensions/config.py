@@ -20,5 +20,5 @@ ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE = 'ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 # .. toggle_use_cases: temporary
 # .. toggle_creation_date: 2023-08-01
 # .. toggle_target_removal_date: 2023-10-01
-# .. toggle_tickets: https://github.com/openedx/edx-drf-extensions/issues/365
+# .. toggle_tickets: https://github.com/openedx/edx-drf-extensions/issues/371
 ENABLE_FORGIVING_JWT_COOKIES = 'ENABLE_FORGIVING_JWT_COOKIES'
