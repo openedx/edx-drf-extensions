@@ -35,6 +35,8 @@ EDX_DRF_EXTENSIONS = {}
 # See https://github.com/GetBlimp/django-rest-framework-jwt/blob/master/rest_framework_jwt/settings.py
 JWT_AUTH = {
 
+    'JWT_AUTH_COOKIE': 'edx-jwt-cookie',
+
     'JWT_AUDIENCE': 'test-aud',
 
     'JWT_DECODE_HANDLER': 'edx_rest_framework_extensions.auth.jwt.decoder.jwt_decode_handler',

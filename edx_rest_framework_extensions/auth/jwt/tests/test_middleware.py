@@ -29,7 +29,10 @@ from edx_rest_framework_extensions.auth.jwt.middleware import (
     JwtAuthCookieMiddleware,
     JwtRedirectToLoginIfUnauthenticatedMiddleware,
 )
-from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
+from edx_rest_framework_extensions.config import (
+    ENABLE_FORGIVING_JWT_COOKIES,
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
+)
 from edx_rest_framework_extensions.permissions import (
     IsStaff,
     IsSuperuser,
@@ -37,6 +40,7 @@ from edx_rest_framework_extensions.permissions import (
     LoginRedirectIfUnauthenticated,
     NotJwtRestrictedApplication,
 )
+from edx_rest_framework_extensions.settings import get_setting
 from edx_rest_framework_extensions.tests.factories import UserFactory
 
 
@@ -321,6 +325,8 @@ class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
     def test_login_required_middleware(self, url, has_jwt_cookies, expected_status):
         if has_jwt_cookies:
             self.client.cookies = _get_test_cookie()
+            if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+                expected_status = 200
         response = self.client.get(url)
         self.assertEqual(expected_status, response.status_code)
         if response.status_code == 302:
@@ -349,10 +355,20 @@ class TestJwtRedirectToLoginIfUnauthenticatedMiddleware(TestCase):
     def test_login_required_overridden_middleware(self, url, has_jwt_cookies, expected_status):
         if has_jwt_cookies:
             self.client.cookies = _get_test_cookie()
+            if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+                expected_status = 200
         response = self.client.get(url)
         self.assertEqual(expected_status, response.status_code)
         if response.status_code == 302:
             self.assertEqual('/overridden/login/?next=' + url, response.url)
+
+
+# We want to duplicate these tests for now while we have two major code paths.  It will get unified once we have a
+# single way of doing JWT authentication again.
+@ddt.ddt
+@override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
+class TestForgivingJwtRedirectToLoginIfUnauthenticatedMiddleware(TestJwtRedirectToLoginIfUnauthenticatedMiddleware):  # pylint: disable=test-inherits-tests # noqa E501 line too long
+    pass
 
 
 class CheckRequestUserForJwtAuthMiddleware(MiddlewareMixin):
@@ -385,7 +401,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
     def test_do_not_use_jwt_cookies(self, mock_set_custom_attribute):
         self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
-        mock_set_custom_attribute.assert_called_once_with('request_jwt_cookie', 'not-requested')
+        mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', False)
 
     @ddt.data(
         (jwt_cookie_header_payload_name(), jwt_cookie_signature_name()),
@@ -405,16 +421,16 @@ class TestJwtAuthCookieMiddleware(TestCase):
             '%s cookie is missing. JWT auth cookies will not be reconstituted.' %
             missing_cookie_name
         )
-        mock_set_custom_attribute.assert_called_once_with(
-            'request_jwt_cookie', f'missing-{missing_cookie_name}'
-        )
+        mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('has_jwt_cookie', False)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_no_cookies(self, mock_set_custom_attribute):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
-        mock_set_custom_attribute.assert_called_once_with('request_jwt_cookie', 'missing-both')
+        mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('has_jwt_cookie', False)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_success(self, mock_set_custom_attribute):
@@ -423,7 +439,8 @@ class TestJwtAuthCookieMiddleware(TestCase):
         self.request.COOKIES[jwt_cookie_signature_name()] = 'signature'
         self.middleware.process_view(self.request, None, None, None)
         self.assertEqual(self.request.COOKIES[jwt_cookie_name()], 'header.payload.signature')
-        mock_set_custom_attribute.assert_called_once_with('request_jwt_cookie', 'success')
+        mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', True)
+        mock_set_custom_attribute.assert_any_call('has_jwt_cookie', True)
 
     _LOG_WARN_AUTHENTICATION_FAILED = 0
     _LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS = 1
@@ -478,6 +495,14 @@ class TestJwtAuthCookieMiddleware(TestCase):
                 )
             else:
                 mock_log.warn.assert_not_called()
+
+
+# We want to duplicate these tests for now while we have two major code paths.  It will get unified once we have a
+# single way of doing JWT authentication again.
+@ddt.ddt
+@override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
+class TestForgivingJwtAuthCookieMiddleware(TestJwtAuthCookieMiddleware):  # pylint: disable=test-inherits-tests
+    pass
 
 
 def _get_test_cookie(is_cookie_valid=True):

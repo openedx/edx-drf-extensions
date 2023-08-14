@@ -8,7 +8,6 @@ from edx_django_utils import monitoring
 from edx_django_utils.cache import DEFAULT_REQUEST_CACHE
 
 import edx_rest_framework_extensions
-from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 
 
@@ -148,14 +147,6 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
     def _set_request_auth_type_guess_attribute(self, request):
         """
         Add custom attribute 'request_auth_type_guess' for the authentication type used.
-
-        NOTE: This is a best guess at this point.  Possible values include:
-            no-user
-            unauthenticated
-            jwt/bearer/other-token-type
-            jwt-cookie
-            session-or-other (catch all)
-
         """
         if not hasattr(request, 'user') or not request.user:
             auth_type = 'no-user'
@@ -168,10 +159,19 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
                 auth_type = token_parts[0].lower()  # 'jwt' or 'bearer' (for example)
             else:
                 auth_type = 'other-token-type'
-        elif USE_JWT_COOKIE_HEADER in request.META and jwt_cookie_name() in request.COOKIES:
+        elif jwt_cookie_name() in request.COOKIES:
             auth_type = 'jwt-cookie'
         else:
             auth_type = 'session-or-other'
+
+        # .. custom_attribute_name: request_auth_type_guess
+        # .. custom_attribute_description: This is a somewhat odd custom attribute, because
+        #      we are taking a guess at authentication. Possible values include:
+        #         no-user,
+        #         unauthenticated,
+        #         jwt/bearer/other-token-type,
+        #         jwt-cookie,
+        #         session-or-other (catch all).
         monitoring.set_custom_attribute('request_auth_type_guess', auth_type)
 
     AUTHENTICATED_USER_FOUND_CACHE_KEY = 'edx-drf-extensions.authenticated_user_found_in_middleware'

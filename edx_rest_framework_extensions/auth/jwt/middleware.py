@@ -23,7 +23,10 @@ from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_name,
     jwt_cookie_signature_name,
 )
-from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
+from edx_rest_framework_extensions.config import (
+    ENABLE_FORGIVING_JWT_COOKIES,
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
+)
 from edx_rest_framework_extensions.permissions import (
     LoginRedirectIfUnauthenticated,
     NotJwtRestrictedApplication,
@@ -133,8 +136,16 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
         Enables Jwt Authentication for endpoints using the LoginRedirectIfUnauthenticated permission class.
         """
         self._check_and_cache_login_required_found(view_func)
-        if self.is_jwt_auth_enabled_with_login_required(request, view_func):
-            request.META[USE_JWT_COOKIE_HEADER] = 'true'
+
+        # Forgiving JWT cookies is an alternative to the older USE_JWT_COOKIE_HEADER.
+        # If the rollout for forgiving JWT cookies succeeds, we would need to see if
+        #   this middleware could be simplified or replaced by a simpler solution, because
+        #   at least one part of the original solution required this middleware to insert
+        #   the USE_JWT_COOKIE_HEADER.
+        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        if not is_forgiving_jwt_cookies_enabled:
+            if self.is_jwt_auth_enabled_with_login_required(request, view_func):
+                request.META[USE_JWT_COOKIE_HEADER] = 'true'
 
     def process_response(self, request, response):
         """
@@ -200,59 +211,59 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
 
     """
 
-    def _get_missing_cookie_message_and_attribute(self, cookie_name):
-        """ Returns tuple with missing cookie (log_message, custom_attribute_value) """
-        cookie_missing_message = '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
+    def _get_missing_cookie_message(self, cookie_name):
+        """ Returns missing cookie log_message """
+        return '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
                 cookie_name
         )
-        request_jwt_cookie = f'missing-{cookie_name}'
-        return cookie_missing_message, request_jwt_cookie
 
     # Note: Using `process_view` over `process_request` so JwtRedirectToLoginIfUnauthenticatedMiddleware which
     # uses `process_view` can update the request before this middleware. Method `process_request` happened too early.
     def process_view(self, request, view_func, view_args, view_kwargs):  # pylint: disable=unused-argument
         """
         Reconstitute the full JWT and add a new cookie on the request object.
+
+        Additionally, may add the user to the request to make it available in process_view. (See below.)
         """
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
 
-        use_jwt_cookie_requested = request.META.get(USE_JWT_COOKIE_HEADER)
+        # .. custom_attribute_name: use_jwt_cookie_requested
+        # .. custom_attribute_description: True if USE_JWT_COOKIE_HEADER was found.
+        #   This is a temporary attribute, because this header is being deprecated/removed.
+        monitoring.set_custom_attribute('use_jwt_cookie_requested', bool(request.META.get(USE_JWT_COOKIE_HEADER)))
+
+        if not get_setting(ENABLE_FORGIVING_JWT_COOKIES):
+            if not request.META.get(USE_JWT_COOKIE_HEADER):
+                return
+
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
-        is_set_request_user_for_jwt_cookie_enabled = get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE)
-        if use_jwt_cookie_requested and is_set_request_user_for_jwt_cookie_enabled:
-            # DRF does not set request.user until process_response. This makes it available in process_view.
-            # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
-            request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
-
-        if not use_jwt_cookie_requested:
-            attribute_value = 'not-requested'
-        elif header_payload_cookie and signature_cookie:
-            # Reconstitute JWT auth cookie if split cookies are available and jwt cookie
-            # authentication was requested by the client.
+        if header_payload_cookie and signature_cookie:
+            # Reconstitute JWT auth cookie if split cookies are available.
             request.COOKIES[jwt_cookie_name()] = '{}{}{}'.format(
                 header_payload_cookie,
                 JWT_DELIMITER,
                 signature_cookie,
             )
-            attribute_value = 'success'
         elif header_payload_cookie or signature_cookie:
             # Log unexpected case of only finding one cookie.
             if not header_payload_cookie:
-                log_message, attribute_value = self._get_missing_cookie_message_and_attribute(
-                    jwt_cookie_header_payload_name()
-                )
+                log_message = self._get_missing_cookie_message(jwt_cookie_header_payload_name())
             if not signature_cookie:
-                log_message, attribute_value = self._get_missing_cookie_message_and_attribute(
-                    jwt_cookie_signature_name()
-                )
+                log_message = self._get_missing_cookie_message(jwt_cookie_signature_name())
             log.warning(log_message)
-        else:
-            attribute_value = 'missing-both'
-            log.warning('Both JWT auth cookies missing. JWT auth cookies will not be reconstituted.')
 
-        monitoring.set_custom_attribute('request_jwt_cookie', attribute_value)
+        has_reconstituted_jwt_cookie = jwt_cookie_name() in request.COOKIES
+        # .. custom_attribute_name: has_jwt_cookie
+        # .. custom_attribute_description: Enables us to see requests which have the full reconstituted
+        #      JWT cookie. If this attribute is missing, it is assumed to be False.
+        monitoring.set_custom_attribute('has_jwt_cookie', has_reconstituted_jwt_cookie)
+
+        if has_reconstituted_jwt_cookie and get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE):
+            # DRF does not set request.user until process_response. This makes it available in process_view.
+            # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
+            request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
 
 
 def _get_user_from_jwt(request, view_func):
@@ -276,7 +287,7 @@ def _get_user_from_jwt(request, view_func):
                 'Jwt Authentication expected, but view %s is not using a JwtAuthentication class.', view_func
             )
     except Exception:  # pylint: disable=broad-except
-        log.exception('Unknown error attempting to complete Jwt Authentication.')  # pragma: no cover
+        log.exception('Unknown Jwt Authentication error attempting to retrieve the user.')  # pragma: no cover
 
     return user
 
