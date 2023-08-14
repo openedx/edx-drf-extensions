@@ -12,6 +12,21 @@ Change Log
 Unreleased
 ----------
 
+[8.9.0] - 2023-08-14
+--------------------
+
+Added
+~~~~~
+* Added capability to forgive JWT cookie authentication failures as a replacement for the now deprecated ``USE-JWT-COOKIE`` header. See DEPR https://github.com/openedx/edx-drf-extensions/issues/371.
+  * For now, this capability must be enabled using the ``ENABLE_FORGIVING_JWT_COOKIES`` toggle.
+  * Added temporary custom attributes ``is_forgiving_jwt_cookies_enabled`` and ``use_jwt_cookie_requested`` to help with this deprecation.
+* Added custom attributes ``has_jwt_cookie`` and ``jwt_auth_result`` for JWT authentication observability.
+
+Changed
+~~~~~~~
+
+* Two features that were gated on the presence of the ``USE-JWT-COOKIE`` header will now be gated on the presence of a JWT cookie instead, regardless of the state of the new ``ENABLE_FORGIVING_JWT_COOKIES`` toggle. The new behavior should be nearly equivalent in most cases, and should cause no issues in the exceptional cases. The two features include CSRF protection for JWT cookies, and the setting of the request user when ``ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE`` is enabled.
+
 [8.8.0] - 2023-05-16
 --------------------
 
