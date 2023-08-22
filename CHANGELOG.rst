@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[8.9.1] - 2023-08-22
+--------------------
+
+Fixed
+~~~~~
+* Fixed Django 40 middleware deprecation warning
+
 [8.9.0] - 2023-08-14
 --------------------
 
