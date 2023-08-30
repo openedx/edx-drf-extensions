@@ -244,7 +244,7 @@ class JwtAuthenticationTests(TestCase):
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_with_correct_jwt_authorization(self, mock_set_custom_attribute):
         """
-        With JWT header it continues and validates the credentials and throws error.
+        With JWT header it continues and validates the credentials.
 
         Note: CSRF protection should be skipped for this case, with no PermissionDenied.
         """
@@ -265,6 +265,19 @@ class JwtAuthenticationTests(TestCase):
         with self.assertRaises(AuthenticationFailed):
             JwtAuthentication().authenticate(request)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-auth-header')
+
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_with_correct_jwt_authorization_and_bad_cookie(self, mock_set_custom_attribute):
+        """
+        With JWT header it continues and validates the credentials and ignores the invalid cookie.
+
+        Note: CSRF protection should be skipped for this case, with no PermissionDenied.
+        """
+        jwt_token = self._get_test_jwt_token()
+        request = RequestFactory().get('/', HTTP_AUTHORIZATION=f"JWT {jwt_token}")
+        request.COOKIES[jwt_cookie_name()] = 'foo'
+        assert JwtAuthentication().authenticate(request)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-auth-header')
 
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_with_bearer_token(self, mock_set_custom_attribute):

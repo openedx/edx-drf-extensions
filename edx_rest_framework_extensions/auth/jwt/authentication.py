@@ -8,7 +8,6 @@ from edx_django_utils.monitoring import set_custom_attribute
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.auth.jwt.decoder import configured_jwt_decode_handler
 from edx_rest_framework_extensions.config import ENABLE_FORGIVING_JWT_COOKIES
 from edx_rest_framework_extensions.settings import get_setting
@@ -82,7 +81,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         #        'failed-cookie': JWT cookie authentication failed. This prevents other
         #          authentication classes from attempting authentication.
 
-        has_jwt_cookie = jwt_cookie_name() in request.COOKIES
+        is_authenticating_with_jwt_cookie = self.is_authenticating_with_jwt_cookie(request)
         try:
             user_and_auth = super().authenticate(request)
 
@@ -92,7 +91,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
                 return user_and_auth
 
             # Not using JWT cookie, CSRF validation not required
-            if not has_jwt_cookie:
+            if not is_authenticating_with_jwt_cookie:
                 set_custom_attribute('jwt_auth_result', 'success-auth-header')
                 return user_and_auth
 
@@ -111,11 +110,11 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             #       for debugging.
             set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
 
-            is_jwt_failure_forgiven = is_forgiving_jwt_cookies_enabled and has_jwt_cookie
+            is_jwt_failure_forgiven = is_forgiving_jwt_cookies_enabled and is_authenticating_with_jwt_cookie
             if is_jwt_failure_forgiven:
                 set_custom_attribute('jwt_auth_result', 'forgiven-failure')
                 return None
-            if has_jwt_cookie:
+            if is_authenticating_with_jwt_cookie:
                 set_custom_attribute('jwt_auth_result', 'failed-cookie')
             else:
                 set_custom_attribute('jwt_auth_result', 'failed-auth-header')
@@ -199,6 +198,21 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         if reason:
             # CSRF failed, bail with explicit error message
             raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
+
+    @classmethod
+    def is_authenticating_with_jwt_cookie(cls, request):
+        """
+        Returns True if authenticating with a JWT cookie, and False otherwise.
+        """
+        try:
+            # If there is a token in the authorization header, it takes precedence in
+            # get_token_from_request. This ensures that not only is a JWT cookie found,
+            # but that it was actually used for authentication.
+            request_token = JSONWebTokenAuthentication.get_token_from_request(request)
+            cookie_token = JSONWebTokenAuthentication.get_token_from_cookies(request.COOKIES)
+            return cookie_token and (request_token == cookie_token)
+        except Exception:  # pylint: disable=broad-exception-caught
+            return False
 
 
 def is_jwt_authenticated(request):

@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[8.9.2] - 2023-08-31
+--------------------
+
+Fixed
+~~~~~
+* Fixes exceptional case where JwtAuthentication should not CSRF protect a request that has both a JWT token in the authorization header and a JWT cookie, since the cookie should be ignored.
+
 [8.9.1] - 2023-08-22
 --------------------
 
