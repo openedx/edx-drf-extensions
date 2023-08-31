@@ -69,7 +69,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         # .. custom_attribute_name: jwt_auth_result
         # .. custom_attribute_description: The result of the JWT authenticate process,
         #      which can having the following values:
-        #        'skipped': When JWT Authentication doesn't apply.
+        #        'n/a': When JWT Authentication doesn't apply.
         #        'success-auth-header': Successfully authenticated using the Authorization header.
         #        'success-cookie': Successfully authenticated using a JWT cookie.
         #        'forgiven-failure': Returns None instead of failing for JWT cookies. This handles
@@ -87,7 +87,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
             # Unauthenticated, CSRF validation not required
             if not user_and_auth:
-                set_custom_attribute('jwt_auth_result', 'skipped')
+                set_custom_attribute('jwt_auth_result', 'n/a')
                 return user_and_auth
 
             # Not using JWT cookie, CSRF validation not required

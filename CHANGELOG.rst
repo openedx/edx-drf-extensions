@@ -19,6 +19,11 @@ Fixed
 ~~~~~
 * Fixes exceptional case where JwtAuthentication should not CSRF protect a request that has both a JWT token in the authorization header and a JWT cookie, since the cookie should be ignored.
 
+Changed
+~~~~~~~
+* Updated one of the values of the custom attribute jwt_auth_result from 'skipped' to 'n/a'.
+
+
 [8.9.1] - 2023-08-22
 --------------------
 
