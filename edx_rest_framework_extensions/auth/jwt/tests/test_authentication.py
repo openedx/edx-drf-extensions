@@ -285,7 +285,7 @@ class JwtAuthenticationTests(TestCase):
         auth_header = '{token_name} {token}'.format(token_name='Bearer', token='abc123')
         request = RequestFactory().get('/', HTTP_AUTHORIZATION=auth_header)
         self.assertIsNone(JwtAuthentication().authenticate(request))
-        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'skipped')
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'n/a')
 
     def _get_test_jwt_token(self):
         """ Returns a user and jwt token """
