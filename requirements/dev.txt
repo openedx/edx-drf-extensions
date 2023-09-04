@@ -300,10 +300,8 @@ semantic-version==2.10.0
     #   -r requirements/test.txt
 six==1.16.0
     # via
-    #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-lint
-    #   python-dateutil
     #   tox
 snowballstemmer==2.2.0
     # via
