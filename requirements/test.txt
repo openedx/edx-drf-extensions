@@ -174,7 +174,6 @@ pytest-django==4.5.2
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via
-    #   -r requirements/base.txt
     #   faker
 python-slugify==8.0.1
     # via code-annotations
