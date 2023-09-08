@@ -27,6 +27,13 @@ Changed
 [8.9.1] - 2023-08-22
 --------------------
 
+Removed
+~~~~~~~
+
+* Removed unused direct dependency on ``six``.
+* Removed unused direct dependency on ``python-dateutil``.
+
+
 Fixed
 ~~~~~
 * Fixed Django 40 middleware deprecation warning
