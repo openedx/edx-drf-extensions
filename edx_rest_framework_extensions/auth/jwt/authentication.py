@@ -5,6 +5,7 @@ import logging
 from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from edx_django_utils.monitoring import set_custom_attribute
+from jwt import exceptions as jwt_exceptions
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
@@ -108,7 +109,8 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # .. custom_attribute_name: jwt_auth_failed
             # .. custom_attribute_description: Includes a summary of the JWT failure exception
             #       for debugging.
-            set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
+            exception_to_report = _deepest_jwt_exception(exception)
+            set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception_to_report)))
 
             is_jwt_failure_forgiven = is_forgiving_jwt_cookies_enabled and is_authenticating_with_jwt_cookie
             if is_jwt_failure_forgiven:
@@ -239,3 +241,23 @@ def get_decoded_jwt_from_auth(request):
         return None
 
     return configured_jwt_decode_handler(request.auth)
+
+
+def _deepest_jwt_exception(exception):
+    """
+    Given an exception, traverse down the __context__ tree
+    until you get to the deepest exceptions which is still
+    a subclass of PyJWTError.  If no PyJWTError subclass
+    exists, then just return the original exception.
+    """
+    relevant_exception = exception
+    cur_exception = exception
+
+    # An exception always has a context but if it's the deepest
+    # exception, than __context__ will return None
+    while cur_exception.__context__:
+        cur_exception = cur_exception.__context__
+        if isinstance(cur_exception, jwt_exceptions.PyJWTError):
+            relevant_exception = cur_exception
+
+    return relevant_exception

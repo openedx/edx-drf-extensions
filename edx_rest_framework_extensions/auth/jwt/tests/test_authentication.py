@@ -5,6 +5,7 @@ from unittest import mock
 import ddt
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase, override_settings
+from jwt import exceptions as jwt_exceptions
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
@@ -300,3 +301,69 @@ class JwtAuthenticationTests(TestCase):
 @override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
 class ForgivingJwtAuthenticationTests(JwtAuthenticationTests):  # pylint: disable=test-inherits-tests
     pass
+
+
+class TestLowestJWTException:
+    """
+    Test that we're getting the correct exception out of a stack of exceptions when checking a JWT for auth Fails.
+
+    The exception closest to us does not have sufficient useful information so we have to see what other exceptions the
+    current exception came from.
+    """
+    # pylint: disable=broad-exception-caught, raise-missing-from, unused-variable, protected-access
+
+    def test_jwt_exception_in_the_middle(self):
+        mock_jwt_exception = jwt_exceptions.DecodeError("Not enough segments")
+        try:
+            try:
+                try:
+                    raise Exception("foo")
+                except Exception as exception:
+                    raise mock_jwt_exception
+            except Exception as exception:
+                raise AuthenticationFailed()
+        except Exception as exception:
+            e = authentication._deepest_jwt_exception(exception)
+            assert e == mock_jwt_exception
+
+    def test_jwt_exception_at_the_bottom(self):
+        mock_jwt_exception = jwt_exceptions.DecodeError("Not enough segments")
+        try:
+            try:
+                try:
+                    raise mock_jwt_exception
+                except Exception as exception:
+                    raise Exception("foo")
+            except Exception as exception:
+                raise AuthenticationFailed()
+        except Exception as exception:
+            e = authentication._deepest_jwt_exception(exception)
+            assert e == mock_jwt_exception
+
+    def test_jwt_exception_at_the_top(self):
+        mock_jwt_exception = jwt_exceptions.DecodeError("Not enough segments")
+        try:
+            try:
+                try:
+                    raise Exception("foo")
+                except Exception as exception:
+                    raise AuthenticationFailed()
+            except Exception as exception:
+                raise mock_jwt_exception
+        except Exception as exception:
+            e = authentication._deepest_jwt_exception(exception)
+            assert e == mock_jwt_exception
+
+    def test_multiple_jwt_exceptions(self):
+        mock_jwt_exception = jwt_exceptions.DecodeError("Not enough segments")
+        try:
+            try:
+                try:
+                    raise Exception("foo")
+                except Exception as exception:
+                    raise mock_jwt_exception
+            except Exception as exception:
+                raise jwt_exceptions.InvalidTokenError()
+        except Exception as exception:
+            e = authentication._deepest_jwt_exception(exception)
+            assert e == mock_jwt_exception
