@@ -12,6 +12,16 @@ Change Log
 Unreleased
 ----------
 
+[8.9.3] - 2023-09-13
+--------------------
+
+Fixed
+~~~~~
+
+* Added more useful exception logging when JWT auth fails.  The exception we
+  get for that did not have enough detail about how the auth check failed so we
+  dig deeper to an exception that is more useful and log that.
+
 [8.9.2] - 2023-08-31
 --------------------
 
