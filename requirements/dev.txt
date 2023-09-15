@@ -125,11 +125,11 @@ exceptiongroup==1.1.3
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==19.4.0
+faker==19.6.1
     # via
     #   -r requirements/test.txt
     #   factory-boy
-filelock==3.12.3
+filelock==3.12.4
     # via
     #   -r requirements/test.txt
     #   tox
@@ -302,6 +302,7 @@ six==1.16.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
+    #   python-dateutil
     #   tox
 snowballstemmer==2.2.0
     # via
@@ -382,7 +383,6 @@ typing-extensions==4.7.1
     #   astroid
     #   edx-opaque-keys
     #   faker
-    #   filelock
     #   pylint
 urllib3==2.0.4
     # via
@@ -390,7 +390,7 @@ urllib3==2.0.4
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.24.4
+virtualenv==20.24.5
     # via
     #   -r requirements/test.txt
     #   tox
