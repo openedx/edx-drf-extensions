@@ -194,7 +194,8 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     #   DEPR: Symmetric JWTs: https://github.com/openedx/public-engineering/issues/83
 
     # Pass only asymmetric_keys to only include asymmetric keys at first
-    key_set = get_verification_jwk_key_set(asymmetric_keys=settings.JWT_AUTH.get('JWT_PUBLIC_SIGNING_JWK_SET'))
+    asymmetric_keys = settings.JWT_AUTH.get('JWT_PUBLIC_SIGNING_JWK_SET')
+    key_set = get_verification_jwk_key_set(asymmetric_keys=asymmetric_keys)
     # .. custom_attribute_name: jwt_auth_verify_asymmetric_keys_count
     # .. custom_attribute_description: Number of JWT verification keys in use for this
     #   verification. Should be same as number of asymmetric public keys. This is
@@ -218,7 +219,6 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
     #   the asymmetric keys here is redundant and unnecessary, but this code is temporary and
     #   will be simplified once symmetric keys have been fully retired.
 
-    asymmetric_keys = settings.JWT_AUTH.get('JWT_PUBLIC_SIGNING_JWK_SET')
     secret_key = jwt_issuer['SECRET_KEY'] if decode_symmetric_token else None
     key_set = get_verification_jwk_key_set(asymmetric_keys=asymmetric_keys, secret_key=secret_key)
     # .. custom_attribute_name: jwt_auth_verify_all_keys_count
@@ -363,8 +363,13 @@ def _decode_and_verify_token(token, jwt_issuer):
 
 def get_verification_jwk_key_set(asymmetric_keys=None, secret_key=None):
     """
-    Returns a JWK Keyset containing all active keys that are configured
-    for verifying signatures.
+    Creates a JWK Keyset containing the provided keys.
+
+    Args:
+        asymmetric_keys (list or None): List of asymmetric JWK verification keys,
+            each in JSON format.
+        secret_key (str or None): Secret key for symmetric JWT verification, as an
+            unencoded string.
     """
     key_set = []
 
