@@ -12,6 +12,11 @@ Change Log
 Unreleased
 ----------
 
+Added
+~~~~~
+* (`#354 <https://github.com/openedx/edx-drf-extensions/pull/354>`_) Implemented ``verify_jwk_signature_using_keyset`` function.
+  This function allows for easy verification of JSON Web Key (JWK) signatures using a provided keyset.
+
 [8.9.3] - 2023-09-13
 --------------------
 
