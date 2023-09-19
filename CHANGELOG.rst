@@ -12,6 +12,9 @@ Change Log
 Unreleased
 ----------
 
+[8.10.0] - 2023-09-19
+---------------------
+
 Added
 ~~~~~
 * (`#354 <https://github.com/openedx/edx-drf-extensions/pull/354>`_) Implemented ``verify_jwk_signature_using_keyset`` function.
