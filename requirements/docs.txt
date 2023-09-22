@@ -74,9 +74,9 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==2.0.4
+urllib3==2.0.5
     # via
     #   -c requirements/test.txt
     #   requests
-zipp==3.16.2
+zipp==3.17.0
     # via importlib-metadata
