@@ -12,6 +12,16 @@ Change Log
 Unreleased
 ----------
 
+[8.11.0] - 2023-10-04
+---------------------
+
+Added
+~~~~~
+* Added toggle EDX_DRF_EXTENSIONS[ENABLE_JWT_VS_SESSION_USER_CHECK] to enable the following:
+
+    * New custom attributes is_jwt_vs_session_user_check_enabled, jwt_auth_session_user_id, jwt_auth_and_session_user_mismatch, and invalid_jwt_cookie_user_id for monitoring and debugging.
+    * When forgiving JWT cookies are also enabled, user mismatches will now result in a failure, rather than a forgiving JWT.
+
 [8.10.0] - 2023-09-19
 ---------------------
 
