@@ -250,7 +250,8 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         # .. custom_attribute_description: The user_id pulled from the failed
         #     JWT cookie. If the user_id claim is not found in the JWT, the attribute
         #     value will be 'not-found'. If the failed JWT simply can't be decoded,
-        #     the attribute value will be 'decode-error'.
+        #     the attribute value will be 'decode-error'. Note: for successful JWTs,
+        #     the user id will already be available in `enduser.id` or `request_user_id`.
         set_custom_attribute('failed_jwt_cookie_user_id', jwt_user_id_attribute_value)
 
         return self._is_jwt_cookie_and_session_user_mismatch(request, jwt_user_id)
