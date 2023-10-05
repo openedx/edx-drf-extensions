@@ -342,14 +342,14 @@ class JwtAuthenticationTests(TestCase):
         assert response.status_code == 200
 
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
-    def test_authenticate_jwt_and_session_mismatch_invalid_cookie(self, mock_set_custom_attribute):
-        """ Tests monitoring for JWT cookie when there is a session user mismatch and invalid JWT cookie """
+    def test_authenticate_jwt_and_session_mismatch_bad_signature_cookie(self, mock_set_custom_attribute):
+        """ Tests monitoring for JWT cookie with a bad signature when there is a session user mismatch """
         session_user_id = 111
         session_user = factories.UserFactory(id=session_user_id)
         jwt_user_id = 222
         jwt_user = factories.UserFactory(id=jwt_user_id)
         self.client.cookies = SimpleCookie({
-            jwt_cookie_name(): self._get_test_jwt_token(user=jwt_user, is_valid=False),
+            jwt_cookie_name(): self._get_test_jwt_token(user=jwt_user, is_valid_signature=False),
         })
 
         enable_forgiving_jwt_cookies = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
@@ -370,7 +370,41 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
         mock_set_custom_attribute.assert_any_call('jwt_auth_session_user_id', session_user_id)
         mock_set_custom_attribute.assert_any_call('jwt_auth_and_session_user_mismatch', True)
-        mock_set_custom_attribute.assert_any_call('invalid_jwt_cookie_user_id', jwt_user_id)
+        mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', jwt_user_id)
+        if enable_forgiving_jwt_cookies:
+            mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
+        else:
+            mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-cookie')
+        assert response.status_code == 401
+
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_jwt_and_session_mismatch_invalid_cookie(self, mock_set_custom_attribute):
+        """ Tests monitoring for invalid JWT cookie when there is a session user mismatch """
+        session_user_id = 111
+        session_user = factories.UserFactory(id=session_user_id)
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_name(): 'invalid-cookie',
+        })
+
+        enable_forgiving_jwt_cookies = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        with override_settings(
+            EDX_DRF_EXTENSIONS={
+                ENABLE_FORGIVING_JWT_COOKIES: enable_forgiving_jwt_cookies,
+                ENABLE_JWT_VS_SESSION_USER_CHECK: True,
+            },
+            MIDDLEWARE=(
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                'django.contrib.auth.middleware.AuthenticationMiddleware',
+            ),
+            ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+        ):
+            self.client.force_login(session_user)
+            response = self.client.get(reverse('authenticated-view'))
+
+        mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_session_user_id', session_user_id)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_and_session_user_mismatch', True)
+        mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', 'decode-error')
         if enable_forgiving_jwt_cookies:
             mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
         else:
@@ -456,11 +490,11 @@ class JwtAuthenticationTests(TestCase):
         assert 'jwt_auth_and_session_user_mismatch' not in set_custom_attribute_keys
         assert response.status_code == 200
 
-    def _get_test_jwt_token(self, user=None, is_valid=True):
+    def _get_test_jwt_token(self, user=None, is_valid_signature=True):
         """ Returns a user and jwt token """
         test_user = factories.UserFactory() if user is None else user
         payload = generate_latest_version_payload(test_user)
-        if is_valid:
+        if is_valid_signature:
             jwt_token = generate_jwt_token(payload)
         else:
             jwt_token = generate_jwt_token(payload, signing_key='invalid-key')
