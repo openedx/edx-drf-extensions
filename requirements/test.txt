@@ -8,7 +8,7 @@ asgiref==3.7.2
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.15.6
+astroid==2.15.8
     # via
     #   pylint
     #   pylint-celery
@@ -16,12 +16,12 @@ certifi==2023.7.22
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.15.1
+cffi==1.16.0
     # via
     #   -r requirements/base.txt
     #   cryptography
     #   pynacl
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via
     #   -r requirements/base.txt
     #   requests
@@ -36,11 +36,11 @@ click-log==0.4.0
     # via edx-lint
 code-annotations==1.5.0
     # via edx-lint
-coverage[toml]==7.3.1
+coverage[toml]==7.3.2
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==41.0.3
+cryptography==41.0.4
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -75,13 +75,13 @@ edx-django-utils==5.7.0
     # via -r requirements/base.txt
 edx-lint==5.3.4
     # via -r requirements/test.in
-edx-opaque-keys==2.5.0
+edx-opaque-keys==2.5.1
     # via -r requirements/base.txt
 exceptiongroup==1.1.3
     # via pytest
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==19.6.1
+faker==19.6.2
     # via factory-boy
 filelock==3.12.4
     # via
@@ -107,11 +107,11 @@ markupsafe==2.1.3
     # via jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==9.0.0
+newrelic==9.1.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-packaging==23.1
+packaging==23.2
     # via
     #   pytest
     #   tox
@@ -119,7 +119,7 @@ pbr==5.11.1
     # via
     #   -r requirements/base.txt
     #   stevedore
-platformdirs==3.10.0
+platformdirs==3.11.0
     # via
     #   pylint
     #   virtualenv
@@ -143,7 +143,7 @@ pyjwt[crypto]==2.8.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-pylint==2.17.5
+pylint==2.17.7
     # via
     #   edx-lint
     #   pylint-celery
@@ -217,7 +217,7 @@ tox==3.28.0
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/test.in
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via
     #   -r requirements/base.txt
     #   asgiref
@@ -225,7 +225,7 @@ typing-extensions==4.7.1
     #   edx-opaque-keys
     #   faker
     #   pylint
-urllib3==2.0.4
+urllib3==2.0.6
     # via
     #   -r requirements/base.txt
     #   requests
