@@ -74,6 +74,23 @@ def jwt_decode_handler(token, decode_symmetric_token=True):
     return _set_token_defaults(decoded_token)
 
 
+def unsafe_jwt_decode_handler(token):
+    """
+    Decodes a JSON Web Token (JWT) with NO verification.
+
+    Args:
+        token (str): JWT to be decoded.
+
+    Returns:
+        dict: Decoded JWT payload
+
+    Raises:
+        InvalidTokenError: Decoding fails.
+    """
+    decoded_token = _unsafe_decode_token_with_no_verification(token)
+    return _set_token_defaults(decoded_token)
+
+
 def configured_jwt_decode_handler(token):
     """
     Calls the ``jwt_decode_handler`` configured in the ``JWT_DECODE_HANDLER`` setting.
@@ -358,6 +375,20 @@ def _decode_and_verify_token(token, jwt_issuer):
         logger.info('Token decode failed due to mismatched issuer [%s]', token_issuer)
         raise jwt.InvalidTokenError('%s is not a valid issuer.' % token_issuer)
 
+    return decoded_token
+
+
+def _unsafe_decode_token_with_no_verification(token):
+    """
+    Returns a decoded JWT token with no verification.
+    """
+    options = {
+        'verify_exp': False,
+        'verify_aud': False,
+        'verify_iss': False,
+        'verify_signature': False,
+    }
+    decoded_token = jwt.decode(token, options=options)
     return decoded_token
 
 

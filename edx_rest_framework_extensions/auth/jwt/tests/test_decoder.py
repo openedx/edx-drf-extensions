@@ -13,6 +13,7 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
     decode_jwt_scopes,
     get_asymmetric_only_jwt_decode_handler,
     jwt_decode_handler,
+    unsafe_jwt_decode_handler,
 )
 from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_asymmetric_jwt_token,
@@ -233,6 +234,20 @@ class JWTDecodeHandlerTests(TestCase):
             mock.call('jwt_auth_issuer', 'test-issuer-1'),
             mock.call('jwt_auth_issuer_verification', 'matches-first-issuer'),
         ]
+
+    def test_unsafe_success_with_invalid_token(self):
+        """
+        Verifies unsafe decode is successful, even with invalid claims and signature
+        """
+        self.payload['iss'] = 'invalid-iss'
+        self.payload['exp'] = 'invalid-exp'
+        self.payload['aud'] = 'invalid-aud'
+        invalid_signing_key = 'invalid-secret-key'
+
+        # Generate a token using the invalid signing key
+        token = generate_jwt_token(self.payload, invalid_signing_key)
+        decoded_token = unsafe_jwt_decode_handler(token)
+        assert decoded_token['username'] is not None
 
 
 def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument
