@@ -10,9 +10,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-from datetime import datetime
 import os
 import sys
+from datetime import datetime
+
 
 # on_rtd is whether we are on readthedocs.org
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -33,6 +34,8 @@ sys.path.append(REPO_ROOT)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'docs_settings')
 
 import django
+
+
 django.setup()
 
 # -- General configuration -----------------------------------------------------
@@ -65,6 +68,7 @@ copyright = f'{datetime.now().year}, edX'
 # built documents.
 #
 import edx_rest_framework_extensions
+
 
 # The short X.Y version.
 version = edx_rest_framework_extensions.__version__

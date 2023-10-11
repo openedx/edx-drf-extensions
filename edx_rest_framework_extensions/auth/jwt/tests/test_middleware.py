@@ -2,7 +2,7 @@
 Unit tests for jwt authentication middlewares.
 """
 from itertools import product
-from unittest.mock import ANY, patch
+from unittest.mock import ANY, Mock, patch
 
 import ddt
 from django.http.cookie import SimpleCookie
@@ -69,7 +69,8 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
     def setUp(self):
         super().setUp()
         self.request = RequestFactory().get('/')
-        self.middleware = EnsureJWTAuthSettingsMiddleware()  # pylint: disable=no-value-for-parameter
+        self.mock_response = Mock()
+        self.middleware = EnsureJWTAuthSettingsMiddleware(self.mock_response)
 
     def _assert_included(self, item, iterator, should_be_included):
         if should_be_included:
@@ -395,7 +396,8 @@ class TestJwtAuthCookieMiddleware(TestCase):
         super().setUp()
         self.request = RequestFactory().get('/')
         self.request.session = 'mock session'
-        self.middleware = JwtAuthCookieMiddleware()  # pylint: disable=no-value-for-parameter
+        self.mock_response = Mock()
+        self.middleware = JwtAuthCookieMiddleware(self.mock_response)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_do_not_use_jwt_cookies(self, mock_set_custom_attribute):
