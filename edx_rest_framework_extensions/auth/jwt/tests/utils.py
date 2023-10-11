@@ -70,6 +70,7 @@ def generate_unversioned_payload(user):
         'iss': jwt_issuer_data['ISSUER'],
         'aud': jwt_issuer_data['AUDIENCE'],
         'username': user.username,
+        'user_id': user.id,  # this should be conditionally added based on the scope
         'email': user.email,
         'iat': now,
         'exp': now + ttl,

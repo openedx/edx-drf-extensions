@@ -4,8 +4,15 @@ from unittest import mock
 
 import ddt
 from django.contrib.auth import get_user_model
+from django.http.cookie import SimpleCookie
 from django.test import RequestFactory, TestCase, override_settings
+from django.urls import re_path as url_pattern
+from django.urls import reverse
+from jwt import exceptions as jwt_exceptions
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from edx_rest_framework_extensions.auth.jwt import authentication
@@ -17,12 +24,32 @@ from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
     generate_latest_version_payload,
 )
-from edx_rest_framework_extensions.config import ENABLE_FORGIVING_JWT_COOKIES
+from edx_rest_framework_extensions.config import (
+    ENABLE_FORGIVING_JWT_COOKIES,
+    ENABLE_JWT_VS_SESSION_USER_CHECK,
+)
 from edx_rest_framework_extensions.settings import get_setting
 from edx_rest_framework_extensions.tests import factories
 
 
 User = get_user_model()
+
+
+class IsAuthenticatedView(APIView):
+    authentication_classes = (JwtAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):  # pylint: disable=unused-argument
+        return Response({'success': True})
+
+
+urlpatterns = [
+    url_pattern(
+        r'^isauthenticated/$',
+        IsAuthenticatedView.as_view(),
+        name='authenticated-view',
+    ),
+]
 
 
 @ddt.ddt
@@ -244,7 +271,7 @@ class JwtAuthenticationTests(TestCase):
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_with_correct_jwt_authorization(self, mock_set_custom_attribute):
         """
-        With JWT header it continues and validates the credentials and throws error.
+        With JWT header it continues and validates the credentials.
 
         Note: CSRF protection should be skipped for this case, with no PermissionDenied.
         """
@@ -267,18 +294,210 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-auth-header')
 
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_with_correct_jwt_authorization_and_bad_cookie(self, mock_set_custom_attribute):
+        """
+        With JWT header it continues and validates the credentials and ignores the invalid cookie.
+
+        Note: CSRF protection should be skipped for this case, with no PermissionDenied.
+        """
+        jwt_token = self._get_test_jwt_token()
+        request = RequestFactory().get('/', HTTP_AUTHORIZATION=f"JWT {jwt_token}")
+        request.COOKIES[jwt_cookie_name()] = 'foo'
+        assert JwtAuthentication().authenticate(request)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-auth-header')
+
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_with_bearer_token(self, mock_set_custom_attribute):
         """ Returns a None for bearer header request. """
         auth_header = '{token_name} {token}'.format(token_name='Bearer', token='abc123')
         request = RequestFactory().get('/', HTTP_AUTHORIZATION=auth_header)
         self.assertIsNone(JwtAuthentication().authenticate(request))
-        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'skipped')
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'n/a')
 
-    def _get_test_jwt_token(self):
+    @override_settings(
+        EDX_DRF_EXTENSIONS={ENABLE_JWT_VS_SESSION_USER_CHECK: True},
+        MIDDLEWARE=(
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+        ),
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+    )
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_jwt_and_session_mismatch(self, mock_set_custom_attribute):
+        """ Tests monitoring for JWT cookie when there is a session user mismatch """
+        session_user_id = 111
+        session_user = factories.UserFactory(id=session_user_id)
+        jwt_user = factories.UserFactory(id=222)
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_name(): self._get_test_jwt_token(user=jwt_user),
+        })
+
+        self.client.force_login(session_user)
+        response = self.client.get(reverse('authenticated-view'))
+
+        mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_session_user_id', session_user_id)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_and_session_user_mismatch', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
+        assert response.status_code == 200
+
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_jwt_and_session_mismatch_bad_signature_cookie(self, mock_set_custom_attribute):
+        """ Tests monitoring for JWT cookie with a bad signature when there is a session user mismatch """
+        session_user_id = 111
+        session_user = factories.UserFactory(id=session_user_id)
+        jwt_user_id = 222
+        jwt_user = factories.UserFactory(id=jwt_user_id)
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_name(): self._get_test_jwt_token(user=jwt_user, is_valid_signature=False),
+        })
+
+        enable_forgiving_jwt_cookies = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        with override_settings(
+            EDX_DRF_EXTENSIONS={
+                ENABLE_FORGIVING_JWT_COOKIES: enable_forgiving_jwt_cookies,
+                ENABLE_JWT_VS_SESSION_USER_CHECK: True,
+            },
+            MIDDLEWARE=(
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                'django.contrib.auth.middleware.AuthenticationMiddleware',
+            ),
+            ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+        ):
+            self.client.force_login(session_user)
+            response = self.client.get(reverse('authenticated-view'))
+
+        mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_session_user_id', session_user_id)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_and_session_user_mismatch', True)
+        mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', jwt_user_id)
+        if enable_forgiving_jwt_cookies:
+            mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
+        else:
+            mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-cookie')
+        assert response.status_code == 401
+
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_jwt_and_session_mismatch_invalid_cookie(self, mock_set_custom_attribute):
+        """ Tests monitoring for invalid JWT cookie when there is a session user mismatch """
+        session_user_id = 111
+        session_user = factories.UserFactory(id=session_user_id)
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_name(): 'invalid-cookie',
+        })
+
+        enable_forgiving_jwt_cookies = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        with override_settings(
+            EDX_DRF_EXTENSIONS={
+                ENABLE_FORGIVING_JWT_COOKIES: enable_forgiving_jwt_cookies,
+                ENABLE_JWT_VS_SESSION_USER_CHECK: True,
+            },
+            MIDDLEWARE=(
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                'django.contrib.auth.middleware.AuthenticationMiddleware',
+            ),
+            ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+        ):
+            self.client.force_login(session_user)
+            response = self.client.get(reverse('authenticated-view'))
+
+        mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_session_user_id', session_user_id)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_and_session_user_mismatch', True)
+        mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', 'decode-error')
+        if enable_forgiving_jwt_cookies:
+            mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
+        else:
+            mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-cookie')
+        assert response.status_code == 401
+
+    @override_settings(
+        EDX_DRF_EXTENSIONS={ENABLE_JWT_VS_SESSION_USER_CHECK: True},
+        MIDDLEWARE=(
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+        ),
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+    )
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_jwt_and_session_match(self, mock_set_custom_attribute):
+        """ Tests monitoring for JWT cookie when session user matches """
+        test_user = factories.UserFactory()
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_name(): self._get_test_jwt_token(user=test_user),
+        })
+
+        self.client.force_login(test_user)
+        response = self.client.get(reverse('authenticated-view'))
+
+        mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
+        set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
+        assert 'is_jwt_vs_session_user_check_enabled' in set_custom_attribute_keys
+        assert 'jwt_auth_session_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_and_session_user_mismatch' not in set_custom_attribute_keys
+        assert response.status_code == 200
+
+    @override_settings(
+        EDX_DRF_EXTENSIONS={ENABLE_JWT_VS_SESSION_USER_CHECK: True},
+        MIDDLEWARE=(
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+        ),
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+    )
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_jwt_and_no_session(self, mock_set_custom_attribute):
+        """ Tests monitoring for JWT cookie when there is no session """
+        test_user = factories.UserFactory()
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_name(): self._get_test_jwt_token(user=test_user),
+        })
+
+        # unlike other tests, there is no force_login call to start the session
+        response = self.client.get(reverse('authenticated-view'))
+
+        mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
+        set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
+        assert 'is_jwt_vs_session_user_check_enabled' in set_custom_attribute_keys
+        assert 'jwt_auth_session_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_and_session_user_mismatch' not in set_custom_attribute_keys
+        assert response.status_code == 200
+
+    @override_settings(
+        EDX_DRF_EXTENSIONS={ENABLE_JWT_VS_SESSION_USER_CHECK: False},
+        MIDDLEWARE=(
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+        ),
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+    )
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_jwt_and_session_mismatch_disabled(self, mock_set_custom_attribute):
+        """ Tests monitoring disabled for JWT cookie and session user mismatch """
+        session_user = factories.UserFactory(id=111)
+        jwt_user = factories.UserFactory(id=222)
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_name(): self._get_test_jwt_token(user=jwt_user),
+        })
+
+        self.client.force_login(session_user)
+        response = self.client.get(reverse('authenticated-view'))
+
+        mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', False)
+        set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
+        assert 'is_jwt_vs_session_user_check_enabled' in set_custom_attribute_keys
+        assert 'jwt_auth_session_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_and_session_user_mismatch' not in set_custom_attribute_keys
+        assert response.status_code == 200
+
+    def _get_test_jwt_token(self, user=None, is_valid_signature=True):
         """ Returns a user and jwt token """
-        user = factories.UserFactory()
-        payload = generate_latest_version_payload(user)
-        jwt_token = generate_jwt_token(payload)
+        test_user = factories.UserFactory() if user is None else user
+        payload = generate_latest_version_payload(test_user)
+        if is_valid_signature:
+            jwt_token = generate_jwt_token(payload)
+        else:
+            jwt_token = generate_jwt_token(payload, signing_key='invalid-key')
         return jwt_token
 
 
@@ -287,3 +506,69 @@ class JwtAuthenticationTests(TestCase):
 @override_settings(EDX_DRF_EXTENSIONS={ENABLE_FORGIVING_JWT_COOKIES: True})
 class ForgivingJwtAuthenticationTests(JwtAuthenticationTests):  # pylint: disable=test-inherits-tests
     pass
+
+
+class TestLowestJWTException:
+    """
+    Test that we're getting the correct exception out of a stack of exceptions when checking a JWT for auth Fails.
+
+    The exception closest to us does not have sufficient useful information so we have to see what other exceptions the
+    current exception came from.
+    """
+    # pylint: disable=broad-exception-caught, raise-missing-from, unused-variable, protected-access
+
+    def test_jwt_exception_in_the_middle(self):
+        mock_jwt_exception = jwt_exceptions.DecodeError("Not enough segments")
+        try:
+            try:
+                try:
+                    raise Exception("foo")
+                except Exception as exception:
+                    raise mock_jwt_exception
+            except Exception as exception:
+                raise AuthenticationFailed()
+        except Exception as exception:
+            e = authentication._deepest_jwt_exception(exception)
+            assert e == mock_jwt_exception
+
+    def test_jwt_exception_at_the_bottom(self):
+        mock_jwt_exception = jwt_exceptions.DecodeError("Not enough segments")
+        try:
+            try:
+                try:
+                    raise mock_jwt_exception
+                except Exception as exception:
+                    raise Exception("foo")
+            except Exception as exception:
+                raise AuthenticationFailed()
+        except Exception as exception:
+            e = authentication._deepest_jwt_exception(exception)
+            assert e == mock_jwt_exception
+
+    def test_jwt_exception_at_the_top(self):
+        mock_jwt_exception = jwt_exceptions.DecodeError("Not enough segments")
+        try:
+            try:
+                try:
+                    raise Exception("foo")
+                except Exception as exception:
+                    raise AuthenticationFailed()
+            except Exception as exception:
+                raise mock_jwt_exception
+        except Exception as exception:
+            e = authentication._deepest_jwt_exception(exception)
+            assert e == mock_jwt_exception
+
+    def test_multiple_jwt_exceptions(self):
+        mock_jwt_exception = jwt_exceptions.DecodeError("Not enough segments")
+        try:
+            try:
+                try:
+                    raise Exception("foo")
+                except Exception as exception:
+                    raise mock_jwt_exception
+            except Exception as exception:
+                raise jwt_exceptions.InvalidTokenError()
+        except Exception as exception:
+            e = authentication._deepest_jwt_exception(exception)
+            assert e == mock_jwt_exception

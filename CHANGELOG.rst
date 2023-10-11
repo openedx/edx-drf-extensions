@@ -12,8 +12,55 @@ Change Log
 Unreleased
 ----------
 
+[8.11.0] - 2023-10-04
+---------------------
+
+Added
+~~~~~
+* Added toggle EDX_DRF_EXTENSIONS[ENABLE_JWT_VS_SESSION_USER_CHECK] to enable the following:
+
+    * New custom attributes is_jwt_vs_session_user_check_enabled, jwt_auth_session_user_id, jwt_auth_and_session_user_mismatch, and invalid_jwt_cookie_user_id for monitoring and debugging.
+    * When forgiving JWT cookies are also enabled, user mismatches will now result in a failure, rather than a forgiving JWT.
+
+[8.10.0] - 2023-09-19
+---------------------
+
+Added
+~~~~~
+* (`#354 <https://github.com/openedx/edx-drf-extensions/pull/354>`_) Implemented ``verify_jwk_signature_using_keyset`` function.
+  This function allows for easy verification of JSON Web Key (JWK) signatures using a provided keyset.
+
+[8.9.3] - 2023-09-13
+--------------------
+
+Fixed
+~~~~~
+
+* Added more useful exception logging when JWT auth fails.  The exception we
+  get for that did not have enough detail about how the auth check failed so we
+  dig deeper to an exception that is more useful and log that.
+
+[8.9.2] - 2023-08-31
+--------------------
+
+Fixed
+~~~~~
+* Fixes exceptional case where JwtAuthentication should not CSRF protect a request that has both a JWT token in the authorization header and a JWT cookie, since the cookie should be ignored.
+
+Changed
+~~~~~~~
+* Updated one of the values of the custom attribute jwt_auth_result from 'skipped' to 'n/a'.
+
+
 [8.9.1] - 2023-08-22
 --------------------
+
+Removed
+~~~~~~~
+
+* Removed unused direct dependency on ``six``.
+* Removed unused direct dependency on ``python-dateutil``.
+
 
 Fixed
 ~~~~~
