@@ -292,10 +292,9 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         )
         if not has_request_user:  # pragma: no cover
             # .. custom_attribute_name: jwt_auth_request_user_not_found
-            # .. custom_attribute_description: This custom attribute will show that we
-            #      were unable to find the session user. This should not occur outside
-            #      of tests, because there should still be an unauthenticated user, but
-            #      this attribute could be used to check for the unexpected.
+            # .. custom_attribute_description: This custom attribute shows when a
+            #      session user was not found during JWT cookie authentication. This
+            #      attribute will not exist if the session user is found.
             set_custom_attribute('jwt_auth_request_user_not_found', True)
             return False
 
@@ -308,20 +307,15 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         if not session_user_id or session_user_id == jwt_user_id:
             return False
 
-        # .. custom_attribute_name: jwt_auth_session_user_id
-        # .. custom_attribute_description: Session authentication may have completed
-        #       in middleware before even getting to DRF. Although this authentication
-        #       won't stick, because it will be replaced by DRF authentication, we
-        #       record it, because it sometimes does not match the JWT cookie user.
-        #       The name of this attribute is simply to clarify that this was found
-        #       during JWT authentication.
-        set_custom_attribute('jwt_auth_session_user_id', session_user_id)
-
-        # .. custom_attribute_name: jwt_auth_and_session_user_mismatch
-        # .. custom_attribute_description: True if session authentication user id and
-        #       the JWT cookie user id may not match. When they match, this attribute
-        #       won't be included. See jwt_auth_session_user_id for additional details.
-        set_custom_attribute('jwt_auth_and_session_user_mismatch', True)
+        # .. custom_attribute_name: jwt_auth_mismatch_session_user_id
+        # .. custom_attribute_description: The session authentication user id if it
+        #      does not match the JWT cookie user id. If there is no session user,
+        #      or if it matches the JWT cookie user id, this attribute will not be
+        #      included. Session authentication may have completed in middleware
+        #      before getting to DRF. Although this authentication won't stick,
+        #      because it will be replaced by DRF authentication, we record it,
+        #      because it sometimes does not match the JWT cookie user.
+        set_custom_attribute('jwt_auth_mismatch_session_user_id', session_user_id)
 
         return True
 

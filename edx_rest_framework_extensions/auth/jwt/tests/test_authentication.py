@@ -336,8 +336,7 @@ class JwtAuthenticationTests(TestCase):
         response = self.client.get(reverse('authenticated-view'))
 
         mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
-        mock_set_custom_attribute.assert_any_call('jwt_auth_session_user_id', session_user_id)
-        mock_set_custom_attribute.assert_any_call('jwt_auth_and_session_user_mismatch', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_user_id', session_user_id)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
         assert response.status_code == 200
 
@@ -368,8 +367,7 @@ class JwtAuthenticationTests(TestCase):
             response = self.client.get(reverse('authenticated-view'))
 
         mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
-        mock_set_custom_attribute.assert_any_call('jwt_auth_session_user_id', session_user_id)
-        mock_set_custom_attribute.assert_any_call('jwt_auth_and_session_user_mismatch', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_user_id', session_user_id)
         mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', jwt_user_id)
         if enable_forgiving_jwt_cookies:
             mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
@@ -402,8 +400,7 @@ class JwtAuthenticationTests(TestCase):
             response = self.client.get(reverse('authenticated-view'))
 
         mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
-        mock_set_custom_attribute.assert_any_call('jwt_auth_session_user_id', session_user_id)
-        mock_set_custom_attribute.assert_any_call('jwt_auth_and_session_user_mismatch', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_user_id', session_user_id)
         mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', 'decode-error')
         if enable_forgiving_jwt_cookies:
             mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
@@ -433,8 +430,7 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
         assert 'is_jwt_vs_session_user_check_enabled' in set_custom_attribute_keys
-        assert 'jwt_auth_session_user_id' not in set_custom_attribute_keys
-        assert 'jwt_auth_and_session_user_mismatch' not in set_custom_attribute_keys
+        assert 'jwt_auth_mismatch_session_user_id' not in set_custom_attribute_keys
         assert response.status_code == 200
 
     @override_settings(
@@ -459,8 +455,7 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', True)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
         assert 'is_jwt_vs_session_user_check_enabled' in set_custom_attribute_keys
-        assert 'jwt_auth_session_user_id' not in set_custom_attribute_keys
-        assert 'jwt_auth_and_session_user_mismatch' not in set_custom_attribute_keys
+        assert 'jwt_auth_mismatch_session_user_id' not in set_custom_attribute_keys
         assert response.status_code == 200
 
     @override_settings(
@@ -486,8 +481,7 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_jwt_vs_session_user_check_enabled', False)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
         assert 'is_jwt_vs_session_user_check_enabled' in set_custom_attribute_keys
-        assert 'jwt_auth_session_user_id' not in set_custom_attribute_keys
-        assert 'jwt_auth_and_session_user_mismatch' not in set_custom_attribute_keys
+        assert 'jwt_auth_mismatch_session_user_id' not in set_custom_attribute_keys
         assert response.status_code == 200
 
     def _get_test_jwt_token(self, user=None, is_valid_signature=True):
