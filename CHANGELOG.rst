@@ -12,6 +12,17 @@ Change Log
 Unreleased
 ----------
 
+[8.12.0] - 2023-10-16
+---------------------
+
+Changed
+~~~~~~~
+* Made changes to the recent ENABLE_JWT_VS_SESSION_USER_CHECK custom attributes. Although this is technically a breaking change, skipping major release because of limited use of these attributes.
+
+    * The jwt_auth_session_user_id attribute has been renamed to clarify that this attribute only appears in the case of a mismatch.
+    * Dropped jwt_auth_and_session_user_mismatch, which is redundant to simply checking for the existence of jwt_auth_mismatch_session_user_id.
+    * Updated annotations for jwt_auth_request_user_not_found, because it has proven to be a real case in Production and not just in testing.
+
 [8.11.1] - 2023-10-11
 ---------------------
 
