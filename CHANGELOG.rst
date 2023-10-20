@@ -40,6 +40,10 @@ Added
     * New custom attributes is_jwt_vs_session_user_check_enabled, jwt_auth_session_user_id, jwt_auth_and_session_user_mismatch, and invalid_jwt_cookie_user_id for monitoring and debugging.
     * When forgiving JWT cookies are also enabled, user mismatches will now result in a failure, rather than a forgiving JWT.
 
+Changed
+~~~~~~~
+* BREAKING CHANGE: For tests only, the test utility method generate_unversioned_payload now requires that the user argument contains an id attribute. In the case of a Mock user, you must set user.id.
+
 [8.10.0] - 2023-09-19
 ---------------------
 
