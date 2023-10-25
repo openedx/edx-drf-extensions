@@ -4,6 +4,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
+from edx_django_utils.cache import RequestCache
 from edx_django_utils.monitoring import set_custom_attribute
 from jwt import exceptions as jwt_exceptions
 from rest_framework import exceptions
@@ -15,12 +16,22 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
 )
 from edx_rest_framework_extensions.config import (
     ENABLE_FORGIVING_JWT_COOKIES,
-    ENABLE_JWT_VS_SESSION_USER_CHECK,
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
 )
 from edx_rest_framework_extensions.settings import get_setting
 
 
 logger = logging.getLogger(__name__)
+
+
+class JwtAuthenticationError(Exception):
+    """
+    Custom base class for all exceptions
+    """
+
+
+class JwtSessionUserMismatchError(JwtAuthenticationError):
+    pass
 
 
 class CSRFCheck(CsrfViewMiddleware):
@@ -87,6 +98,11 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         #          other authentication classes from attempting authentication.
         #        'failed-cookie': JWT cookie authentication failed. This prevents other
         #          authentication classes from attempting authentication.
+        #        'user-mismatch-failure': JWT vs session user mismatch found for what would have been
+        #          a forgiven-failure, but instead, the JWT failure will be final.
+        #        'user-mismatch-enforced-failure': JWT vs session user mismatch found for what would
+        #          have been a successful JWT authentication, but we are enforcing a match, and thus
+        #          we fail authentication.
 
         is_authenticating_with_jwt_cookie = self.is_authenticating_with_jwt_cookie(request)
         try:
@@ -105,18 +121,29 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             self.enforce_csrf(request)
 
             # CSRF passed validation with authenticated user
+
+            # adds additional monitoring for mismatches; and raises errors in certain cases
+            self._monitor_or_enforce_successful_jwt_cookie_and_session_user_mismatch(
+                request, jwt_user_id=user_and_auth[0].id
+            )
             set_custom_attribute('jwt_auth_result', 'success-cookie')
-            # adds additional monitoring for mismatches
-            self._monitor_successful_jwt_cookie_and_session_user_mismatch(request, jwt_user_id=user_and_auth[0].id)
             return user_and_auth
+
+        except JwtSessionUserMismatchError as exception:
+            # Warn against these errors because JWT vs session user should not be happening.
+            logger.warning('Failed JWT Authentication due to session user mismatch.')
+            # .. custom_attribute_name: jwt_auth_failed
+            # .. custom_attribute_description: Includes a summary of the JWT failure exception
+            #       for debugging.
+            set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception)))
+            set_custom_attribute('jwt_auth_result', 'user-mismatch-enforced-failure')
+            raise
 
         except Exception as exception:
             # Errors in production do not need to be logged (as they may be noisy),
             # but debug logging can help quickly resolve issues during development.
-            logger.debug('Failed JWT Authentication,', exc_info=exception)
-            # .. custom_attribute_name: jwt_auth_failed
-            # .. custom_attribute_description: Includes a summary of the JWT failure exception
-            #       for debugging.
+            logger.debug('Failed JWT Authentication.', exc_info=exception)
+
             exception_to_report = _deepest_jwt_exception(exception)
             set_custom_attribute('jwt_auth_failed', 'Exception:{}'.format(repr(exception_to_report)))
 
@@ -256,15 +283,23 @@ class JwtAuthentication(JSONWebTokenAuthentication):
 
         return self._is_jwt_cookie_and_session_user_mismatch(request, jwt_user_id)
 
-    def _monitor_successful_jwt_cookie_and_session_user_mismatch(self, request, jwt_user_id):
+    def _monitor_or_enforce_successful_jwt_cookie_and_session_user_mismatch(self, request, jwt_user_id):
         """
-        Provides monitoring when a successful JWT cookie and session user do not match.
+        Provides monitoring and possible enforcement when a successful JWT cookie and session user do not match.
 
         Notes:
         - Must only be called in the case of a successful JWT cookie.
         - Also provides monitoring details for mismatches.
+        - In the case where ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE is being used, we trigger a failure for
+            what otherwise would have been a successful authentication.
         """
-        self._is_jwt_cookie_and_session_user_mismatch(request, jwt_user_id)
+        is_mismatch = self._is_jwt_cookie_and_session_user_mismatch(request, jwt_user_id)
+        if is_mismatch and get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE):
+            # For failed_jwt_cookie_user_id docs, see custom attribute annotations elsewhere
+            set_custom_attribute('failed_jwt_cookie_user_id', jwt_user_id)
+            raise JwtSessionUserMismatchError(
+                'Failing otherwise successful JWT authentication due to session user mismatch with set request user.'
+            )
 
     def _is_jwt_cookie_and_session_user_mismatch(self, request, jwt_user_id):
         """
@@ -275,22 +310,30 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             jwt_user_id (int): The user_id of the JWT, None if not found.
 
         Other notes:
-        - If ENABLE_JWT_VS_SESSION_USER_CHECK is toggled off, always return False.
+        - If ENABLE_FORGIVING_JWT_COOKIES is toggled off, always return False.
         - Also adds monitoring details for mismatches.
         - Should only be called for JWT cookies.
         """
-        is_jwt_vs_session_user_check_enabled = get_setting(ENABLE_JWT_VS_SESSION_USER_CHECK)
-        # .. custom_attribute_name: is_jwt_vs_session_user_check_enabled
-        # .. custom_attribute_description: This is temporary custom attribute to show
-        #      whether ENABLE_JWT_VS_SESSION_USER_CHECK is toggled on or off.
-        set_custom_attribute('is_jwt_vs_session_user_check_enabled', is_jwt_vs_session_user_check_enabled)
-        if not is_jwt_vs_session_user_check_enabled:
+        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        # This toggle provides a temporary safety valve for rollout.
+        if not is_forgiving_jwt_cookies_enabled:
             return False
 
-        has_request_user = (
-            hasattr(request, '_request') and hasattr(request._request, 'user')  # pylint: disable=protected-access
-        )
-        if not has_request_user:  # pragma: no cover
+        # If we set the request user in middleware for JWT auth, then we'd actually be checking JWT vs JWT user id.
+        # Additionally, somehow the setting of request.user and the retrieving of request.user below causes some
+        # unknown issue in production-like environments, and this allows us to skip that case.
+        if _is_request_user_set_for_jwt_auth():
+            # .. custom_attribute_name: skip_jwt_vs_session_check
+            # .. custom_attribute_description: This is temporary custom attribute to show that we skipped the check.
+            #      This is probably redundant with the custom attribute set_user_from_jwt_status, but temporarily
+            #      adding during initial rollout.
+            set_custom_attribute('skip_jwt_vs_session_check', True)
+            return False
+
+        # Get the session-based user from the underlying HttpRequest object.
+        # This line taken from DRF SessionAuthentication.
+        user = getattr(request._request, 'user', None)  # pylint: disable=protected-access
+        if not user:  # pragma: no cover
             # .. custom_attribute_name: jwt_auth_request_user_not_found
             # .. custom_attribute_description: This custom attribute shows when a
             #      session user was not found during JWT cookie authentication. This
@@ -298,9 +341,8 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             set_custom_attribute('jwt_auth_request_user_not_found', True)
             return False
 
-        wsgi_request_user = request._request.user  # pylint: disable=protected-access
-        if wsgi_request_user and wsgi_request_user.is_authenticated:
-            session_user_id = wsgi_request_user.id
+        if user.is_authenticated:
+            session_user_id = user.id
         else:
             session_user_id = None
 
@@ -318,6 +360,19 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         set_custom_attribute('jwt_auth_mismatch_session_user_id', session_user_id)
 
         return True
+
+
+_IS_REQUEST_USER_SET_FOR_JWT_AUTH_CACHE_KEY = '_is_request_user_for_jwt_set'
+
+
+def set_flag_is_request_user_set_for_jwt_auth():
+    """
+    Sets a flag that the shows the request user was set to be based on JWT auth.
+
+    Used to coordinate between middleware and JwtAuthentication. Note that the flag
+    is stored in this module to avoid circular dependencies.
+    """
+    _get_module_request_cache()[_IS_REQUEST_USER_SET_FOR_JWT_AUTH_CACHE_KEY] = True
 
 
 def is_jwt_authenticated(request):
@@ -364,3 +419,16 @@ def _deepest_jwt_exception(exception):
             relevant_exception = cur_exception
 
     return relevant_exception
+
+
+def _get_module_request_cache():
+    return RequestCache(__name__).data
+
+
+def _is_request_user_set_for_jwt_auth():
+    """
+    Returns whether the request user was set to be based on JWT auth in JwtAuthCookieMiddleware.
+
+    This is a public method to enable coordination with the JwtAuthentication class.
+    """
+    return _get_module_request_cache().get(_IS_REQUEST_USER_SET_FOR_JWT_AUTH_CACHE_KEY, False)

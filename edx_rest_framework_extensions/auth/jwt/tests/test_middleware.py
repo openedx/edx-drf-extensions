@@ -28,6 +28,8 @@ from edx_rest_framework_extensions.auth.jwt.middleware import (
     EnsureJWTAuthSettingsMiddleware,
     JwtAuthCookieMiddleware,
     JwtRedirectToLoginIfUnauthenticatedMiddleware,
+    _get_cached_user_from_jwt,
+    _get_user_from_jwt_original,
 )
 from edx_rest_framework_extensions.config import (
     ENABLE_FORGIVING_JWT_COOKIES,
@@ -394,12 +396,13 @@ class CheckRequestUserAnonymousForJwtAuthMiddleware(MiddlewareMixin):
 class TestJwtAuthCookieMiddleware(TestCase):
     def setUp(self):
         super().setUp()
+        RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
         self.request.session = 'mock session'
         self.mock_response = Mock()
         self.middleware = JwtAuthCookieMiddleware(self.mock_response)
 
-    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    @patch('edx_rest_framework_extensions.auth.jwt.middleware.set_custom_attribute')
     def test_do_not_use_jwt_cookies(self, mock_set_custom_attribute):
         self.middleware.process_view(self.request, None, None, None)
         self.assertIsNone(self.request.COOKIES.get(jwt_cookie_name()))
@@ -411,7 +414,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
     )
     @ddt.unpack
     @patch('edx_rest_framework_extensions.auth.jwt.middleware.log')
-    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    @patch('edx_rest_framework_extensions.auth.jwt.middleware.set_custom_attribute')
     def test_missing_cookies(
             self, set_cookie_name, missing_cookie_name, mock_set_custom_attribute, mock_log
     ):
@@ -426,7 +429,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
         mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', True)
         mock_set_custom_attribute.assert_any_call('has_jwt_cookie', False)
 
-    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    @patch('edx_rest_framework_extensions.auth.jwt.middleware.set_custom_attribute')
     def test_no_cookies(self, mock_set_custom_attribute):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.middleware.process_view(self.request, None, None, None)
@@ -434,7 +437,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
         mock_set_custom_attribute.assert_any_call('use_jwt_cookie_requested', True)
         mock_set_custom_attribute.assert_any_call('has_jwt_cookie', False)
 
-    @patch('edx_django_utils.monitoring.set_custom_attribute')
+    @patch('edx_rest_framework_extensions.auth.jwt.middleware.set_custom_attribute')
     def test_success(self, mock_set_custom_attribute):
         self.request.META[USE_JWT_COOKIE_HEADER] = 'true'
         self.request.COOKIES[jwt_cookie_header_payload_name()] = 'header.payload'
@@ -448,6 +451,14 @@ class TestJwtAuthCookieMiddleware(TestCase):
     _LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS = 1
 
     @patch('edx_rest_framework_extensions.auth.jwt.middleware.log')
+    @patch(
+        'edx_rest_framework_extensions.auth.jwt.middleware._get_cached_user_from_jwt',
+        wraps=_get_cached_user_from_jwt
+    )
+    @patch(
+        'edx_rest_framework_extensions.auth.jwt.middleware._get_user_from_jwt_original',
+        wraps=_get_user_from_jwt_original
+    )
     @ddt.data(
         ('/nopermissionsrequired/', True, True, True, None, False),
         ('/nopermissionsrequired/', True, False, False, None, False),
@@ -459,8 +470,8 @@ class TestJwtAuthCookieMiddleware(TestCase):
     )
     @ddt.unpack
     def test_set_request_user_with_use_jwt_cookie(
-            self, url, is_cookie_valid, is_request_user_set, is_toggle_enabled, log_warning,
-            send_post, mock_log,
+            self, url, is_cookie_valid, is_request_user_set, is_toggle_enabled, log_warning, send_post,
+            mock_protected_get_user_original, mock_protected_get_cached_user_from_jwt, mock_log,
     ):
         header = {USE_JWT_COOKIE_HEADER: 'true'}
         self.client.cookies = _get_test_cookie(is_cookie_valid=is_cookie_valid)
@@ -480,6 +491,7 @@ class TestJwtAuthCookieMiddleware(TestCase):
                     ),
             ),
             EDX_DRF_EXTENSIONS={
+                ENABLE_FORGIVING_JWT_COOKIES: False,
                 ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: is_toggle_enabled,
             }
         ):
@@ -489,14 +501,51 @@ class TestJwtAuthCookieMiddleware(TestCase):
                 response = self.client.get(url, **header)
             self.assertEqual(200, response.status_code)
 
-            if log_warning == self._LOG_WARN_AUTHENTICATION_FAILED:
-                mock_log.warning.assert_called_once_with('Jwt Authentication failed and request.user could not be set.')
-            elif log_warning == self._LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS:
-                mock_log.warning.assert_called_once_with(
-                    'Jwt Authentication expected, but view %s is not using a JwtAuthentication class.', ANY
-                )
-            else:
-                mock_log.warn.assert_not_called()
+        if log_warning == self._LOG_WARN_AUTHENTICATION_FAILED:
+            mock_log.debug.assert_called_once_with('Jwt Authentication failed and request.user could not be set.')
+        elif log_warning == self._LOG_WARN_MISSING_JWT_AUTHENTICATION_CLASS:
+            mock_log.debug.assert_called_once_with(
+                'Jwt Authentication expected, but view %s is not using a JwtAuthentication class.', ANY
+            )
+        else:
+            mock_log.warn.assert_not_called()
+        # Ensure _get_user_from_jwt_original is called, since ENABLE_FORGIVING_JWT_COOKIES is disabled
+        if is_request_user_set:
+            mock_protected_get_user_original.assert_called()
+        # Ensure _get_cached_user_from_jwt is not called, since ENABLE_FORGIVING_JWT_COOKIES is disabled
+        mock_protected_get_cached_user_from_jwt.assert_not_called()
+
+    @patch(
+        'edx_rest_framework_extensions.auth.jwt.middleware._get_cached_user_from_jwt',
+        wraps=_get_cached_user_from_jwt
+    )
+    @override_settings(
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_middleware',
+        MIDDLEWARE=(
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
+                'django.contrib.auth.middleware.AuthenticationMiddleware',
+                'edx_rest_framework_extensions.auth.jwt.tests.test_middleware.CheckRequestUserForJwtAuthMiddleware',
+        ),
+        EDX_DRF_EXTENSIONS={
+            ENABLE_FORGIVING_JWT_COOKIES: True,
+            ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: True,
+        }
+    )
+    def test_set_request_user_with_use_jwt_cookie_and_forgiving_jwt_cookie_enabled(
+        self, mock_protected_get_cached_user_from_jwt
+    ):
+        """
+        Tests set request user when ENABLE_FORGIVING_JWT_COOKIES is also enabled.
+        """
+        self.client.cookies = _get_test_cookie(is_cookie_valid=True)
+
+        response = self.client.get('/nopermissionsrequired/')
+
+        # additional assertions in CheckRequestUserForJwtAuthMiddleware
+        self.assertEqual(200, response.status_code)
+        # Ensure _get_cached_user_from_jwt is called, since ENABLE_FORGIVING_JWT_COOKIES is enabled
+        mock_protected_get_cached_user_from_jwt.assert_called()
 
 
 # We want to duplicate these tests for now while we have two major code paths.  It will get unified once we have a

@@ -29,6 +29,15 @@ Rather than checking for the `HTTP_USE_JWT_COOKIE`, the `JwtAuthCookieMiddleware
 
 The proposal includes protecting all changes with a temporary rollout feature toggle ``ENABLE_FORGIVING_JWT_COOKIES``. This can be used to ensure no harm is done for each service before cleaning up the old header.
 
+Unfortunately, there are certain rare cases where the user inside the JWT and the session user do not match:
+
+- If the JWT cookie succeeds authentication, and:
+
+    - If ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE is enabled to make the JWT user available to middleware, then we also enforce the that the JWT user and session user match. If they do not, we will fail authentication instead.
+    - If ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE is disabled, we allow the successful JWT cookie authentication to proceed, even though the session user does not match. We will monitor this situation and may choose to enforce the match and fail instead.
+
+- If the JWT cookie fails authentication, but the failed JWT contains a user that does not match the session user, authentication will be failed, rather than moving on to SessionAuthentication which would have resulted in authentication for a different user.
+
 .. _JwtAuthCookieMiddleware: https://github.com/edx/edx-drf-extensions/blob/270cf521a72b506d7df595c4c479c7ca232b4bec/edx_rest_framework_extensions/auth/jwt/middleware.py#L164
 
 Consequences
@@ -48,3 +57,14 @@ Consequences
 
 .. _why the request header HTTP_USE_JWT_COOKIE: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/oauth_dispatch/docs/decisions/0009-jwt-in-session-cookie.rst#login---cookie---api
 .. _JwtRedirectToLoginIfUnauthenticatedMiddleware: https://github.com/edx/edx-drf-extensions/blob/270cf521a72b506d7df595c4c479c7ca232b4bec/edx_rest_framework_extensions/auth/jwt/middleware.py#L87
+
+Change History
+--------------
+
+2023-10-30
+~~~~~~~~~~
+* Details added for handling of a variety of situations when the JWT cookie user and the session user do not match.
+
+2023-08-14
+~~~~~~~~~~
+* Merged original ADR

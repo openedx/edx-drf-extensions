@@ -17,7 +17,6 @@ from rest_framework_jwt.settings import api_settings
 
 from edx_rest_framework_extensions.config import (
     ENABLE_FORGIVING_JWT_COOKIES,
-    ENABLE_JWT_VS_SESSION_USER_CHECK,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
 )
 
@@ -36,7 +35,6 @@ DEFAULT_SETTINGS = {
     'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': (),
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: False,
     ENABLE_FORGIVING_JWT_COOKIES: False,
-    ENABLE_JWT_VS_SESSION_USER_CHECK: False,
 }
 
 
