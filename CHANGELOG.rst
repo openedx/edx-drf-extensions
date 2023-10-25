@@ -12,6 +12,25 @@ Change Log
 Unreleased
 ----------
 
+[8.13.0] - 2023-10-30
+---------------------
+
+Fixed
+~~~~~
+* Bug fix for when both ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE and the JWT cookie user vs session user check behind ENABLE_FORGIVING_JWT_COOKIES were enabled at the same time.
+
+Added
+~~~~~
+* Added custom attributes set_user_from_jwt_status and skip_jwt_vs_session_check.
+
+Updated
+~~~~~~~
+* ADR for removing HTTP_USE_JWT_COOKIE, which explains forgiven JWT cookies, was updated to explain the cases where the JWT cookie user and session user do not match.
+
+Removed
+~~~~~~~
+* Toggle EDX_DRF_EXTENSIONS[ENABLE_JWT_VS_SESSION_USER_CHECK] has been removed. This check is now a default part of the ENABLE_FORGIVING_JWT_COOKIES functionality. ENABLE_JWT_VS_SESSION_USER_CHECK was just a temporary roll-out toggle that was already proven out everywhere ENABLE_FORGIVING_JWT_COOKIES was already enabled.
+
 [8.12.0] - 2023-10-16
 ---------------------
 
