@@ -109,7 +109,7 @@ class TestEnsureJWTAuthSettingsMiddleware(TestCase):
         }
         view_classes = {
             "class_view": SomeClassView,
-            "view_set": views['view_set'].cls,
+            "view_set": views['view_set'].cls,  # pylint: disable=no-member
             "function_view": views['function_view'].view_class,
         }
         view = views[view_type]
