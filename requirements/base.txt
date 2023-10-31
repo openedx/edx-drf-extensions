@@ -6,30 +6,29 @@
 #
 asgiref==3.7.2
     # via django
-certifi==2023.7.22
+certifi==2023.5.7
     # via requests
-cffi==1.16.0
+cffi==1.15.1
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.3.1
+charset-normalizer==3.1.0
     # via requests
-click==8.1.7
+click==8.1.3
     # via edx-django-utils
-cryptography==41.0.4
+cryptography==41.0.1
     # via pyjwt
-django==3.2.22
+django==3.2.19
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
     #   django-crum
-    #   django-waffle
     #   djangorestframework
     #   drf-jwt
     #   edx-django-utils
 django-crum==0.7.9
     # via edx-django-utils
-django-waffle==4.0.0
+django-waffle==3.0.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
@@ -39,30 +38,31 @@ djangorestframework==3.14.0
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==5.7.0
+edx-django-utils==5.5.0
     # via -r requirements/base.in
-edx-opaque-keys==2.5.1
+edx-opaque-keys==2.3.0
     # via -r requirements/base.in
 idna==3.4
     # via requests
-newrelic==9.1.1
+newrelic==8.8.0
     # via edx-django-utils
 pbr==5.11.1
     # via stevedore
-psutil==5.9.6
+psutil==5.9.5
     # via edx-django-utils
 pycparser==2.21
     # via cffi
-pyjwt[crypto]==2.8.0
+pyjwt[crypto]==2.7.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
-    #   pyjwt
 pymongo==3.13.0
     # via edx-opaque-keys
 pynacl==1.5.0
     # via edx-django-utils
-pytz==2023.3.post1
+python-dateutil==2.8.2
+    # via -r requirements/base.in
+pytz==2023.3
     # via
     #   django
     #   djangorestframework
@@ -70,15 +70,17 @@ requests==2.31.0
     # via -r requirements/base.in
 semantic-version==2.10.0
     # via -r requirements/base.in
+six==1.16.0
+    # via
+    #   -r requirements/base.in
+    #   python-dateutil
 sqlparse==0.4.4
     # via django
 stevedore==5.1.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-typing-extensions==4.8.0
-    # via
-    #   asgiref
-    #   edx-opaque-keys
-urllib3==2.0.7
+typing-extensions==4.6.3
+    # via asgiref
+urllib3==2.0.3
     # via requests
