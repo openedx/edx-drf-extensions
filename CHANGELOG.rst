@@ -12,6 +12,16 @@ Change Log
 Unreleased
 ----------
 
+[10.0.0] - 2023-11-30
+---------------------
+
+Removed
+~~~~~~~
+* **BREAKING CHANGE:** Removed ENABLE_FORGIVING_JWT_COOKIES toggle. It is now permanently enabled.
+
+  * The header USE-JWT-COOKIE was removed because it has been fully replaced by forgiving JWTs.
+  * Removed temporary rollout custom attributes: use_jwt_cookie_requested, jwt_auth_request_user_not_found, and skip_jwt_vs_session_check.
+
 [9.1.2] - 2024-01-07
 --------------------
 Updated

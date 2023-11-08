@@ -15,7 +15,6 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
     unsafe_jwt_decode_handler,
 )
 from edx_rest_framework_extensions.config import (
-    ENABLE_FORGIVING_JWT_COOKIES,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
 )
 from edx_rest_framework_extensions.settings import get_setting
@@ -77,13 +76,6 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         return get_setting('JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES')
 
     def authenticate(self, request):
-        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
-        # .. custom_attribute_name: is_forgiving_jwt_cookies_enabled
-        # .. custom_attribute_description: This is temporary custom attribute to show
-        #      whether ENABLE_FORGIVING_JWT_COOKIES is toggled on or off.
-        #      See docs/decisions/0002-remove-use-jwt-cookie-header.rst
-        set_custom_attribute('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
-
         # .. custom_attribute_name: jwt_auth_result
         # .. custom_attribute_description: The result of the JWT authenticate process,
         #      which can having the following values:
@@ -154,14 +146,11 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             if is_authenticating_with_jwt_cookie:
                 # This check also adds monitoring details
                 is_user_mismatch = self._is_jwt_cookie_and_session_user_mismatch(request)
-                if is_forgiving_jwt_cookies_enabled:
-                    if is_user_mismatch:
-                        set_custom_attribute('jwt_auth_result', 'user-mismatch-failure')
-                        raise
-                    set_custom_attribute('jwt_auth_result', 'forgiven-failure')
-                    return None
-                set_custom_attribute('jwt_auth_result', 'failed-cookie')
-                raise
+                if is_user_mismatch:
+                    set_custom_attribute('jwt_auth_result', 'user-mismatch-failure')
+                    raise
+                set_custom_attribute('jwt_auth_result', 'forgiven-failure')
+                return None
 
             set_custom_attribute('jwt_auth_result', 'failed-auth-header')
             raise
@@ -268,15 +257,9 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             request: The request.
 
         Other notes:
-        - If ENABLE_FORGIVING_JWT_COOKIES is toggled off, always return False.
         - Also adds monitoring details for mismatches.
         - Should only be called for JWT cookies.
         """
-        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
-        # This toggle provides a temporary safety valve for rollout.
-        if not is_forgiving_jwt_cookies_enabled:
-            return False
-
         jwt_username, jwt_lms_user_id = self._get_unsafe_jwt_cookie_username_and_lms_user_id(request)
 
         # add early monitoring for the JWT LMS user_id for observability for a variety of user cases
@@ -291,11 +274,6 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         # Additionally, somehow the setting of request.user and the retrieving of request.user below causes some
         # unknown issue in production-like environments, and this allows us to skip that case.
         if _is_request_user_set_for_jwt_auth():
-            # .. custom_attribute_name: skip_jwt_vs_session_check
-            # .. custom_attribute_description: This is temporary custom attribute to show that we skipped the check.
-            #      This is probably redundant with the custom attribute set_user_from_jwt_status, but temporarily
-            #      adding during initial rollout.
-            set_custom_attribute('skip_jwt_vs_session_check', True)
             return False
 
         wsgi_request = getattr(request, '_request', request)
@@ -311,11 +289,6 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         # This line taken from DRF SessionAuthentication.
         session_user = getattr(wsgi_request, 'user', None)
         if not session_user:  # pragma: no cover
-            # .. custom_attribute_name: jwt_auth_request_user_not_found
-            # .. custom_attribute_description: This custom attribute shows when a
-            #      session user was not found during JWT cookie authentication. This
-            #      attribute will not exist if the session user is found.
-            set_custom_attribute('jwt_auth_request_user_not_found', True)
             return False
 
         if not session_user.is_authenticated or not session_user.username or session_user.username == jwt_username:
