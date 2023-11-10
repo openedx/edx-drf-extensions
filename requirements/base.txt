@@ -12,13 +12,13 @@ cffi==1.16.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.3.0
+charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via edx-django-utils
-cryptography==41.0.4
+cryptography==41.0.5
     # via pyjwt
-django==3.2.22
+django==3.2.23
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -39,17 +39,17 @@ djangorestframework==3.14.0
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==5.7.0
+edx-django-utils==5.8.0
     # via -r requirements/base.in
 edx-opaque-keys==2.5.1
     # via -r requirements/base.in
 idna==3.4
     # via requests
-newrelic==9.1.0
+newrelic==9.1.1
     # via edx-django-utils
-pbr==5.11.1
+pbr==6.0.0
     # via stevedore
-psutil==5.9.5
+psutil==5.9.6
     # via edx-django-utils
 pycparser==2.21
     # via cffi
@@ -57,6 +57,7 @@ pyjwt[crypto]==2.8.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
+    #   pyjwt
 pymongo==3.13.0
     # via edx-opaque-keys
 pynacl==1.5.0
@@ -79,5 +80,5 @@ typing-extensions==4.8.0
     # via
     #   asgiref
     #   edx-opaque-keys
-urllib3==2.0.6
+urllib3==2.0.7
     # via requests
