@@ -230,6 +230,33 @@ class JwtAuthenticationTests(TestCase):
         is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
+        set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
+        assert 'jwt_auth_with_django_request' not in set_custom_attribute_keys
+
+    @mock.patch.object(JwtAuthentication, 'enforce_csrf')
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_with_correct_jwt_cookie_and_django_request(
+        self, mock_set_custom_attribute, mock_enforce_csrf
+    ):
+        """
+        Verify authenticate succeeds with a valid JWT cookie and a Django request.
+
+        Note that JwtAuthentication is a DRF class, so a DRF request is expected. However,
+        there is custom authentication code that passes in a Django request, so this test
+        ensures backward compatibility. A custom attribute has been added to track down this
+        custom authentication code.
+        """
+        request = RequestFactory().post('/')
+        request.META[USE_JWT_COOKIE_HEADER] = 'true'
+        request.COOKIES[jwt_cookie_name()] = self._get_test_jwt_token()
+
+        assert JwtAuthentication().authenticate(request)
+        mock_enforce_csrf.assert_called_with(request)
+        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
+        if is_forgiving_jwt_cookies_enabled:
+            mock_set_custom_attribute.assert_any_call('jwt_auth_with_django_request', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
 
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_csrf_protected(self, mock_set_custom_attribute):

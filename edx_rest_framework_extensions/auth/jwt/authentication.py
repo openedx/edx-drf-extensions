@@ -330,9 +330,18 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             set_custom_attribute('skip_jwt_vs_session_check', True)
             return False
 
+        wsgi_request = getattr(request, '_request', request)
+        if wsgi_request == request:
+            # .. custom_attribute_name: jwt_auth_with_django_request
+            # .. custom_attribute_description: There exists custom authentication code in the platform that is
+            #      calling JwtAuthentication with a Django request, rather than the expected DRF request. This
+            #      custom attribute could be used to track down those usages and find ways to elimitate custom
+            #      authentication code that lives outside of this library.
+            set_custom_attribute('jwt_auth_with_django_request', True)
+
         # Get the session-based user from the underlying HttpRequest object.
         # This line taken from DRF SessionAuthentication.
-        user = getattr(request._request, 'user', None)  # pylint: disable=protected-access
+        user = getattr(wsgi_request, 'user', None)
         if not user:  # pragma: no cover
             # .. custom_attribute_name: jwt_auth_request_user_not_found
             # .. custom_attribute_description: This custom attribute shows when a
