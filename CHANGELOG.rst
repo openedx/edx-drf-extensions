@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[8.13.1] - 2023-11-15
+---------------------
+
+Fixed
+~~~~~
+* Fixed bug where JwtAuthentication called with a Django request instead of a DRF request would fail. Also added custom attribute jwt_auth_request_user_not_found to track down these unexpected cases.
+
 [8.13.0] - 2023-10-30
 ---------------------
 
