@@ -12,6 +12,17 @@ Change Log
 Unreleased
 ----------
 
+[9.0.0] - 2023-11-27
+
+Fixed
+~~~~~
+* **BREAKING CHANGE**: Fixes a bug for any service other than the identity service (LMS/CMS), where the session's local service user id would never match the JWT LMS user id when compared.
+
+  * The custom attribute jwt_auth_mismatch_session_lms_user_id was renamed to jwt_auth_mismatch_session_lms_user_id to make this more clear.
+  * The setting EDX_DRF_EXTENSIONS[VERIFY_LMS_USER_ID_PROPERTY_NAME] was added to enable choosing the user object property that contains the lms_user_id, if one exists. If this is unset, a service will simply skip this additional protection.
+  * The custom attribute jwt_auth_get_lms_user_id_status was added to provide observability into the new functionality.
+  * The breaking change only affects services with ENABLE_FORGIVING_JWT_COOKIES enabled. It now requires the new setting VERIFY_LMS_USER_ID_PROPERTY_NAME to be set in order to provide the existing Session vs JWT user id check.
+
 [8.13.1] - 2023-11-15
 ---------------------
 

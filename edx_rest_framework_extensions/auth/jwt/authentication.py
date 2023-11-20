@@ -17,6 +17,7 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
 from edx_rest_framework_extensions.config import (
     ENABLE_FORGIVING_JWT_COOKIES,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
+    VERIFY_LMS_USER_ID_PROPERTY_NAME,
 )
 from edx_rest_framework_extensions.settings import get_setting
 
@@ -335,7 +336,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             # .. custom_attribute_name: jwt_auth_with_django_request
             # .. custom_attribute_description: There exists custom authentication code in the platform that is
             #      calling JwtAuthentication with a Django request, rather than the expected DRF request. This
-            #      custom attribute could be used to track down those usages and find ways to elimitate custom
+            #      custom attribute could be used to track down those usages and find ways to eliminate custom
             #      authentication code that lives outside of this library.
             set_custom_attribute('jwt_auth_with_django_request', True)
 
@@ -351,24 +352,56 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             return False
 
         if user.is_authenticated:
-            session_user_id = user.id
+            session_lms_user_id = self._get_lms_user_id_from_user(user)
         else:
-            session_user_id = None
+            session_lms_user_id = None
 
-        if not session_user_id or session_user_id == jwt_user_id:
+        if not session_lms_user_id or session_lms_user_id == jwt_user_id:
             return False
 
-        # .. custom_attribute_name: jwt_auth_mismatch_session_user_id
-        # .. custom_attribute_description: The session authentication user id if it
-        #      does not match the JWT cookie user id. If there is no session user,
-        #      or if it matches the JWT cookie user id, this attribute will not be
-        #      included. Session authentication may have completed in middleware
+        # .. custom_attribute_name: jwt_auth_mismatch_session_lms_user_id
+        # .. custom_attribute_description: The session authentication LMS user id if it
+        #      does not match the JWT cookie LMS user id. If there is no session user,
+        #      or no LMS user id for the session user, or if it matches the JWT cookie user id,
+        #      this attribute will not be included. Session authentication may have completed in middleware
         #      before getting to DRF. Although this authentication won't stick,
         #      because it will be replaced by DRF authentication, we record it,
         #      because it sometimes does not match the JWT cookie user.
-        set_custom_attribute('jwt_auth_mismatch_session_user_id', session_user_id)
+        set_custom_attribute('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
 
         return True
+
+    def _get_lms_user_id_from_user(self, user):
+        """
+        Returns the lms_user_id from the user object if found, or None if not found.
+
+        This is intended for use only by LMS user id matching code, and thus will provide appropriate error
+        logs in the case of misconfiguration.
+        """
+        # .. custom_attribute_name: jwt_auth_get_lms_user_id_status
+        # .. custom_attribute_description: This custom attribute is intended to be temporary. It will allow
+        #      us visibility into when and how the LMS user id is being found from the session user, which
+        #      allows us to check the session's LMS user id with the JWT's LMS user id.
+
+        lms_user_id_property_name = get_setting(VERIFY_LMS_USER_ID_PROPERTY_NAME)
+        if not lms_user_id_property_name:
+            set_custom_attribute('jwt_auth_get_lms_user_id_status', 'not-configured')
+            return None
+
+        if not hasattr(user, lms_user_id_property_name):
+            logger.error(f'Misconfigured VERIFY_LMS_USER_ID_PROPERTY_NAME. User object has no attribute with name'
+                         f' [{lms_user_id_property_name}]. User id validation will be skipped.')
+            set_custom_attribute('jwt_auth_get_lms_user_id_status', 'misconfigured')
+            return None
+
+        # If the property is found, but returns None, validation will be skipped with no messaging.
+        lms_user_id = getattr(user, lms_user_id_property_name, None)
+        if lms_user_id:
+            set_custom_attribute('jwt_auth_get_lms_user_id_status', 'id-found')
+        else:  # pragma: no cover
+            set_custom_attribute('jwt_auth_get_lms_user_id_status', 'id-not-found')
+
+        return lms_user_id
 
 
 _IS_REQUEST_USER_SET_FOR_JWT_AUTH_CACHE_KEY = '_is_request_user_for_jwt_set'

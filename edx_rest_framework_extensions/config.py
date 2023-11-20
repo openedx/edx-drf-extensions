@@ -5,11 +5,15 @@ Application configuration constants and code.
 # .. toggle_name: EDX_DRF_EXTENSIONS[ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE]
 # .. toggle_implementation: DjangoSetting
 # .. toggle_default: False
-# .. toggle_description: Toggle for setting request.user with jwt cookie authentication
+# .. toggle_description: Toggle for setting request.user with jwt cookie authentication. This makes the JWT cookie
+#      user available to middleware while processing the request, if the session user wasn't already available. This
+#      requires JwtAuthCookieMiddleware to work. It is recommended to set VERIFY_LMS_USER_ID_PROPERTY_NAME if possible
+#      when using this feature.
 # .. toggle_use_cases: temporary
 # .. toggle_creation_date: 2019-10-15
-# .. toggle_target_removal_date: 2019-12-31
-# .. toggle_warning: This feature fixed ecommerce, but broke edx-platform. The toggle enables us to fix over time.
+# .. toggle_target_removal_date: 2024-12-31
+# .. toggle_warning: This feature caused a memory leak in edx-platform. This toggle is temporary only if we can make it
+#      work in all services, or find a replacement. Consider making this a permanent toggle instead.
 # .. toggle_tickets: ARCH-1210, ARCH-1199, ARCH-1197
 ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE = 'ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE'
 
@@ -22,3 +26,11 @@ ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE = 'ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 # .. toggle_target_removal_date: 2023-10-01
 # .. toggle_tickets: https://github.com/openedx/edx-drf-extensions/issues/371
 ENABLE_FORGIVING_JWT_COOKIES = 'ENABLE_FORGIVING_JWT_COOKIES'
+
+# .. setting_name: EDX_DRF_EXTENSIONS[VERIFY_LMS_USER_ID_PROPERTY_NAME]
+# .. setting_default: None
+# .. setting_description: This setting should be set to the name of the user attribute property containing the LMS
+#      user id. Examples might be `id` or `lms_user_id`. If there is no property, leave the default value of None.
+#      This is used by JWT cookie authentication to verify that the (LMS) user id in the JWT is the same
+#      as the LMS user id for a service's session.
+VERIFY_LMS_USER_ID_PROPERTY_NAME = 'VERIFY_LMS_USER_ID_PROPERTY_NAME'
