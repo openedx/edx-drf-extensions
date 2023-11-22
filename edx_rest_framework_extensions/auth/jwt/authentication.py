@@ -381,12 +381,29 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         # .. custom_attribute_name: jwt_auth_get_lms_user_id_status
         # .. custom_attribute_description: This custom attribute is intended to be temporary. It will allow
         #      us visibility into when and how the LMS user id is being found from the session user, which
-        #      allows us to check the session's LMS user id with the JWT's LMS user id.
+        #      allows us to check the session's LMS user id with the JWT's LMS user id. Possible values include:
+        #        - skip-check (disabled check, useful when lms_user_id would have been available),
+        #        - not-configured (setting was None and lms_user_id is not found),
+        #        - misconfigured (the property name supplied could not be found),
+        #        - id-found (the id was found using the property name),
+        #        - id-not-found (the property exists, but returned None)
 
         lms_user_id_property_name = get_setting(VERIFY_LMS_USER_ID_PROPERTY_NAME)
-        if not lms_user_id_property_name:
-            set_custom_attribute('jwt_auth_get_lms_user_id_status', 'not-configured')
+
+        # This special value acts like an emergency disable toggle in the event that the user object has an lms_user_id,
+        # but this LMS id check starts causing unforeseen issues and needs to be disabled.
+        skip_check_property_name = 'skip-check'
+        if lms_user_id_property_name == skip_check_property_name:
+            set_custom_attribute('jwt_auth_get_lms_user_id_status', skip_check_property_name)
             return None
+
+        if not lms_user_id_property_name:
+            if hasattr(user, 'lms_user_id'):
+                # The custom attribute will be set below.
+                lms_user_id_property_name = 'lms_user_id'
+            else:
+                set_custom_attribute('jwt_auth_get_lms_user_id_status', 'not-configured')
+                return None
 
         if not hasattr(user, lms_user_id_property_name):
             logger.error(f'Misconfigured VERIFY_LMS_USER_ID_PROPERTY_NAME. User object has no attribute with name'
