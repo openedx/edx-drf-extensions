@@ -514,7 +514,7 @@ class JwtAuthenticationTests(TestCase):
             mock_set_custom_attribute.assert_any_call(
                 'is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled
             )
-            mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', jwt_user_id)
+            mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_user_id)
             if is_forgiving_jwt_cookies_enabled:
                 mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
                 mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
@@ -555,7 +555,7 @@ class JwtAuthenticationTests(TestCase):
             mock_set_custom_attribute.assert_any_call(
                 'is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled
             )
-            mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', 'decode-error')
+            mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', 'decode-error')
             if is_forgiving_jwt_cookies_enabled:
                 mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
                 mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
@@ -652,7 +652,8 @@ class JwtAuthenticationTests(TestCase):
         - This test is kept with the rest of the JWT vs session user tests.
         """
         session_user = factories.UserFactory(id=111)
-        jwt_user = factories.UserFactory(id=222)
+        jwt_user_id = 222
+        jwt_user = factories.UserFactory(id=jwt_user_id)
         jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=jwt_user)
         # Cookie parts will be recombined by JwtAuthCookieMiddleware
         self.client.cookies = SimpleCookie({
@@ -669,9 +670,9 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
         mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'not-configured')
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_user_id)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
         assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
-        assert 'failed_jwt_cookie_user_id' not in set_custom_attribute_keys
         assert 'jwt_auth_failed' not in set_custom_attribute_keys
         mock_logger.error.assert_not_called()
 
@@ -700,8 +701,10 @@ class JwtAuthenticationTests(TestCase):
         - This test is kept with the rest of the JWT vs session user tests.
         """
         session_user = factories.UserFactory(id=111)
-        jwt_user = factories.UserFactory(id=222)
-        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=jwt_user)
+        jwt_lms_user_id = 222
+        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(
+            user=session_user, lms_user_id=jwt_lms_user_id
+        )
         # Cookie parts will be recombined by JwtAuthCookieMiddleware
         self.client.cookies = SimpleCookie({
             jwt_cookie_header_payload_name(): jwt_header_payload,
@@ -717,9 +720,9 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
         mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'misconfigured')
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_lms_user_id)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
         assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
-        assert 'failed_jwt_cookie_user_id' not in set_custom_attribute_keys
         assert 'jwt_auth_failed' not in set_custom_attribute_keys
 
         # assert for error log for misconfigured VERIFY_LMS_USER_ID_PROPERTY_NAME
@@ -769,7 +772,7 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
         mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
         mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
-        mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', jwt_user_id)
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_user_id)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-enforced-failure')
         mock_set_custom_attribute.assert_any_call('jwt_auth_failed', mock.ANY)
 
@@ -803,8 +806,7 @@ class JwtAuthenticationTests(TestCase):
         # In this test, the service's user id matches the JWT LMS user id, which ordinarily would never happen.
         # However, for the purpose of this test, we want to ensure that this doesn't prevent the mismatch.
         jwt_user_id = session_user_id
-        jwt_user = session_user
-        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=jwt_user)
+        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=session_user)
         # Cookie parts will be recombined by JwtAuthCookieMiddleware
         self.client.cookies = SimpleCookie({
             jwt_cookie_header_payload_name(): jwt_header_payload,
@@ -821,7 +823,7 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
         mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_user_lms_id)
         mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
-        mock_set_custom_attribute.assert_any_call('failed_jwt_cookie_user_id', jwt_user_id)
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_user_id)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-enforced-failure')
         mock_set_custom_attribute.assert_any_call('jwt_auth_failed', mock.ANY)
 
@@ -847,7 +849,10 @@ class JwtAuthenticationTests(TestCase):
         - This test is kept with the rest of the JWT vs session user tests.
         """
         test_user = factories.UserFactory()
-        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=test_user)
+        jwt_lms_user_id = 222
+        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(
+            user=test_user, lms_user_id=jwt_lms_user_id
+        )
         # Cookie parts will be recombined by JwtAuthCookieMiddleware
         self.client.cookies = SimpleCookie({
             jwt_cookie_header_payload_name(): jwt_header_payload,
@@ -860,24 +865,28 @@ class JwtAuthenticationTests(TestCase):
         # The case where forgiving JWTs is disabled is tested under other tests, including the middleware tests.
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
         mock_set_custom_attribute.assert_any_call('skip_jwt_vs_session_check', True)
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_lms_user_id)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
         assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
         assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
         assert response.status_code == 200
 
-    def _get_test_jwt_token(self, user=None, is_valid_signature=True):
+    def _get_test_jwt_token(self, user=None, is_valid_signature=True, lms_user_id=None):
         """ Returns a test jwt token for the provided user """
         test_user = factories.UserFactory() if user is None else user
         payload = generate_latest_version_payload(test_user)
+        if lms_user_id:
+            # In other services, the LMS user id in the JWT would not be the user's id.
+            payload['user_id'] = lms_user_id
         if is_valid_signature:
             jwt_token = generate_jwt_token(payload)
         else:
             jwt_token = generate_jwt_token(payload, signing_key='invalid-key')
         return jwt_token
 
-    def _get_test_jwt_token_payload_and_signature(self, user=None):
+    def _get_test_jwt_token_payload_and_signature(self, user=None, lms_user_id=None):
         """ Returns a test jwt token split into payload and signature """
-        jwt_token = self._get_test_jwt_token(user=user)
+        jwt_token = self._get_test_jwt_token(user=user, lms_user_id=lms_user_id)
         jwt_token_parts = jwt_token.split('.')
         header_and_payload = '.'.join(jwt_token_parts[0:2])
         signature = jwt_token_parts[2]
