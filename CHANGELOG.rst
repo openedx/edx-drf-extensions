@@ -12,6 +12,19 @@ Change Log
 Unreleased
 ----------
 
+[9.0.1] - 2023-12-06
+--------------------
+
+Fixed
+~~~~~
+
+* Fixed bug for successful JWTs where the JWT user id was still using the service user id, rather than the LMS user id, so comparison against the LMS user id would fail.
+
+Updated
+~~~~~~~
+
+* As part of the bug fix, the custom attribute ``failed_jwt_cookie_user_id`` was renamed to ``jwt_cookie_lms_user_id``, and will be set for all JWT cookies. Since this is only a breaking change for recently added monitoring, this won't be versioned as a breaking change.
+
 [9.0.0] - 2023-11-27
 --------------------
 
