@@ -34,3 +34,4 @@ Table of Contents
     permissions
     utils
     changelog
+    decisions/index
