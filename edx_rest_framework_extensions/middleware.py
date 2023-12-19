@@ -17,16 +17,22 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
 
     Possible custom attributes include:
         request_authenticated_user_set_in_middleware:
-            Example values: 'process_request', 'process_view', 'process_response',
-            or 'process_exception'. Attribute won't exist if user is not authenticated.
-        request_auth_type_guess: Example values include: no-user, unauthenticated,
-            jwt, bearer, other-token-type, jwt-cookie, or session-or-other
+            Example values: 'process_request', 'process_view', 'process_response', or 'process_exception'.
+
+            Attribute won't exist if user is not authenticated.
+
+        request_auth_type_guess:
+            Example values include: no-user, unauthenticated, jwt, bearer, other-token-type, jwt-cookie, or
+            session-or-other
+
             Note: These are just guesses because if a token was expired, for example,
-              the user could have been authenticated by some other means.
+            the user could have been authenticated by some other means.
+
         request_client_name: The client name from edx-rest-api-client calls.
-        request_referer
+        request_referer: The referrer for the request.
         request_user_agent: The user agent string from the request header.
         request_user_id: The user id of the request user.
+
         request_is_staff_or_superuser: `staff` or `superuser` depending on whether the
             user in the request is a django staff or superuser.
 
