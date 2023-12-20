@@ -251,6 +251,11 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('jwt_auth_with_django_request', True)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
 
+    @override_settings(
+        EDX_DRF_EXTENSIONS={
+            ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH: False
+        }
+    )
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_csrf_protected(self, mock_set_custom_attribute):
         """
