@@ -12,6 +12,18 @@ Change Log
 Unreleased
 ----------
 
+[9.1.1] - 2024-01-04
+--------------------
+Updated
+~~~~~~~
+* Reverted 9.1.0 change until issue can be fixed.
+
+[9.1.0] - 2024-01-03
+--------------------
+Updated
+~~~~~~~
+* (Now reverted) Simplified JWT cookie vs session user check by checking username instead of lms user id. Note: this was reverted on 9.1.1.
+
 [9.0.1] - 2023-12-06
 --------------------
 
