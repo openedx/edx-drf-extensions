@@ -12,20 +12,6 @@ Change Log
 Unreleased
 ----------
 
-[9.1.0] - 2024-01-03
---------------------
-
-Updated
-~~~~~~~
-
-* Simplified JWT cookie vs session user check by checking username instead of lms user id.
-
-  * Removed ``VERIFY_LMS_USER_ID_PROPERTY_NAME``, which is no longer needed.
-  * Removed custom attribute ``jwt_auth_get_lms_user_id_status``, since we no longer attempt to get the lms_user_id from the user object.
-  * Renames custom attribute ``jwt_auth_mismatch_session_lms_user_id`` to ``jwt_auth_mismatch_session_username``.
-  * Adds custom attribute ``jwt_auth_mismatch_jwt_cookie_username``.
-  * Adds custom attribute ``jwt_cookie_unsafe_decode_issue`` for when a JWT cookie cannot even be unsafely decoded.
-
 [9.0.1] - 2023-12-06
 --------------------
 

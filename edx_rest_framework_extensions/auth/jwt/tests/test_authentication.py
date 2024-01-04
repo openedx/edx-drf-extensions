@@ -36,6 +36,7 @@ from edx_rest_framework_extensions.auth.jwt.tests.utils import (
 from edx_rest_framework_extensions.config import (
     ENABLE_FORGIVING_JWT_COOKIES,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
+    VERIFY_LMS_USER_ID_PROPERTY_NAME,
 )
 from edx_rest_framework_extensions.settings import get_setting
 from edx_rest_framework_extensions.tests import factories
@@ -236,6 +237,97 @@ class JwtAuthenticationTests(TestCase):
 
     @mock.patch.object(JwtAuthentication, 'enforce_csrf')
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_with_correct_jwt_cookie_and_mistmatched_lms_user_id(
+        self, mock_set_custom_attribute, mock_enforce_csrf
+    ):
+        """
+        Verify authenticate succeeds with a valid JWT cookie with a mismatched lms_user_id attribute.
+
+        Notes:
+        - When VERIFY_LMS_USER_ID_PROPERTY_NAME is None, it will also check for an `lms_user_id` attribute.
+        - This test mocks lms_user_id with a different value from the the JWT cookie LMS user id.
+        - At this time, we still allow authentication to succeed with the JWT cookie user, but we add observability.
+        - The other mismatch tests use the middleware and less mocking, but it was too difficult to add the
+          lms_user_id attribute.
+        """
+        request = RequestFactory().post('/')
+        request.META[USE_JWT_COOKIE_HEADER] = 'true'
+        request.COOKIES[jwt_cookie_name()] = self._get_test_jwt_token()
+        session_user = factories.UserFactory(id=111)
+
+        # set up request user with an lms_user_id attribute that will be compared to the JWT LMS user id
+        session_lms_user_id = 333
+        session_user.lms_user_id = session_lms_user_id
+        request.user = session_user
+
+        drf_request = Request(request)
+
+        assert JwtAuthentication().authenticate(drf_request)
+        mock_enforce_csrf.assert_called_with(drf_request)
+        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
+        set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
+        assert 'jwt_auth_with_django_request' not in set_custom_attribute_keys
+
+        if is_forgiving_jwt_cookies_enabled:
+            mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
+            mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
+        else:
+            assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+            assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
+
+    @mock.patch.object(JwtAuthentication, 'enforce_csrf')
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_with_correct_jwt_cookie_and_skipped_check(
+        self, mock_set_custom_attribute, mock_enforce_csrf
+    ):
+        """
+        Verify authenticate succeeds with a valid JWT cookie and a skipped user id check.
+
+        Notes:
+        - When VERIFY_LMS_USER_ID_PROPERTY_NAME is 'skip-check', the `lms_user_id` attribute should be ignored.
+        - This mocks lms_user_id with a different value from the the JWT cookie LMS user id.
+        - The other mismatch tests use the middleware and less mocking, but it was too difficult to add the
+          lms_user_id attribute.
+        """
+        request = RequestFactory().post('/')
+        request.META[USE_JWT_COOKIE_HEADER] = 'true'
+        request.COOKIES[jwt_cookie_name()] = self._get_test_jwt_token()
+        session_user = factories.UserFactory(id=111)
+
+        # set up request user with an lms_user_id attribute that will be compared to the JWT LMS user id
+        session_lms_user_id = 333
+        session_user.lms_user_id = session_lms_user_id
+        request.user = session_user
+
+        drf_request = Request(request)
+
+        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+        with override_settings(
+            EDX_DRF_EXTENSIONS={
+                ENABLE_FORGIVING_JWT_COOKIES: is_forgiving_jwt_cookies_enabled,
+                VERIFY_LMS_USER_ID_PROPERTY_NAME: 'skip-check',
+            },
+        ):
+            assert JwtAuthentication().authenticate(drf_request)
+
+            mock_enforce_csrf.assert_called_with(drf_request)
+            is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
+            mock_set_custom_attribute.assert_any_call(
+                'is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled
+            )
+            mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
+            set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
+            assert 'jwt_auth_with_django_request' not in set_custom_attribute_keys
+            assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+            if is_forgiving_jwt_cookies_enabled:
+                mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'skip-check')
+            else:
+                assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
+
+    @mock.patch.object(JwtAuthentication, 'enforce_csrf')
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_with_correct_jwt_cookie_and_django_request(
         self, mock_set_custom_attribute, mock_enforce_csrf
     ):
@@ -361,8 +453,9 @@ class JwtAuthenticationTests(TestCase):
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_jwt_and_session_mismatch(self, mock_set_custom_attribute):
         """ Tests monitoring for JWT cookie when there is a session user mismatch """
-        session_user = factories.UserFactory(id=111, username='session-name')
-        jwt_user = factories.UserFactory(id=222, username='jwt-name')
+        session_lms_user_id = 111
+        session_user = factories.UserFactory(id=session_lms_user_id)
+        jwt_user = factories.UserFactory(id=222)
         self.client.cookies = SimpleCookie({
             jwt_cookie_name(): self._get_test_jwt_token(user=jwt_user),
         })
@@ -371,6 +464,7 @@ class JwtAuthenticationTests(TestCase):
         with override_settings(
             EDX_DRF_EXTENSIONS={
                 ENABLE_FORGIVING_JWT_COOKIES: is_forgiving_jwt_cookies_enabled,
+                VERIFY_LMS_USER_ID_PROPERTY_NAME: 'id',
             },
         ):
             self.client.force_login(session_user)
@@ -381,15 +475,12 @@ class JwtAuthenticationTests(TestCase):
             )
             mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
             if is_forgiving_jwt_cookies_enabled:
-                mock_set_custom_attribute.assert_any_call(
-                    'jwt_cookie_lms_user_id', jwt_user.id  # pylint: disable=no-member
-                )
-                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_username', session_user.username)
-                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_jwt_cookie_username', jwt_user.username)
+                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
+                mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
             else:
                 set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
-                assert 'jwt_auth_mismatch_session_username' not in set_custom_attribute_keys
-                assert 'jwt_auth_mismatch_jwt_cookie_username' not in set_custom_attribute_keys
+                assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+                assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
             assert response.status_code == 200
 
     @override_settings(
@@ -402,8 +493,10 @@ class JwtAuthenticationTests(TestCase):
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_jwt_and_session_mismatch_bad_signature_cookie(self, mock_set_custom_attribute):
         """ Tests monitoring for JWT cookie with a bad signature when there is a session user mismatch """
-        session_user = factories.UserFactory(id=111, username='session-name')
-        jwt_user = factories.UserFactory(id=222, username='jwt-name')
+        session_lms_user_id = 111
+        session_user = factories.UserFactory(id=session_lms_user_id)
+        jwt_user_id = 222
+        jwt_user = factories.UserFactory(id=jwt_user_id)
         self.client.cookies = SimpleCookie({
             jwt_cookie_name(): self._get_test_jwt_token(user=jwt_user, is_valid_signature=False),
         })
@@ -412,6 +505,7 @@ class JwtAuthenticationTests(TestCase):
         with override_settings(
             EDX_DRF_EXTENSIONS={
                 ENABLE_FORGIVING_JWT_COOKIES: is_forgiving_jwt_cookies_enabled,
+                VERIFY_LMS_USER_ID_PROPERTY_NAME: 'id',
             },
         ):
             self.client.force_login(session_user)
@@ -420,18 +514,16 @@ class JwtAuthenticationTests(TestCase):
             mock_set_custom_attribute.assert_any_call(
                 'is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled
             )
+            mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_user_id)
             if is_forgiving_jwt_cookies_enabled:
-                mock_set_custom_attribute.assert_any_call(
-                    'jwt_cookie_lms_user_id', jwt_user.id  # pylint: disable=no-member
-                )
                 mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
-                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_username', session_user.username)
-                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_jwt_cookie_username', jwt_user.username)
+                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
+                mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
             else:
                 mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-cookie')
                 set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
-                assert 'jwt_auth_mismatch_session_username' not in set_custom_attribute_keys
-                assert 'jwt_auth_mismatch_jwt_cookie_username' not in set_custom_attribute_keys
+                assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+                assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
             assert response.status_code == 401
 
     @override_settings(
@@ -444,7 +536,8 @@ class JwtAuthenticationTests(TestCase):
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_jwt_and_session_mismatch_invalid_cookie(self, mock_set_custom_attribute):
         """ Tests monitoring for invalid JWT cookie when there is a session user mismatch """
-        session_user = factories.UserFactory(id=111, username='session-name')
+        session_lms_user_id = 111
+        session_user = factories.UserFactory(id=session_lms_user_id)
         self.client.cookies = SimpleCookie({
             jwt_cookie_name(): 'invalid-cookie',
         })
@@ -453,6 +546,7 @@ class JwtAuthenticationTests(TestCase):
         with override_settings(
             EDX_DRF_EXTENSIONS={
                 ENABLE_FORGIVING_JWT_COOKIES: is_forgiving_jwt_cookies_enabled,
+                VERIFY_LMS_USER_ID_PROPERTY_NAME: 'id',
             },
         ):
             self.client.force_login(session_user)
@@ -461,17 +555,16 @@ class JwtAuthenticationTests(TestCase):
             mock_set_custom_attribute.assert_any_call(
                 'is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled
             )
+            mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', 'decode-error')
             if is_forgiving_jwt_cookies_enabled:
-                mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', None)
-                mock_set_custom_attribute.assert_any_call('jwt_cookie_unsafe_decode_issue', 'decode-error')
                 mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-failure')
-                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_username', session_user.username)
-                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_jwt_cookie_username', None)
+                mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
+                mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
             else:
                 mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'failed-cookie')
                 set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
-                assert 'jwt_auth_mismatch_session_username' not in set_custom_attribute_keys
-                assert 'jwt_auth_mismatch_jwt_cookie_username' not in set_custom_attribute_keys
+                assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+                assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
             assert response.status_code == 401
 
     @override_settings(
@@ -493,6 +586,7 @@ class JwtAuthenticationTests(TestCase):
         with override_settings(
             EDX_DRF_EXTENSIONS={
                 ENABLE_FORGIVING_JWT_COOKIES: is_forgiving_jwt_cookies_enabled,
+                VERIFY_LMS_USER_ID_PROPERTY_NAME: 'id',
             },
         ):
             self.client.force_login(test_user)
@@ -503,6 +597,10 @@ class JwtAuthenticationTests(TestCase):
             )
             set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
             assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+            if is_forgiving_jwt_cookies_enabled:
+                mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
+            else:
+                assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
             assert response.status_code == 200
 
     @override_settings(
@@ -527,6 +625,7 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
         assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
         assert response.status_code == 200
 
     @override_settings(
@@ -541,17 +640,121 @@ class JwtAuthenticationTests(TestCase):
         ),
         ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
     )
-    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
-    def test_authenticate_mismatch_with_set_request_user(self, mock_set_custom_attribute):
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.logger', autospec=True)
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute', autospec=True)
+    def test_authenticate_no_lms_user_id_property_and_set_request_user(self, mock_set_custom_attribute, mock_logger):
         """
-        Tests failure for JWT cookie when there is a session user mismatch with a request to set user.
+        Tests JWT cookie success when VERIFY_LMS_USER_ID_PROPERTY_NAME is not set and there is a request to set user.
 
         - This tests coordination between ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE in middleware and JwtAuthentication.
         - This test requires ENABLE_FORGIVING_JWT_COOKIES to get to ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE.
+        - Uses default of VERIFY_LMS_USER_ID_PROPERTY_NAME as None, and skips user id validation.
         - This test is kept with the rest of the JWT vs session user tests.
         """
-        session_user = factories.UserFactory(id=111, username='session-name')
-        jwt_user = factories.UserFactory(id=222, username='jwt-name')
+        session_user = factories.UserFactory(id=111)
+        jwt_user_id = 222
+        jwt_user = factories.UserFactory(id=jwt_user_id)
+        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=jwt_user)
+        # Cookie parts will be recombined by JwtAuthCookieMiddleware
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_header_payload_name(): jwt_header_payload,
+            jwt_cookie_signature_name(): jwt_signature,
+        })
+
+        self.client.force_login(session_user)
+
+        response = self.client.get(reverse('authenticated-view'))
+        assert response.status_code == 200
+
+        # The case where forgiving JWTs is disabled is tested under other tests, including the middleware tests.
+        mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
+        mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'not-configured')
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_user_id)
+        set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
+        assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_failed' not in set_custom_attribute_keys
+        mock_logger.error.assert_not_called()
+
+    @override_settings(
+        EDX_DRF_EXTENSIONS={
+            ENABLE_FORGIVING_JWT_COOKIES: True,
+            ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: True,
+            VERIFY_LMS_USER_ID_PROPERTY_NAME: 'unknown_property',
+        },
+        MIDDLEWARE=(
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
+        ),
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+    )
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.logger', autospec=True)
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute', autospec=True)
+    def test_authenticate_unknown_user_id_property_and_set_request_user(self, mock_set_custom_attribute, mock_logger):
+        """
+        Tests JWT cookie success when VERIFY_LMS_USER_ID_PROPERTY_NAME is misconfigured with a request to set user.
+
+        - This tests coordination between ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE in middleware and JwtAuthentication.
+        - This test requires ENABLE_FORGIVING_JWT_COOKIES to get to ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE.
+        - The misconfigured VERIFY_LMS_USER_ID_PROPERTY_NAME will result in an error log.
+        - This test is kept with the rest of the JWT vs session user tests.
+        """
+        session_user = factories.UserFactory(id=111)
+        jwt_lms_user_id = 222
+        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(
+            user=session_user, lms_user_id=jwt_lms_user_id
+        )
+        # Cookie parts will be recombined by JwtAuthCookieMiddleware
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_header_payload_name(): jwt_header_payload,
+            jwt_cookie_signature_name(): jwt_signature,
+        })
+
+        self.client.force_login(session_user)
+
+        response = self.client.get(reverse('authenticated-view'))
+        assert response.status_code == 200
+
+        # The case where forgiving JWTs is disabled is tested under other tests, including the middleware tests.
+        mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
+        mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'misconfigured')
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_lms_user_id)
+        set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
+        assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_failed' not in set_custom_attribute_keys
+
+        # assert for error log for misconfigured VERIFY_LMS_USER_ID_PROPERTY_NAME
+        assert 'unknown_property' in mock_logger.error.call_args_list[0][0][0]
+
+    @override_settings(
+        EDX_DRF_EXTENSIONS={
+            ENABLE_FORGIVING_JWT_COOKIES: True,
+            ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: True,
+            VERIFY_LMS_USER_ID_PROPERTY_NAME: 'id',
+        },
+        MIDDLEWARE=(
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
+        ),
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+    )
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_user_id_property_and_set_request_user(self, mock_set_custom_attribute):
+        """
+        Tests failure for JWT cookie when there is a session user mismatch with id property and a request to set user.
+
+        - This tests coordination between ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE in middleware and JwtAuthentication.
+        - This test requires ENABLE_FORGIVING_JWT_COOKIES to get to ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE.
+        - Uses VERIFY_LMS_USER_ID_PROPERTY_NAME of 'id', as would be used by the identity service (LMS).
+        - This test is kept with the rest of the JWT vs session user tests.
+        """
+        session_lms_user_id = 111
+        session_user = factories.UserFactory(id=session_lms_user_id)
+        jwt_user_id = 222
+        jwt_user = factories.UserFactory(id=jwt_user_id)
         jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=jwt_user)
         # Cookie parts will be recombined by JwtAuthCookieMiddleware
         self.client.cookies = SimpleCookie({
@@ -567,11 +770,60 @@ class JwtAuthenticationTests(TestCase):
 
         # The case where forgiving JWTs is disabled is tested under other tests, including the middleware tests.
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
-        mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_username', session_user.username)
-        mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_jwt_cookie_username', jwt_user.username)
-        mock_set_custom_attribute.assert_any_call(
-            'jwt_cookie_lms_user_id', jwt_user.id  # pylint: disable=no-member
-        )
+        mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_lms_user_id)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_user_id)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-enforced-failure')
+        mock_set_custom_attribute.assert_any_call('jwt_auth_failed', mock.ANY)
+
+    @override_settings(
+        EDX_DRF_EXTENSIONS={
+            ENABLE_FORGIVING_JWT_COOKIES: True,
+            ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: True,
+            VERIFY_LMS_USER_ID_PROPERTY_NAME: 'username',
+        },
+        MIDDLEWARE=(
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
+        ),
+        ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
+    )
+    @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
+    def test_authenticate_other_user_property_and_set_request_user(self, mock_set_custom_attribute):
+        """
+        Tests failure for JWT cookie with a session user mismatch with username property and a request to set user.
+
+        - This tests coordination between ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE in middleware and JwtAuthentication.
+        - This test requires ENABLE_FORGIVING_JWT_COOKIES to get to ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE.
+        - This test is kept with the rest of the JWT vs session user tests.
+        """
+        session_user_id = 222
+        # Some services introduce an lms_user_id property to the user, which ideally is what we'd be testing.
+        # However, we use the username property because it is simplifies the testing.
+        session_user_lms_id = '111'  # must be string because we are using username
+        session_user = factories.UserFactory(id=session_user_id, username=session_user_lms_id)
+        # In this test, the service's user id matches the JWT LMS user id, which ordinarily would never happen.
+        # However, for the purpose of this test, we want to ensure that this doesn't prevent the mismatch.
+        jwt_user_id = session_user_id
+        jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=session_user)
+        # Cookie parts will be recombined by JwtAuthCookieMiddleware
+        self.client.cookies = SimpleCookie({
+            jwt_cookie_header_payload_name(): jwt_header_payload,
+            jwt_cookie_signature_name(): jwt_signature,
+        })
+
+        self.client.force_login(session_user)
+
+        with self.assertRaises(JwtSessionUserMismatchError):
+            response = self.client.get(reverse('authenticated-view'))
+            assert response.status_code == 401
+
+        # The case where forgiving JWTs is disabled is tested under other tests, including the middleware tests.
+        mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', True)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_lms_user_id', session_user_lms_id)
+        mock_set_custom_attribute.assert_any_call('jwt_auth_get_lms_user_id_status', 'id-found')
+        mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_user_id)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-enforced-failure')
         mock_set_custom_attribute.assert_any_call('jwt_auth_failed', mock.ANY)
 
@@ -616,6 +868,7 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_lms_user_id)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
         assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_get_lms_user_id_status' not in set_custom_attribute_keys
         assert response.status_code == 200
 
     def _get_test_jwt_token(self, user=None, is_valid_signature=True, lms_user_id=None):
