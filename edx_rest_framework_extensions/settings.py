@@ -18,7 +18,6 @@ from rest_framework_jwt.settings import api_settings
 from edx_rest_framework_extensions.config import (
     ENABLE_FORGIVING_JWT_COOKIES,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
-    VERIFY_LMS_USER_ID_PROPERTY_NAME,
 )
 
 
@@ -36,7 +35,6 @@ DEFAULT_SETTINGS = {
     'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': (),
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: False,
     ENABLE_FORGIVING_JWT_COOKIES: False,
-    VERIFY_LMS_USER_ID_PROPERTY_NAME: None,
 }
 
 
