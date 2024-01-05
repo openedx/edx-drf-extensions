@@ -502,7 +502,8 @@ class JwtAuthenticationTests(TestCase):
                 'is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled
             )
             set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
-            assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+            assert 'jwt_auth_mismatch_session_username' not in set_custom_attribute_keys
+            assert 'jwt_auth_mismatch_jwt_cookie_username' not in set_custom_attribute_keys
             assert response.status_code == 200
 
     @override_settings(
@@ -526,7 +527,8 @@ class JwtAuthenticationTests(TestCase):
         is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
         mock_set_custom_attribute.assert_any_call('is_forgiving_jwt_cookies_enabled', is_forgiving_jwt_cookies_enabled)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
-        assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_mismatch_session_username' not in set_custom_attribute_keys
+        assert 'jwt_auth_mismatch_jwt_cookie_username' not in set_custom_attribute_keys
         assert response.status_code == 200
 
     @override_settings(
@@ -615,7 +617,8 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('skip_jwt_vs_session_check', True)
         mock_set_custom_attribute.assert_any_call('jwt_cookie_lms_user_id', jwt_lms_user_id)
         set_custom_attribute_keys = [call.args[0] for call in mock_set_custom_attribute.call_args_list]
-        assert 'jwt_auth_mismatch_session_lms_user_id' not in set_custom_attribute_keys
+        assert 'jwt_auth_mismatch_session_username' not in set_custom_attribute_keys
+        assert 'jwt_auth_mismatch_jwt_cookie_username' not in set_custom_attribute_keys
         assert response.status_code == 200
 
     def _get_test_jwt_token(self, user=None, is_valid_signature=True, lms_user_id=None):

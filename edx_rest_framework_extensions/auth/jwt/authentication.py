@@ -356,7 +356,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         try:
             cookie_token = JSONWebTokenAuthentication.get_token_from_cookies(request.COOKIES)
             unsafe_decoded_jwt = unsafe_jwt_decode_handler(cookie_token)
-            jwt_username = unsafe_decoded_jwt.get('username', None)
+            jwt_username = JSONWebTokenAuthentication.jwt_get_username_from_payload(unsafe_decoded_jwt)
             jwt_lms_user_id = unsafe_decoded_jwt.get('user_id', None)
             if not jwt_username or not jwt_lms_user_id:
                 set_custom_attribute('jwt_cookie_unsafe_decode_issue', 'missing-claim')
