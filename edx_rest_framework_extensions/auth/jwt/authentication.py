@@ -170,7 +170,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         """Get or create an active user with the username contained in the payload."""
         # TODO it would be good to refactor this heavily-nested function.
         # pylint: disable=too-many-nested-blocks
-        username = payload.get('preferred_username') or payload.get('username')
+        username = self._get_username_from_payload(payload)
         if username is None:
             raise exceptions.AuthenticationFailed('JWT must include a preferred_username or username claim!')
         try:
@@ -356,7 +356,7 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         try:
             cookie_token = JSONWebTokenAuthentication.get_token_from_cookies(request.COOKIES)
             unsafe_decoded_jwt = unsafe_jwt_decode_handler(cookie_token)
-            jwt_username = JSONWebTokenAuthentication.jwt_get_username_from_payload(unsafe_decoded_jwt)
+            jwt_username = self._get_username_from_payload(unsafe_decoded_jwt)
             jwt_lms_user_id = unsafe_decoded_jwt.get('user_id', None)
             if not jwt_username or not jwt_lms_user_id:
                 set_custom_attribute('jwt_cookie_unsafe_decode_issue', 'missing-claim')
@@ -366,6 +366,17 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             set_custom_attribute('jwt_cookie_unsafe_decode_issue', 'decode-error')
 
         return (jwt_username, jwt_lms_user_id)
+
+    def _get_username_from_payload(self, payload):
+        """
+        Returns the username from the payload.
+
+        WARNING:
+        1. This doesn't play well with JSONWebTokenAuthentication.jwt_get_username_from_payload, but
+        some services do not have JWT_PAYLOAD_GET_USERNAME_HANDLER configured.
+        2. It's unclear if `username` is used for any old JWTs, but this could probably be removed.
+        """
+        return payload.get('preferred_username') or payload.get('username')
 
 
 _IS_REQUEST_USER_SET_FOR_JWT_AUTH_CACHE_KEY = '_is_request_user_for_jwt_set'
