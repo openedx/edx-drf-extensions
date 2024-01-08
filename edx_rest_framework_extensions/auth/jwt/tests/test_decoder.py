@@ -247,7 +247,7 @@ class JWTDecodeHandlerTests(TestCase):
         # Generate a token using the invalid signing key
         token = generate_jwt_token(self.payload, invalid_signing_key)
         decoded_token = unsafe_jwt_decode_handler(token)
-        assert decoded_token['username'] is not None
+        assert decoded_token['preferred_username'] is not None
 
 
 def _jwt_decode_handler_with_defaults(token):  # pylint: disable=unused-argument

@@ -46,6 +46,9 @@ JWT_AUTH = {
 
     'JWT_LEEWAY': 1,
 
+    # This matches the configuration of all Open edX services.
+    'JWT_PAYLOAD_GET_USERNAME_HANDLER': lambda d: d.get('preferred_username'),
+
     'JWT_SECRET_KEY': 'test-key',
 
     'JWT_PUBLIC_SIGNING_JWK_SET': """
