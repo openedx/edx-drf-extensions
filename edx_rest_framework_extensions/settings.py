@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_SETTINGS = {
     ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH: False,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: False,
+    ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH: False,
 
     'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': (),
     # Map JWT claims to user attributes.
