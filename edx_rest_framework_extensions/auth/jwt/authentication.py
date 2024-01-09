@@ -14,9 +14,7 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
     configured_jwt_decode_handler,
     unsafe_jwt_decode_handler,
 )
-from edx_rest_framework_extensions.config import (
-    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
-)
+from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 from edx_rest_framework_extensions.settings import get_setting
 
 

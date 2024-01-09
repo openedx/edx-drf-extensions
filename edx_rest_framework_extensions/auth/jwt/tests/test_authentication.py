@@ -32,9 +32,7 @@ from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
     generate_latest_version_payload,
 )
-from edx_rest_framework_extensions.config import (
-    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
-)
+from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 from edx_rest_framework_extensions.tests import factories
 
 
