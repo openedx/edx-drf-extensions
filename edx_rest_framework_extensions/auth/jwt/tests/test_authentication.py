@@ -32,10 +32,14 @@ from edx_rest_framework_extensions.auth.jwt.tests.utils import (
     generate_jwt_token,
     generate_latest_version_payload,
 )
+<<<<<<< HEAD
 from edx_rest_framework_extensions.config import (
     ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
 )
+=======
+from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
+>>>>>>> 7d931d2 (fixup! fix imports)
 from edx_rest_framework_extensions.tests import factories
 
 
