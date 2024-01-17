@@ -15,7 +15,10 @@ import warnings
 from django.conf import settings
 from rest_framework_jwt.settings import api_settings
 
-from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
+from edx_rest_framework_extensions.config import (
+    ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH,
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -23,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: False,
+    ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH: False,
 
     'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': (),
     # Map JWT claims to user attributes.

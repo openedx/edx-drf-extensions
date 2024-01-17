@@ -14,7 +14,10 @@ from edx_rest_framework_extensions.auth.jwt.decoder import (
     configured_jwt_decode_handler,
     unsafe_jwt_decode_handler,
 )
-from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
+from edx_rest_framework_extensions.config import (
+    ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH,
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
+)
 from edx_rest_framework_extensions.settings import get_setting
 
 
@@ -28,6 +31,10 @@ class JwtAuthenticationError(Exception):
 
 
 class JwtSessionUserMismatchError(JwtAuthenticationError):
+    pass
+
+
+class JwtUserEmailMismatchError(JwtAuthenticationError):
     pass
 
 
@@ -102,6 +109,14 @@ class JwtAuthentication(JSONWebTokenAuthentication):
             if not user_and_auth:
                 set_custom_attribute('jwt_auth_result', 'n/a')
                 return user_and_auth
+
+            if get_setting(ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH):
+                is_email_mismatch = self._is_jwt_and_lms_user_email_mismatch(request, user_and_auth[0])
+                if is_email_mismatch:
+                    raise JwtUserEmailMismatchError(
+                        'Failing JWT authentication due to jwt user email mismatch '
+                        'with lms user email.'
+                    )
 
             # Not using JWT cookie, CSRF validation not required
             if not is_authenticating_with_jwt_cookie:
@@ -312,6 +327,23 @@ class JwtAuthentication(JSONWebTokenAuthentication):
         set_custom_attribute('jwt_auth_mismatch_jwt_cookie_username', jwt_username)
 
         return True
+
+    def _is_jwt_and_lms_user_email_mismatch(self, request, user):
+        """
+        Returns True if user email in JWT and email of user do not match, False otherwise.
+        Arguments:
+            request: The request.
+            user: user from user_and_auth
+        """
+        lms_user_email = getattr(user, 'email', None)
+
+        # This function will check for token in the authorization header and return it
+        # otherwise it will return token from JWT cookies.
+        token = JSONWebTokenAuthentication.get_token_from_request(request)
+        decoded_jwt = configured_jwt_decode_handler(token)
+        jwt_user_email = decoded_jwt.get('email', None)
+
+        return lms_user_email != jwt_user_email
 
     def _get_unsafe_jwt_cookie_username_and_lms_user_id(self, request):
         """
