@@ -36,7 +36,6 @@ from edx_rest_framework_extensions.config import (
     ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
 )
-from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 from edx_rest_framework_extensions.tests import factories
 
 
@@ -251,11 +250,6 @@ class JwtAuthenticationTests(TestCase):
         mock_set_custom_attribute.assert_any_call('jwt_auth_with_django_request', True)
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'success-cookie')
 
-    @override_settings(
-        EDX_DRF_EXTENSIONS={
-            ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH: False
-        }
-    )
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_csrf_protected(self, mock_set_custom_attribute):
         """
@@ -551,12 +545,11 @@ class JwtAuthenticationTests(TestCase):
         ),
         ROOT_URLCONF='edx_rest_framework_extensions.auth.jwt.tests.test_authentication',
     )
-    def test_authenticate_user_lms_and_jwt_email_mismatch_not_checked(self):
+    def test_authenticate_user_lms_and_jwt_email_mismatch_toggle_disabled(self):
         """
-        Test that lms and jwt user email is not checked for match if ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH is false.
+        Test success for JwtAuthentication when ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH is disabled.
         """
-        user_email = 'old@example.com'
-        user = factories.UserFactory(email=user_email)
+        user = factories.UserFactory(email='old@example.com')
         jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=user)
 
         # Cookie parts will be recombined by JwtAuthCookieMiddleware
@@ -591,10 +584,10 @@ class JwtAuthenticationTests(TestCase):
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_user_lms_and_jwt_email_match_failure(self, mock_set_custom_attribute):
         """
-        Tests failure when lms and jwt user email do not match if ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH is True.
+        Test failure for JwtAuthentication when ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH
+        is enabled and the lms and jwt user email do not match.
         """
-        user_email = 'old@example.com'
-        user = factories.UserFactory(email=user_email)
+        user = factories.UserFactory(email='old@example.com')
         jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=user)
 
         # Cookie parts will be recombined by JwtAuthCookieMiddleware
@@ -634,10 +627,10 @@ class JwtAuthenticationTests(TestCase):
     @mock.patch('edx_rest_framework_extensions.auth.jwt.authentication.set_custom_attribute')
     def test_authenticate_user_lms_and_jwt_email_match_success(self, mock_set_custom_attribute):
         """
-        Tests success when lms and jwt user email match if ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH is True.
+        Test success for JwtAuthentication when ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH
+        is enabled and the lms and jwt user email match.
         """
-        user_email = 'old@example.com'
-        user = factories.UserFactory(email=user_email)
+        user = factories.UserFactory(email='old@example.com')
         jwt_header_payload, jwt_signature = self._get_test_jwt_token_payload_and_signature(user=user)
 
         # Cookie parts will be recombined by JwtAuthCookieMiddleware

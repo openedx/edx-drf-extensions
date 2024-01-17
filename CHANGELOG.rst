@@ -12,6 +12,15 @@ Change Log
 Unreleased
 ----------
 
+[10.1.0] - 2024-01-26
+---------------------
+
+* Added permanent toggle EDX_DRF_EXTENSIONS[ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH]:
+
+    * This toggle should only get enabled in the LMS, and should remain disabled in all other services.
+    * If enabled, makes sure that the user email in JWT cookies and LMS user email matches
+    * If email matches, it allows authentication otherwise raise JwtUserEmailMismatchError error.
+
 [10.0.0] - 2023-11-30
 ---------------------
 
