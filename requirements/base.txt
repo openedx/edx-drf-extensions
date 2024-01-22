@@ -39,13 +39,13 @@ djangorestframework==3.14.0
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==5.9.0
+edx-django-utils==5.10.1
     # via -r requirements/base.in
 edx-opaque-keys==2.5.1
     # via -r requirements/base.in
 idna==3.6
     # via requests
-newrelic==9.3.0
+newrelic==9.5.0
     # via edx-django-utils
 pbr==6.0.0
     # via stevedore
