@@ -18,19 +18,13 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from edx_rest_framework_extensions.auth.jwt.authentication import (
     set_flag_is_request_user_set_for_jwt_auth,
 )
-from edx_rest_framework_extensions.auth.jwt.constants import (
-    JWT_DELIMITER,
-    USE_JWT_COOKIE_HEADER,
-)
+from edx_rest_framework_extensions.auth.jwt.constants import JWT_DELIMITER
 from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_header_payload_name,
     jwt_cookie_name,
     jwt_cookie_signature_name,
 )
-from edx_rest_framework_extensions.config import (
-    ENABLE_FORGIVING_JWT_COOKIES,
-    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
-)
+from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 from edx_rest_framework_extensions.permissions import (
     LoginRedirectIfUnauthenticated,
     NotJwtRestrictedApplication,
@@ -106,9 +100,6 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
     using the LoginRedirectIfUnauthenticated permission class.
 
     Enables a DRF view to redirect the user to login when they are unauthenticated.
-    It automatically enables JWT-cookie-based authentication by setting the
-    `USE_JWT_COOKIE_HEADER` for endpoints using the LoginRedirectIfUnauthenticated
-    permission.
 
     This can be used to convert a plain Django view using @login_required into a
     DRF APIView, which is useful to enable our DRF JwtAuthentication class.
@@ -139,17 +130,9 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
         """
         Enables Jwt Authentication for endpoints using the LoginRedirectIfUnauthenticated permission class.
         """
+        # Note: Rather than caching here, this could be called directly in process_response based on the request,
+        # which would require using reverse to determine the view.
         self._check_and_cache_login_required_found(view_func)
-
-        # Forgiving JWT cookies is an alternative to the older USE_JWT_COOKIE_HEADER.
-        # If the rollout for forgiving JWT cookies succeeds, we would need to see if
-        #   this middleware could be simplified or replaced by a simpler solution, because
-        #   at least one part of the original solution required this middleware to insert
-        #   the USE_JWT_COOKIE_HEADER.
-        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
-        if not is_forgiving_jwt_cookies_enabled:
-            if self.is_jwt_auth_enabled_with_login_required(request, view_func):
-                request.META[USE_JWT_COOKIE_HEADER] = 'true'
 
     def process_response(self, request, response):
         """
@@ -230,15 +213,6 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         """
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
 
-        # .. custom_attribute_name: use_jwt_cookie_requested
-        # .. custom_attribute_description: True if USE_JWT_COOKIE_HEADER was found.
-        #   This is a temporary attribute, because this header is being deprecated/removed.
-        set_custom_attribute('use_jwt_cookie_requested', bool(request.META.get(USE_JWT_COOKIE_HEADER)))
-
-        if not get_setting(ENABLE_FORGIVING_JWT_COOKIES):
-            if not request.META.get(USE_JWT_COOKIE_HEADER):
-                return
-
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
@@ -275,18 +249,12 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         # handled through a more traditional AuthenticationMiddleware that handles both JWT cookies and sessions in
         # the future.
         if has_reconstituted_jwt_cookie and get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE):
-            if get_setting(ENABLE_FORGIVING_JWT_COOKIES):
-                # Since this call to the user is not made lazily, and has the potential to cause issues, we
-                # ensure it is only used in the case of ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE.
-                if not get_user(request).is_authenticated:
-                    # Similar to django/contrib/auth/middleware.py AuthenticationMiddleware.
-                    set_flag_is_request_user_set_for_jwt_auth()
-                    request.user = SimpleLazyObject(lambda: _get_cached_user_from_jwt(request, view_func))
-            else:
-                # Disabling ENABLE_FORGIVING_JWT_COOKIES will provide the original implementation,
-                # without checking the user outside of the lazy call (and without caching). This
-                # ensures there is no change in behavior until we test ENABLE_FORGIVING_JWT_COOKIES.
-                request.user = SimpleLazyObject(lambda: _get_user_from_jwt_original(request, view_func))
+            # Since this call to the user is not made lazily, and has the potential to cause issues, we
+            # ensure it is only used in the case of ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE.
+            if not get_user(request).is_authenticated:
+                # Similar to django/contrib/auth/middleware.py AuthenticationMiddleware.
+                set_flag_is_request_user_set_for_jwt_auth()
+                request.user = SimpleLazyObject(lambda: _get_cached_user_from_jwt(request, view_func))
 
 
 def _get_module_request_cache():
@@ -305,22 +273,6 @@ def _get_cached_user_from_jwt(request, view_func):
         cached_jwt_user = _get_user_from_jwt(request, view_func)
         _get_module_request_cache()[_JWT_USER_CACHE_KEY] = cached_jwt_user
     return _get_module_request_cache()[_JWT_USER_CACHE_KEY]
-
-
-def _get_user_from_jwt_original(request, view_func):
-    """
-    Returns user from JWT authentication using the original implementation.
-
-    Although this implementation is not ideal, it is temporarily being left in place
-    for backward-compatibility when ENABLE_FORGIVING_JWT_COOKIES is disabled.
-    """
-    # The original implementation first returned the result of the authenticated session
-    # user if it were available, which is not really what this method says it will do.
-    user = get_user(request)
-    if user.is_authenticated:
-        return user
-
-    return _get_user_from_jwt(request, view_func)
 
 
 def _get_user_from_jwt(request, view_func):
