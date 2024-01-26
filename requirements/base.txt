@@ -16,7 +16,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via edx-django-utils
-cryptography==41.0.7
+cryptography==42.0.1
     # via pyjwt
 django==3.2.23
     # via
@@ -45,11 +45,11 @@ edx-opaque-keys==2.5.1
     # via -r requirements/base.in
 idna==3.6
     # via requests
-newrelic==9.5.0
+newrelic==9.6.0
     # via edx-django-utils
 pbr==6.0.0
     # via stevedore
-psutil==5.9.7
+psutil==5.9.8
     # via edx-django-utils
 pycparser==2.21
     # via cffi
