@@ -4,6 +4,10 @@
 #
 #    make upgrade
 #
+accessible-pygments==0.0.4
+    # via
+    #   -r requirements/docs.txt
+    #   pydata-sphinx-theme
 alabaster==0.7.13
     # via
     #   -r requirements/docs.txt
@@ -21,7 +25,12 @@ astroid==3.0.2
 babel==2.14.0
     # via
     #   -r requirements/docs.txt
+    #   pydata-sphinx-theme
     #   sphinx
+beautifulsoup4==4.12.3
+    # via
+    #   -r requirements/docs.txt
+    #   pydata-sphinx-theme
 cachetools==5.3.2
     # via
     #   -r requirements/test.txt
@@ -60,7 +69,7 @@ click-log==0.4.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-code-annotations==1.5.0
+code-annotations==1.6.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -68,19 +77,19 @@ colorama==0.4.6
     # via
     #   -r requirements/test.txt
     #   tox
-coverage[toml]==7.4.0
+coverage[toml]==7.4.1
     # via
     #   -r requirements/test.txt
     #   coverage
     #   pytest-cov
-cryptography==42.0.1
+cryptography==42.0.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   pyjwt
 ddt==1.7.1
     # via -r requirements/test.txt
-dill==0.3.7
+dill==0.3.8
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -116,8 +125,8 @@ djangorestframework==3.14.0
 docutils==0.19
     # via
     #   -r requirements/docs.txt
+    #   pydata-sphinx-theme
     #   sphinx
-    #   sphinx-rtd-theme
 drf-jwt==1.19.2
     # via
     #   -r requirements/base.txt
@@ -138,7 +147,7 @@ exceptiongroup==1.2.0
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==22.5.1
+faker==22.6.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -195,6 +204,7 @@ packaging==23.2
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
+    #   pydata-sphinx-theme
     #   pyproject-api
     #   pytest
     #   sphinx
@@ -204,7 +214,7 @@ pbr==6.0.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==4.1.0
+platformdirs==4.2.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -227,9 +237,15 @@ pycparser==2.21
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   cffi
+pydata-sphinx-theme==0.14.4
+    # via
+    #   -r requirements/docs.txt
+    #   sphinx-book-theme
 pygments==2.17.2
     # via
     #   -r requirements/docs.txt
+    #   accessible-pygments
+    #   pydata-sphinx-theme
     #   sphinx
 pyjwt[crypto]==2.8.0
     # via
@@ -271,14 +287,14 @@ pyproject-api==1.6.1
     # via
     #   -r requirements/test.txt
     #   tox
-pytest==7.4.4
+pytest==8.0.0
     # via
     #   -r requirements/test.txt
     #   pytest-cov
     #   pytest-django
 pytest-cov==4.1.0
     # via -r requirements/test.txt
-pytest-django==4.7.0
+pytest-django==4.8.0
     # via -r requirements/test.txt
 python-dateutil==2.8.2
     # via
@@ -288,7 +304,7 @@ python-slugify==8.0.2
     # via
     #   -r requirements/test.txt
     #   code-annotations
-pytz==2023.3.post1
+pytz==2023.4
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -319,13 +335,17 @@ snowballstemmer==2.2.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
+soupsieve==2.5
+    # via
+    #   -r requirements/docs.txt
+    #   beautifulsoup4
 sphinx==5.3.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/docs.txt
-    #   sphinx-rtd-theme
-    #   sphinxcontrib-jquery
-sphinx-rtd-theme==2.0.0
+    #   pydata-sphinx-theme
+    #   sphinx-book-theme
+sphinx-book-theme==1.0.1
     # via -r requirements/docs.txt
 sphinxcontrib-applehelp==1.0.4
     # via
@@ -339,10 +359,6 @@ sphinxcontrib-htmlhelp==2.0.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-sphinxcontrib-jquery==4.1
-    # via
-    #   -r requirements/docs.txt
-    #   sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via
     #   -r requirements/docs.txt
@@ -388,13 +404,15 @@ tox==4.12.1
 typing-extensions==4.9.0
     # via
     #   -r requirements/base.txt
+    #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   asgiref
     #   astroid
     #   edx-opaque-keys
     #   faker
+    #   pydata-sphinx-theme
     #   pylint
-urllib3==2.1.0
+urllib3==2.2.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
