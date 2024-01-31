@@ -38,21 +38,21 @@ click==8.1.7
     #   edx-lint
 click-log==0.4.0
     # via edx-lint
-code-annotations==1.5.0
+code-annotations==1.6.0
     # via edx-lint
 colorama==0.4.6
     # via tox
-coverage[toml]==7.4.0
+coverage[toml]==7.4.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==42.0.1
+cryptography==42.0.2
     # via
     #   -r requirements/base.txt
     #   pyjwt
 ddt==1.7.1
     # via -r requirements/test.in
-dill==0.3.7
+dill==0.3.8
     # via pylint
 distlib==0.3.8
     # via virtualenv
@@ -87,7 +87,7 @@ exceptiongroup==1.2.0
     # via pytest
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==22.5.1
+faker==22.6.0
     # via factory-boy
 filelock==3.13.1
     # via
@@ -124,7 +124,7 @@ pbr==6.0.0
     # via
     #   -r requirements/base.txt
     #   stevedore
-platformdirs==4.1.0
+platformdirs==4.2.0
     # via
     #   pylint
     #   tox
@@ -172,19 +172,19 @@ pynacl==1.5.0
     #   edx-django-utils
 pyproject-api==1.6.1
     # via tox
-pytest==7.4.4
+pytest==8.0.0
     # via
     #   pytest-cov
     #   pytest-django
 pytest-cov==4.1.0
     # via -r requirements/test.in
-pytest-django==4.7.0
+pytest-django==4.8.0
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via faker
 python-slugify==8.0.2
     # via code-annotations
-pytz==2023.3.post1
+pytz==2023.4
     # via
     #   -r requirements/base.txt
     #   django
@@ -230,7 +230,7 @@ typing-extensions==4.9.0
     #   edx-opaque-keys
     #   faker
     #   pylint
-urllib3==2.1.0
+urllib3==2.2.0
     # via
     #   -r requirements/base.txt
     #   requests
