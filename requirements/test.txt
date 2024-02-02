@@ -14,7 +14,7 @@ astroid==3.0.2
     #   pylint-celery
 cachetools==5.3.2
     # via tox
-certifi==2023.11.17
+certifi==2024.2.2
     # via
     #   -r requirements/base.txt
     #   requests
@@ -182,9 +182,9 @@ pytest-django==4.8.0
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via faker
-python-slugify==8.0.2
+python-slugify==8.0.3
     # via code-annotations
-pytz==2023.4
+pytz==2024.1
     # via
     #   -r requirements/base.txt
     #   django
