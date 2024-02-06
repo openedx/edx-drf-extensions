@@ -20,7 +20,9 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from edx_rest_framework_extensions.auth.jwt import authentication
 from edx_rest_framework_extensions.auth.jwt.authentication import (
     JwtAuthentication,
+    JwtAuthenticationError,
     JwtSessionUserMismatchError,
+    JwtUserEmailMismatchError,
 )
 from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_header_payload_name,
@@ -486,9 +488,8 @@ class JwtAuthenticationTests(TestCase):
 
         self.client.force_login(session_user)
 
-        with self.assertRaises(JwtSessionUserMismatchError):
-            response = self.client.get(reverse('authenticated-view'))
-            assert response.status_code == 401
+        response = self.client.get(reverse('authenticated-view'))
+        assert response.status_code == 401
 
         mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_session_username', session_user.username)
         mock_set_custom_attribute.assert_any_call('jwt_auth_mismatch_jwt_cookie_username', jwt_user.username)
@@ -496,7 +497,11 @@ class JwtAuthenticationTests(TestCase):
             'jwt_cookie_lms_user_id', jwt_user.id  # pylint: disable=no-member
         )
         mock_set_custom_attribute.assert_any_call('jwt_auth_result', 'user-mismatch-enforced-failure')
-        mock_set_custom_attribute.assert_any_call('jwt_auth_failed', mock.ANY)
+        mock_set_custom_attribute.assert_any_call(
+            'jwt_auth_failed',
+            "Exception:JwtSessionUserMismatchError('Failing otherwise successful JWT authentication due "
+            "to session user mismatch with set request user.')"
+        )
 
     @override_settings(
         EDX_DRF_EXTENSIONS={
@@ -734,3 +739,26 @@ class TestLowestJWTException:
         except Exception as exception:
             e = authentication._deepest_jwt_exception(exception)
             assert e == mock_jwt_exception
+
+
+class JwtAuthenticationErrorTests(TestCase):
+    def test_jwt_authentication_error_instance_of_authentication_failed(self):
+        # Create an instance of JwtAuthenticationError
+        error = JwtAuthenticationError()
+
+        # Assert that it is also an instance of AuthenticationFailed
+        self.assertIsInstance(error, AuthenticationFailed)
+
+    def test_jwt_session_user_mismatch_error_instance_of_authentication_failed(self):
+        # Create an instance of JwtSessionUserMismatchError
+        error = JwtSessionUserMismatchError()
+
+        # Assert that it is also an instance of AuthenticationFailed
+        self.assertIsInstance(error, AuthenticationFailed)
+
+    def test_jwt_user_email_mismatch_error_instance_of_authentication_failed(self):
+        # Create an instance of JwtUserEmailMismatchError
+        error = JwtUserEmailMismatchError()
+
+        # Assert that it is also an instance of AuthenticationFailed
+        self.assertIsInstance(error, AuthenticationFailed)

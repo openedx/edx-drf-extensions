@@ -12,6 +12,11 @@ Change Log
 Unreleased
 ----------
 
+[10.2.0] - 2024-01-26
+---------------------
+
+* Subclasses base exception ``JwtAuthenticationError`` from Django Rest Framework's ``AuthenticationFailed`` exception, allowing ``JwtAuthenticationError`` to be recognized and handled by the default exception handler of the Django Rest Framework.
+
 [10.1.0] - 2024-01-26
 ---------------------
 

@@ -24,7 +24,7 @@ from edx_rest_framework_extensions.settings import get_setting
 logger = logging.getLogger(__name__)
 
 
-class JwtAuthenticationError(Exception):
+class JwtAuthenticationError(exceptions.AuthenticationFailed):
     """
     Custom base class for all exceptions
     """
