@@ -46,7 +46,7 @@ coverage[toml]==7.4.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==42.0.2
+cryptography==42.0.3
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -87,7 +87,7 @@ exceptiongroup==1.2.0
     # via pytest
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==23.1.0
+faker==23.2.0
     # via factory-boy
 filelock==3.13.1
     # via
