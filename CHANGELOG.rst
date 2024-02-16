@@ -12,6 +12,8 @@ Change Log
 Unreleased
 ----------
 
+* Add support for python 3.12
+
 [10.2.0] - 2024-01-26
 ---------------------
 
