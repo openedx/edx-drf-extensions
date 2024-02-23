@@ -90,7 +90,7 @@ typing-extensions==4.9.0
     # via
     #   -c requirements/test.txt
     #   pydata-sphinx-theme
-urllib3==2.2.0
+urllib3==2.2.1
     # via
     #   -c requirements/test.txt
     #   requests
