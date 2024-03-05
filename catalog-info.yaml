@@ -5,7 +5,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: 'edx-drf-extensions'
-  description: "This library includes various cross-cutting concerns related to APIs."
+  description: "This library includes various cross-cutting concerns for providing APIs."
   links:
     - url: "https://github.com/openedx/edx-drf-extensions"
       title: "edX Django REST Framework Extensions"
