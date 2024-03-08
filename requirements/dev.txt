@@ -17,7 +17,7 @@ asgiref==3.7.2
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-astroid==3.0.3
+astroid==3.1.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -27,11 +27,16 @@ babel==2.14.0
     #   -r requirements/docs.txt
     #   pydata-sphinx-theme
     #   sphinx
+backports-zoneinfo==0.2.1
+    # via
+    #   -r requirements/base.txt
+    #   -r requirements/test.txt
+    #   django
 beautifulsoup4==4.12.3
     # via
     #   -r requirements/docs.txt
     #   pydata-sphinx-theme
-cachetools==5.3.2
+cachetools==5.3.3
     # via
     #   -r requirements/test.txt
     #   tox
@@ -77,16 +82,16 @@ colorama==0.4.6
     # via
     #   -r requirements/test.txt
     #   tox
-coverage[toml]==7.4.2
+coverage[toml]==7.4.3
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==42.0.4
+cryptography==42.0.5
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   pyjwt
-ddt==1.7.1
+ddt==1.7.2
     # via -r requirements/test.txt
 dill==0.3.8
     # via
@@ -96,7 +101,7 @@ distlib==0.3.8
     # via
     #   -r requirements/test.txt
     #   virtualenv
-django==3.2.24
+django==4.2.11
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
@@ -130,7 +135,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-django-utils==5.10.1
+edx-django-utils==5.11.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -146,7 +151,7 @@ exceptiongroup==1.2.0
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==23.2.1
+faker==24.0.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -167,7 +172,7 @@ imagesize==1.4.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-importlib-metadata==7.0.1
+importlib-metadata==7.0.2
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -251,7 +256,7 @@ pyjwt[crypto]==2.8.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==3.0.3
+pylint==3.1.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -285,7 +290,7 @@ pyproject-api==1.6.1
     # via
     #   -r requirements/test.txt
     #   tox
-pytest==8.0.1
+pytest==8.0.2
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -294,7 +299,7 @@ pytest-cov==4.1.0
     # via -r requirements/test.txt
 pytest-django==4.8.0
     # via -r requirements/test.txt
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   -r requirements/test.txt
     #   faker
@@ -308,7 +313,6 @@ pytz==2024.1
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   babel
-    #   django
     #   djangorestframework
 pyyaml==6.0.1
     # via
@@ -393,13 +397,13 @@ tomli==2.0.1
     #   pyproject-api
     #   pytest
     #   tox
-tomlkit==0.12.3
+tomlkit==0.12.4
     # via
     #   -r requirements/test.txt
     #   pylint
-tox==4.13.0
+tox==4.14.1
     # via -r requirements/test.txt
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
