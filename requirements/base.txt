@@ -6,6 +6,8 @@
 #
 asgiref==3.7.2
     # via django
+backports-zoneinfo==0.2.1
+    # via django
 certifi==2024.2.2
     # via requests
 cffi==1.16.0
@@ -16,9 +18,9 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via edx-django-utils
-cryptography==42.0.4
+cryptography==42.0.5
     # via pyjwt
-django==3.2.24
+django==4.2.11
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -39,13 +41,13 @@ djangorestframework==3.14.0
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==5.10.1
+edx-django-utils==5.11.0
     # via -r requirements/base.in
 edx-opaque-keys==2.5.1
     # via -r requirements/base.in
 idna==3.6
     # via requests
-newrelic==9.7.0
+newrelic==9.7.1
     # via edx-django-utils
 pbr==6.0.0
     # via stevedore
@@ -62,9 +64,7 @@ pymongo==3.13.0
 pynacl==1.5.0
     # via edx-django-utils
 pytz==2024.1
-    # via
-    #   django
-    #   djangorestframework
+    # via djangorestframework
 requests==2.31.0
     # via -r requirements/base.in
 semantic-version==2.10.0
@@ -75,7 +75,7 @@ stevedore==5.2.0
     # via
     #   edx-django-utils
     #   edx-opaque-keys
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via
     #   asgiref
     #   edx-opaque-keys
