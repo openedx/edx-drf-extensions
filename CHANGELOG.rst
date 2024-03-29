@@ -12,6 +12,12 @@ Change Log
 Unreleased
 ----------
 
+[10.3.0] - 2024-03-29
+---------------------
+
+* Added Support for ``Python 3.11``
+* Dropped support for ``Django<4.2``
+
 [10.2.0] - 2024-01-26
 ---------------------
 
