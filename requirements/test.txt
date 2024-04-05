@@ -83,7 +83,7 @@ django-waffle==4.1.0
     #   drf-jwt
 drf-jwt==1.19.2
     # via -r requirements/base.txt
-edx-django-utils==5.11.0
+edx-django-utils==5.12.0
     # via -r requirements/base.txt
 edx-lint==5.3.6
     # via -r requirements/test.in
@@ -145,7 +145,7 @@ psutil==5.9.8
     #   edx-django-utils
 pycodestyle==2.11.1
     # via -r requirements/test.in
-pycparser==2.21
+pycparser==2.22
     # via
     #   -r requirements/base.txt
     #   cffi
