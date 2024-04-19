@@ -76,7 +76,7 @@ click-log==0.4.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-code-annotations==1.7.0
+code-annotations==1.8.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -137,7 +137,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-django-utils==5.11.0
+edx-django-utils==5.12.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -147,24 +147,24 @@ edx-opaque-keys==2.5.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-exceptiongroup==1.2.0
+exceptiongroup==1.2.1
     # via
     #   -r requirements/test.txt
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==24.4.0
+faker==24.11.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
-filelock==3.13.3
+filelock==3.13.4
     # via
     #   -r requirements/test.txt
     #   tox
     #   virtualenv
 httpretty==1.1.4
     # via -r requirements/test.txt
-idna==3.6
+idna==3.7
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -202,7 +202,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==9.8.0
+newrelic==9.9.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -239,7 +239,7 @@ psutil==5.9.8
     #   edx-django-utils
 pycodestyle==2.11.1
     # via -r requirements/test.txt
-pycparser==2.21
+pycparser==2.22
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -373,7 +373,7 @@ sphinxcontrib-serializinghtml==1.1.5
     # via
     #   -r requirements/docs.txt
     #   sphinx
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -403,7 +403,7 @@ tomlkit==0.12.4
     #   pylint
 tox==4.14.2
     # via -r requirements/test.txt
-typing-extensions==4.10.0
+typing-extensions==4.11.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -420,7 +420,7 @@ urllib3==2.2.1
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.25.1
+virtualenv==20.25.3
     # via
     #   -r requirements/test.txt
     #   tox
