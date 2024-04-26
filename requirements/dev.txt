@@ -76,7 +76,7 @@ click-log==0.4.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-code-annotations==1.7.0
+code-annotations==1.8.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -84,7 +84,7 @@ colorama==0.4.6
     # via
     #   -r requirements/test.txt
     #   tox
-coverage[toml]==7.4.4
+coverage[toml]==7.5.0
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -128,6 +128,11 @@ djangorestframework==3.15.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
+dnspython==2.6.1
+    # via
+    #   -r requirements/base.txt
+    #   -r requirements/test.txt
+    #   pymongo
 docutils==0.19
     # via
     #   -r requirements/docs.txt
@@ -137,34 +142,34 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-django-utils==5.11.0
+edx-django-utils==5.12.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
 edx-lint==5.3.6
     # via -r requirements/test.txt
-edx-opaque-keys==2.5.1
+edx-opaque-keys==2.9.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-exceptiongroup==1.2.0
+exceptiongroup==1.2.1
     # via
     #   -r requirements/test.txt
     #   pytest
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==24.4.0
+faker==24.14.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
-filelock==3.13.3
+filelock==3.13.4
     # via
     #   -r requirements/test.txt
     #   tox
     #   virtualenv
 httpretty==1.1.4
     # via -r requirements/test.txt
-idna==3.6
+idna==3.7
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -202,7 +207,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==9.8.0
+newrelic==9.9.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -221,13 +226,13 @@ pbr==6.0.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==4.2.0
+platformdirs==4.2.1
     # via
     #   -r requirements/test.txt
     #   pylint
     #   tox
     #   virtualenv
-pluggy==1.4.0
+pluggy==1.5.0
     # via
     #   -r requirements/test.txt
     #   pytest
@@ -239,7 +244,7 @@ psutil==5.9.8
     #   edx-django-utils
 pycodestyle==2.11.1
     # via -r requirements/test.txt
-pycparser==2.21
+pycparser==2.22
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -279,7 +284,7 @@ pylint-plugin-utils==0.8.2
     #   -r requirements/test.txt
     #   pylint-celery
     #   pylint-django
-pymongo==3.13.0
+pymongo==4.4.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -373,7 +378,7 @@ sphinxcontrib-serializinghtml==1.1.5
     # via
     #   -r requirements/docs.txt
     #   sphinx
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -403,7 +408,7 @@ tomlkit==0.12.4
     #   pylint
 tox==4.14.2
     # via -r requirements/test.txt
-typing-extensions==4.10.0
+typing-extensions==4.11.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -420,7 +425,7 @@ urllib3==2.2.1
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.25.1
+virtualenv==20.26.0
     # via
     #   -r requirements/test.txt
     #   tox
