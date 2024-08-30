@@ -227,9 +227,10 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
             # Log unexpected case of only finding one cookie.
             if not header_payload_cookie:
                 log_message = self._get_missing_cookie_message(jwt_cookie_header_payload_name())
+                log.warning(log_message)
             if not signature_cookie:
                 log_message = self._get_missing_cookie_message(jwt_cookie_signature_name())
-            log.warning(log_message)
+                log.warning(log_message)
 
         has_reconstituted_jwt_cookie = jwt_cookie_name() in request.COOKIES
         # .. custom_attribute_name: has_jwt_cookie
