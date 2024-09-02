@@ -6,7 +6,7 @@
 #
 asgiref==3.8.1
     # via django
-certifi==2024.7.4
+certifi==2024.8.30
     # via requests
 cffi==1.17.0
     # via
@@ -45,11 +45,11 @@ edx-django-utils==5.15.0
     # via -r requirements/base.in
 edx-opaque-keys==2.10.0
     # via -r requirements/base.in
-idna==3.7
+idna==3.8
     # via requests
 newrelic==9.13.0
     # via edx-django-utils
-pbr==6.0.0
+pbr==6.1.0
     # via stevedore
 psutil==6.0.0
     # via edx-django-utils
