@@ -8,7 +8,7 @@ asgiref==3.8.1
     # via django
 certifi==2024.8.30
     # via requests
-cffi==1.17.0
+cffi==1.17.1
     # via
     #   cryptography
     #   pynacl
@@ -16,9 +16,9 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via edx-django-utils
-cryptography==43.0.0
+cryptography==43.0.1
     # via pyjwt
-django==4.2.15
+django==4.2.16
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -43,7 +43,7 @@ drf-jwt==1.19.2
     # via -r requirements/base.in
 edx-django-utils==5.15.0
     # via -r requirements/base.in
-edx-opaque-keys==2.10.0
+edx-opaque-keys==2.11.0
     # via -r requirements/base.in
 idna==3.8
     # via requests

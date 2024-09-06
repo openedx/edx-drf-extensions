@@ -18,7 +18,7 @@ certifi==2024.8.30
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.17.0
+cffi==1.17.1
     # via
     #   -r requirements/base.txt
     #   cryptography
@@ -46,7 +46,7 @@ coverage[toml]==7.6.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==43.0.0
+cryptography==43.0.1
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -85,11 +85,11 @@ edx-django-utils==5.15.0
     # via -r requirements/base.txt
 edx-lint==5.4.0
     # via -r requirements/test.in
-edx-opaque-keys==2.10.0
+edx-opaque-keys==2.11.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==28.1.0
+faker==28.4.1
     # via factory-boy
 filelock==3.15.4
     # via
@@ -179,7 +179,7 @@ pytest==8.3.2
     #   pytest-django
 pytest-cov==5.0.0
     # via -r requirements/test.in
-pytest-django==4.8.0
+pytest-django==4.9.0
     # via -r requirements/test.in
 python-dateutil==2.9.0.post0
     # via faker
