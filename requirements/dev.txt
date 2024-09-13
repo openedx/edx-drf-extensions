@@ -151,7 +151,7 @@ faker==28.4.1
     # via
     #   -r requirements/test.txt
     #   factory-boy
-filelock==3.15.4
+filelock==3.16.0
     # via
     #   -r requirements/test.txt
     #   tox
@@ -210,7 +210,7 @@ pbr==6.1.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==4.2.2
+platformdirs==4.3.2
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -282,7 +282,7 @@ pyproject-api==1.7.1
     # via
     #   -r requirements/test.txt
     #   tox
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -378,7 +378,7 @@ tomlkit==0.13.2
     # via
     #   -r requirements/test.txt
     #   pylint
-tox==4.18.0
+tox==4.18.1
     # via -r requirements/test.txt
 typing-extensions==4.12.2
     # via
@@ -387,13 +387,13 @@ typing-extensions==4.12.2
     #   -r requirements/test.txt
     #   edx-opaque-keys
     #   pydata-sphinx-theme
-urllib3==2.2.2
+urllib3==2.2.3
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.26.3
+virtualenv==20.26.4
     # via
     #   -r requirements/test.txt
     #   tox
