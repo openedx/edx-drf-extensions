@@ -17,7 +17,7 @@ asgiref==3.8.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-astroid==3.2.4
+astroid==3.3.4
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -88,7 +88,7 @@ cryptography==43.0.1
     #   pyjwt
 ddt==1.7.2
     # via -r requirements/test.txt
-dill==0.3.8
+dill==0.3.9
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -135,7 +135,7 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-django-utils==5.15.0
+edx-django-utils==5.16.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -147,18 +147,18 @@ edx-opaque-keys==2.11.0
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==28.4.1
+faker==30.1.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
-filelock==3.15.4
+filelock==3.16.1
     # via
     #   -r requirements/test.txt
     #   tox
     #   virtualenv
 httpretty==1.1.4
     # via -r requirements/test.txt
-idna==3.8
+idna==3.10
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -191,7 +191,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==9.13.0
+newrelic==10.0.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -210,7 +210,7 @@ pbr==6.1.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==4.2.2
+platformdirs==4.3.6
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -248,7 +248,7 @@ pyjwt[crypto]==2.9.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==3.2.7
+pylint==3.3.1
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -268,7 +268,7 @@ pylint-plugin-utils==0.8.2
     #   -r requirements/test.txt
     #   pylint-celery
     #   pylint-django
-pymongo==4.8.0
+pymongo==4.10.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -278,11 +278,11 @@ pynacl==1.5.0
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-pyproject-api==1.7.1
+pyproject-api==1.8.0
     # via
     #   -r requirements/test.txt
     #   tox
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -378,7 +378,7 @@ tomlkit==0.13.2
     # via
     #   -r requirements/test.txt
     #   pylint
-tox==4.18.0
+tox==4.21.2
     # via -r requirements/test.txt
 typing-extensions==4.12.2
     # via
@@ -386,14 +386,15 @@ typing-extensions==4.12.2
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   edx-opaque-keys
+    #   faker
     #   pydata-sphinx-theme
-urllib3==2.2.2
+urllib3==2.2.3
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.26.3
+virtualenv==20.26.6
     # via
     #   -r requirements/test.txt
     #   tox
