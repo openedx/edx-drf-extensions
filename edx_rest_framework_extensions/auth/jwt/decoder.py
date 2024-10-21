@@ -267,6 +267,7 @@ def _verify_jwt_signature(token, jwt_issuer, decode_symmetric_token):
         raise jwt.InvalidTokenError(exc_info[2]) from token_error
 
 
+# pylint: disable=R0917
 def verify_jwk_signature_using_keyset(token, key_set, aud=None, iss=None, verify_signature=True, verify_exp=True):
     """
     Verifies the signature of a JSON Web Token (JWT) using a provided JSON Web Key (PyJWK) key set.
