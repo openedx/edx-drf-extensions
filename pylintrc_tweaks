@@ -2,7 +2,7 @@
 load-plugins = edx_lint.pylint
 
 [MESSAGES CONTROL]
-disable+ = no-member
+disable = no-member
 
 [BASIC]
 const-rgx = (([A-Z_][A-Z0-9_]*)|(__.*__)|log|urlpatterns|logger|User)$
