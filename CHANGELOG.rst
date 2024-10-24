@@ -12,6 +12,10 @@ Change Log
 Unreleased
 ----------
 
+[10.5.0] - 2024-10-21
+---------------------
+* Upgraded to use ``Python 3.12``
+
 [10.4.0] - 2024-08-30
 ---------------------
 * Dropped support for ``Python<3.11``
