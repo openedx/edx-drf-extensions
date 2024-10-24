@@ -431,7 +431,6 @@ class JwtRestrictedApplicationOrUserAccessTests(TestCase):
             expected_log=expected_log,
         )
 
-    # pylint: disable=R0917
     def _assert_jwt_restricted_case(self, scopes, filters, is_user_in_url, expected_response, expected_log):
         with patch('edx_rest_framework_extensions.permissions.log') as mock_log:
             user = self._create_user()

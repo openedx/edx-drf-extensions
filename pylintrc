@@ -286,7 +286,7 @@ disable =
 	feature-toggle-needs-doc,
 	illegal-waffle-usage,
 	
-	logging-fstring-interpolation,no-member
+	logging-fstring-interpolation,no-member, too-many-positional-arguments
 
 [REPORTS]
 output-format = text
@@ -383,4 +383,4 @@ int-import-graph =
 [EXCEPTIONS]
 overgeneral-exceptions = builtins.Exception
 
-# 5a70e4e2588f3e189eb578fb3aa1b148a823913b
+# 3d6ea133547fe5894b68602b76c8d69a9d460e8c
