@@ -38,11 +38,11 @@ click==8.1.7
     #   edx-lint
 click-log==0.4.0
     # via edx-lint
-code-annotations==1.8.0
+code-annotations==1.8.1
     # via edx-lint
 colorama==0.4.6
     # via tox
-coverage[toml]==7.6.4
+coverage[toml]==7.6.5
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -89,7 +89,7 @@ edx-opaque-keys==2.11.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==30.8.2
+faker==33.0.0
     # via factory-boy
 filelock==3.16.1
     # via
@@ -117,7 +117,7 @@ newrelic==10.2.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-packaging==24.1
+packaging==24.2
     # via
     #   pyproject-api
     #   pytest
@@ -195,7 +195,7 @@ six==1.16.0
     # via
     #   edx-lint
     #   python-dateutil
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via
     #   -r requirements/base.txt
     #   django

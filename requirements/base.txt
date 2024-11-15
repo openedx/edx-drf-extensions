@@ -67,7 +67,7 @@ requests==2.32.3
     # via -r requirements/base.in
 semantic-version==2.10.0
     # via -r requirements/base.in
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via django
 stevedore==5.3.0
     # via
