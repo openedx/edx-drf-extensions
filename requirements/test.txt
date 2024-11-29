@@ -38,15 +38,15 @@ click==8.1.7
     #   edx-lint
 click-log==0.4.0
     # via edx-lint
-code-annotations==1.8.0
+code-annotations==2.0.0
     # via edx-lint
 colorama==0.4.6
     # via tox
-coverage[toml]==7.6.4
+coverage[toml]==7.6.8
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==43.0.3
+cryptography==44.0.0
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -68,7 +68,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-django-waffle==4.1.0
+django-waffle==4.2.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -81,7 +81,7 @@ dnspython==2.7.0
     #   pymongo
 drf-jwt==1.19.2
     # via -r requirements/base.txt
-edx-django-utils==7.0.0
+edx-django-utils==7.0.1
     # via -r requirements/base.txt
 edx-lint==5.4.1
     # via -r requirements/test.in
@@ -89,7 +89,7 @@ edx-opaque-keys==2.11.0
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==30.8.2
+faker==33.1.0
     # via factory-boy
 filelock==3.16.1
     # via
@@ -113,11 +113,11 @@ markupsafe==3.0.2
     # via jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==10.2.0
+newrelic==10.3.1
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-packaging==24.1
+packaging==24.2
     # via
     #   pyproject-api
     #   pytest
@@ -145,7 +145,7 @@ pycparser==2.22
     # via
     #   -r requirements/base.txt
     #   cffi
-pyjwt[crypto]==2.9.0
+pyjwt[crypto]==2.10.1
     # via
     #   -r requirements/base.txt
     #   drf-jwt
@@ -195,11 +195,11 @@ six==1.16.0
     # via
     #   edx-lint
     #   python-dateutil
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==5.3.0
+stevedore==5.4.0
     # via
     #   -r requirements/base.txt
     #   code-annotations
@@ -220,5 +220,5 @@ urllib3==2.2.3
     # via
     #   -r requirements/base.txt
     #   requests
-virtualenv==20.27.1
+virtualenv==20.28.0
     # via tox
