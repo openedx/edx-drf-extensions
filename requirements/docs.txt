@@ -40,7 +40,7 @@ markupsafe==3.0.2
     # via
     #   -c requirements/test.txt
     #   jinja2
-packaging==24.1
+packaging==24.2
     # via
     #   -c requirements/test.txt
     #   pydata-sphinx-theme
