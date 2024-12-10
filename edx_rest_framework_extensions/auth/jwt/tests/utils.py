@@ -62,6 +62,9 @@ def generate_latest_version_payload(user, scopes=None, filters=None, version=Non
 def generate_unversioned_payload(user):
     """
     Generate an unversioned valid JWT payload given a user.
+
+    WARNING: This test utility is mocking JWT creation of the identity service (LMS).
+    - A safer alternative might be to move the LMS's JWT creation code to this library.
     """
     jwt_issuer_data = settings.JWT_AUTH['JWT_ISSUERS'][0]
     now = int(time())
@@ -69,7 +72,10 @@ def generate_unversioned_payload(user):
     payload = {
         'iss': jwt_issuer_data['ISSUER'],
         'aud': jwt_issuer_data['AUDIENCE'],
-        'username': user.username,
+        'preferred_username': user.username,  # preferred_username is used by Open edX JWTs.
+        # WARNING: This `user_id` implementation could lead to bugs because `user_id` should be
+        #   conditionally added based on scope, and should not always be available.
+        'user_id': user.id,
         'email': user.email,
         'iat': now,
         'exp': now + ttl,

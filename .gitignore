@@ -72,3 +72,4 @@ test.tmp
 
 # vscode
 .vscode
+venv

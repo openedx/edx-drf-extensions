@@ -2,14 +2,13 @@
 Unit tests for middlewares.
 """
 import re
-from unittest.mock import call, patch
+from unittest.mock import Mock, call, patch
 
 import ddt
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 from edx_django_utils.cache import RequestCache
 
-from edx_rest_framework_extensions.auth.jwt.constants import USE_JWT_COOKIE_HEADER
 from edx_rest_framework_extensions.auth.jwt.cookies import jwt_cookie_name
 from edx_rest_framework_extensions.middleware import (
     RequestCustomAttributesMiddleware,
@@ -24,7 +23,8 @@ class TestRequestCustomAttributesMiddleware(TestCase):
         super().setUp()
         RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
-        self.middleware = RequestCustomAttributesMiddleware()  # pylint: disable=no-value-for-parameter
+        self.mock_response = Mock()
+        self.middleware = RequestCustomAttributesMiddleware(self.mock_response)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_edx_drf_extensions_version_attribute(self, mock_set_custom_attribute):
@@ -111,7 +111,6 @@ class TestRequestCustomAttributesMiddleware(TestCase):
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_auth_type_guess_jwt_cookie_attribute(self, mock_set_custom_attribute):
         self.request.user = UserFactory()
-        self.request.META[USE_JWT_COOKIE_HEADER] = True
         self.request.COOKIES[jwt_cookie_name()] = 'reconstituted-jwt-cookie'
 
         self.middleware.process_response(self.request, None)
@@ -230,7 +229,8 @@ class TestRequestMetricsMiddleware(TestCase):
         super().setUp()
         RequestCache.clear_all_namespaces()
         self.request = RequestFactory().get('/')
-        self.middleware = RequestMetricsMiddleware()
+        self.mock_response = Mock()
+        self.middleware = RequestMetricsMiddleware(self.mock_response)
 
     @patch('edx_django_utils.monitoring.set_custom_attribute')
     def test_request_auth_type_guess_anonymous_attribute(self, mock_set_custom_attribute):

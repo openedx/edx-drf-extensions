@@ -16,7 +16,7 @@ from django.conf import settings
 from rest_framework_jwt.settings import api_settings
 
 from edx_rest_framework_extensions.config import (
-    ENABLE_FORGIVING_JWT_COOKIES,
+    ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH,
     ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
 )
 
@@ -25,16 +25,17 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_SETTINGS = {
-    'OAUTH2_USER_INFO_URL': None,
+    ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH: False,
+    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: False,
 
+    'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': (),
     # Map JWT claims to user attributes.
     'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {
         'administrator': 'is_staff',
         'email': 'email',
     },
-    'JWT_PAYLOAD_MERGEABLE_USER_ATTRIBUTES': (),
-    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE: False,
-    ENABLE_FORGIVING_JWT_COOKIES: False,
+
+    'OAUTH2_USER_INFO_URL': None,
 }
 
 

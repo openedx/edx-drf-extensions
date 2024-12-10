@@ -1,3 +1,3 @@
 """ edx Django REST Framework extensions. """
 
-__version__ = '8.9.2'  # pragma: no cover
+__version__ = '10.5.0'  # pragma: no cover

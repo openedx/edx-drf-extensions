@@ -1,0 +1,18 @@
+# This file records information about this repo. Its use is described in OEP-55:
+# https://open-edx-proposals.readthedocs.io/en/latest/processes/oep-0055-proc-project-maintainers.html
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: 'edx-drf-extensions'
+  description: "This library includes various cross-cutting concerns for providing APIs."
+  links:
+    - url: "https://github.com/openedx/edx-drf-extensions"
+      title: "edX Django REST Framework Extensions"
+      icon: "Web"
+  annotations:
+    openedx.org/arch-interest-groups: ""
+spec:
+  owner: group:2u-arch-bom
+  type: 'library'
+  lifecycle: 'production'

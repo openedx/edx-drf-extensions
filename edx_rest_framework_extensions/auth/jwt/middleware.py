@@ -5,28 +5,26 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.middleware import get_user
+from django.contrib.auth.models import AnonymousUser
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
-from edx_django_utils import monitoring
 from edx_django_utils.cache import RequestCache
+from edx_django_utils.monitoring import set_custom_attribute
 from rest_framework.permissions import OperandHolder, SingleOperandHolder
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from edx_rest_framework_extensions.auth.jwt.constants import (
-    JWT_DELIMITER,
-    USE_JWT_COOKIE_HEADER,
+from edx_rest_framework_extensions.auth.jwt.authentication import (
+    set_flag_is_request_user_set_for_jwt_auth,
 )
+from edx_rest_framework_extensions.auth.jwt.constants import JWT_DELIMITER
 from edx_rest_framework_extensions.auth.jwt.cookies import (
     jwt_cookie_header_payload_name,
     jwt_cookie_name,
     jwt_cookie_signature_name,
 )
-from edx_rest_framework_extensions.config import (
-    ENABLE_FORGIVING_JWT_COOKIES,
-    ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE,
-)
+from edx_rest_framework_extensions.config import ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE
 from edx_rest_framework_extensions.permissions import (
     LoginRedirectIfUnauthenticated,
     NotJwtRestrictedApplication,
@@ -102,9 +100,6 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
     using the LoginRedirectIfUnauthenticated permission class.
 
     Enables a DRF view to redirect the user to login when they are unauthenticated.
-    It automatically enables JWT-cookie-based authentication by setting the
-    `USE_JWT_COOKIE_HEADER` for endpoints using the LoginRedirectIfUnauthenticated
-    permission.
 
     This can be used to convert a plain Django view using @login_required into a
     DRF APIView, which is useful to enable our DRF JwtAuthentication class.
@@ -135,17 +130,9 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
         """
         Enables Jwt Authentication for endpoints using the LoginRedirectIfUnauthenticated permission class.
         """
+        # Note: Rather than caching here, this could be called directly in process_response based on the request,
+        # which would require using reverse to determine the view.
         self._check_and_cache_login_required_found(view_func)
-
-        # Forgiving JWT cookies is an alternative to the older USE_JWT_COOKIE_HEADER.
-        # If the rollout for forgiving JWT cookies succeeds, we would need to see if
-        #   this middleware could be simplified or replaced by a simpler solution, because
-        #   at least one part of the original solution required this middleware to insert
-        #   the USE_JWT_COOKIE_HEADER.
-        is_forgiving_jwt_cookies_enabled = get_setting(ENABLE_FORGIVING_JWT_COOKIES)
-        if not is_forgiving_jwt_cookies_enabled:
-            if self.is_jwt_auth_enabled_with_login_required(request, view_func):
-                request.META[USE_JWT_COOKIE_HEADER] = 'true'
 
     def process_response(self, request, response):
         """
@@ -210,7 +197,6 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         )
 
     """
-
     def _get_missing_cookie_message(self, cookie_name):
         """ Returns missing cookie log_message """
         return '{} cookie is missing. JWT auth cookies will not be reconstituted.'.format(
@@ -227,15 +213,6 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
         """
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. Edit your MIDDLEWARE setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."  # noqa E501 line too long
 
-        # .. custom_attribute_name: use_jwt_cookie_requested
-        # .. custom_attribute_description: True if USE_JWT_COOKIE_HEADER was found.
-        #   This is a temporary attribute, because this header is being deprecated/removed.
-        monitoring.set_custom_attribute('use_jwt_cookie_requested', bool(request.META.get(USE_JWT_COOKIE_HEADER)))
-
-        if not get_setting(ENABLE_FORGIVING_JWT_COOKIES):
-            if not request.META.get(USE_JWT_COOKIE_HEADER):
-                return
-
         header_payload_cookie = request.COOKIES.get(jwt_cookie_header_payload_name())
         signature_cookie = request.COOKIES.get(jwt_cookie_signature_name())
 
@@ -250,27 +227,65 @@ class JwtAuthCookieMiddleware(MiddlewareMixin):
             # Log unexpected case of only finding one cookie.
             if not header_payload_cookie:
                 log_message = self._get_missing_cookie_message(jwt_cookie_header_payload_name())
+                log.warning(log_message)
             if not signature_cookie:
                 log_message = self._get_missing_cookie_message(jwt_cookie_signature_name())
-            log.warning(log_message)
+                log.warning(log_message)
 
         has_reconstituted_jwt_cookie = jwt_cookie_name() in request.COOKIES
         # .. custom_attribute_name: has_jwt_cookie
         # .. custom_attribute_description: Enables us to see requests which have the full reconstituted
         #      JWT cookie. If this attribute is missing, it is assumed to be False.
-        monitoring.set_custom_attribute('has_jwt_cookie', has_reconstituted_jwt_cookie)
+        set_custom_attribute('has_jwt_cookie', has_reconstituted_jwt_cookie)
 
+        # DRF authentication does not set the request.user early enough for it to be used in process_request/
+        # process_view of middleware. This code enables JWT cookie authentication to set the request.user for
+        # middleware, before it will presumably happen again during DRF authentication.
+        # For more info on DRF and the request.user, see
+        # https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
+        #
+        # If the user has already been authenticated, we already have a user and intentionally avoid resetting it. As of
+        # Oct 2023, this would likely be due to session authentication in middleware. It is thus important for
+        # JwtAuthentication to verify that the session user and JWT user match. It is possible that this would be better
+        # handled through a more traditional AuthenticationMiddleware that handles both JWT cookies and sessions in
+        # the future.
         if has_reconstituted_jwt_cookie and get_setting(ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE):
-            # DRF does not set request.user until process_response. This makes it available in process_view.
-            # For more info, see https://github.com/jpadilla/django-rest-framework-jwt/issues/45#issuecomment-74996698
-            request.user = SimpleLazyObject(lambda: _get_user_from_jwt(request, view_func))
+            # Since this call to the user is not made lazily, and has the potential to cause issues, we
+            # ensure it is only used in the case of ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE.
+            if not get_user(request).is_authenticated:
+                # Similar to django/contrib/auth/middleware.py AuthenticationMiddleware.
+                set_flag_is_request_user_set_for_jwt_auth()
+                request.user = SimpleLazyObject(lambda: _get_cached_user_from_jwt(request, view_func))
+
+
+def _get_module_request_cache():
+    return RequestCache(__name__).data
+
+
+def _get_cached_user_from_jwt(request, view_func):
+    """
+    Returns cached user from JWT authentication.
+
+    Performs JWT authentication if not already cached.
+    """
+    # Similar to django/contrib/auth/middleware.py get_user.
+    _JWT_USER_CACHE_KEY = '_cached_jwt_user'
+    if _get_module_request_cache().get(_JWT_USER_CACHE_KEY, None) is None:
+        cached_jwt_user = _get_user_from_jwt(request, view_func)
+        _get_module_request_cache()[_JWT_USER_CACHE_KEY] = cached_jwt_user
+    return _get_module_request_cache()[_JWT_USER_CACHE_KEY]
 
 
 def _get_user_from_jwt(request, view_func):
-    user = get_user(request)
-    if user.is_authenticated:
-        return user
+    """
+    Performs JWT Authentication and returns the user, or AnonymousUser if the user is
+    not authenticated.
 
+    Uses the JWT authentication class associated the view. If not found, processing is skipped.
+    """
+    # .. custom_attribute_name: set_user_from_jwt_status
+    # .. custom_attribute_description: Provides the status of setting the user from the JWT, using one of the
+    #      following values: success, auth-failed, jwt-auth-class-not-found, and unknown-exception.
     try:
         jwt_authentication_class = _get_jwt_authentication_class(view_func)
         if jwt_authentication_class:
@@ -279,17 +294,21 @@ def _get_user_from_jwt(request, view_func):
                 parsers=api_settings.DEFAULT_PARSER_CLASSES
             ))
             if user_jwt is not None:
+                set_custom_attribute('set_user_from_jwt_status', 'success')
                 return user_jwt[0]
             else:
-                log.warning('Jwt Authentication failed and request.user could not be set.')
+                set_custom_attribute('set_user_from_jwt_status', 'auth-failed')
+                log.debug('Jwt Authentication failed and request.user could not be set.')
         else:
-            log.warning(
+            set_custom_attribute('set_user_from_jwt_status', 'jwt-auth-class-not-found')
+            log.debug(
                 'Jwt Authentication expected, but view %s is not using a JwtAuthentication class.', view_func
             )
     except Exception:  # pylint: disable=broad-except
+        set_custom_attribute('set_user_from_jwt_status', 'unknown-exception')
         log.exception('Unknown Jwt Authentication error attempting to retrieve the user.')  # pragma: no cover
 
-    return user
+    return AnonymousUser()
 
 
 def _get_jwt_authentication_class(view_func):

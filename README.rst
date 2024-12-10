@@ -6,6 +6,9 @@ edX Django REST Framework Extensions  |CI|_ |Codecov|_
 .. |Codecov| image:: https://codecov.io/github/edx/edx-drf-extensions/coverage.svg?branch=master
 .. _Codecov: https://codecov.io/github/edx/edx-drf-extensions?branch=master
 
+.. |doc-badge| image:: https://readthedocs.org/projects/edx-drf-extensions/badge/?version=latest
+.. _doc-badge: http://edx-drf-extensions.readthedocs.io/en/latest/
+
 This library includes various cross-cutting concerns related to APIs. API functionality added to this library must be required for multiple Open edX applications or multiple repositories.
 
 Some of these concerns include extensions of `Django REST Framework <https://www.django-rest-framework.org/>`_ (DRF), which is how the repository initially got its name.
@@ -39,6 +42,12 @@ To make use of this API endpoint:
 #. Add ``'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware'`` to ``MIDDLEWARE``.
 #. Add ``csrf.urls`` to urls.py.
 
+Documentation
+-------------
+
+The latest documentation for this repository can be found on `Read the Docs <http://edx-drf-extensions.readthedocs.io/en/latest/>`_
+
+
 License
 -------
 
@@ -57,4 +66,4 @@ Please read `How To Contribute <https://github.com/openedx/.github/blob/master/C
 Reporting Security Issues
 -------------------------
 
-Please do not report security issues in public. Please email security@edx.org.
+Please do not report security issues in public. Please email security@openedx.org.

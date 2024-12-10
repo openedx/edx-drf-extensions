@@ -2,11 +2,11 @@
 URL definitions for version 1 of the CSRF API.
 """
 
-from django.urls import re_path
+from django.urls import path
 
 from .views import CsrfTokenView
 
 
 urlpatterns = [
-    re_path(r'^token$', CsrfTokenView.as_view(), name='csrf_token'),
+    path('token', CsrfTokenView.as_view(), name='csrf_token'),
 ]

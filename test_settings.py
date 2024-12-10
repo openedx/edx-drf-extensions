@@ -13,6 +13,7 @@ INSTALLED_APPS = (
     'csrf.apps.CsrfAppConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sessions',
     'edx_rest_framework_extensions',
     'rest_framework_jwt',
     'waffle',
@@ -44,6 +45,9 @@ JWT_AUTH = {
     'JWT_ISSUER': 'test-iss',
 
     'JWT_LEEWAY': 1,
+
+    # This matches the configuration of all Open edX services.
+    'JWT_PAYLOAD_GET_USERNAME_HANDLER': lambda d: d.get('preferred_username'),
 
     'JWT_SECRET_KEY': 'test-key',
 

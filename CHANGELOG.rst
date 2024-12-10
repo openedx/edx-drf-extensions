@@ -12,6 +12,170 @@ Change Log
 Unreleased
 ----------
 
+[10.5.0] - 2024-10-21
+---------------------
+* Upgraded to use ``Python 3.12``
+
+[10.4.0] - 2024-08-30
+---------------------
+* Dropped support for ``Python<3.11``
+
+[10.3.0] - 2024-03-29
+---------------------
+
+* Added Support for ``Python 3.11``
+* Dropped support for ``Django<4.2``
+
+[10.2.0] - 2024-01-26
+---------------------
+
+* Subclasses base exception ``JwtAuthenticationError`` from Django Rest Framework's ``AuthenticationFailed`` exception, allowing ``JwtAuthenticationError`` to be recognized and handled by the default exception handler of the Django Rest Framework.
+
+[10.1.0] - 2024-01-26
+---------------------
+
+* Added permanent toggle EDX_DRF_EXTENSIONS[ENABLE_JWT_AND_LMS_USER_EMAIL_MATCH]:
+
+    * This toggle should only get enabled in the LMS, and should remain disabled in all other services.
+    * If enabled, makes sure that the user email in JWT cookies and LMS user email matches
+    * If email matches, it allows authentication otherwise raise JwtUserEmailMismatchError error.
+
+[10.0.0] - 2023-11-30
+---------------------
+
+Removed
+~~~~~~~
+* **BREAKING CHANGE:** Removed ENABLE_FORGIVING_JWT_COOKIES toggle. It is now permanently enabled.
+
+  * The header USE-JWT-COOKIE was removed because it has been fully replaced by forgiving JWTs.
+  * Removed temporary rollout custom attributes: use_jwt_cookie_requested, jwt_auth_request_user_not_found, and skip_jwt_vs_session_check.
+
+[9.1.2] - 2024-01-07
+--------------------
+Updated
+~~~~~~~
+* Restores and fixes simplified JWT cookie vs session user check by checking username instead of lms user id (originally introduced in 9.1.0, and removed in 9.1.1).
+
+  * Removed ``VERIFY_LMS_USER_ID_PROPERTY_NAME``, which is no longer needed.
+  * Removed custom attribute ``jwt_auth_get_lms_user_id_status``, since we no longer attempt to get the lms_user_id from the user object.
+  * Renames custom attribute ``jwt_auth_mismatch_session_lms_user_id`` to ``jwt_auth_mismatch_session_username``.
+  * Adds custom attribute ``jwt_auth_mismatch_jwt_cookie_username``.
+  * Adds custom attribute ``jwt_cookie_unsafe_decode_issue`` for when a JWT cookie cannot even be unsafely decoded.
+  * Fixes mock JWT creation for tests to use ``preferred_username``, which is configured in each Open edX service.
+
+[9.1.1] - 2024-01-04
+--------------------
+Updated
+~~~~~~~
+* Reverted 9.1.0 change until issue can be fixed.
+
+[9.1.0] - 2024-01-03
+--------------------
+Updated
+~~~~~~~
+* (Now reverted) Simplified JWT cookie vs session user check by checking username instead of lms user id. Note: this was reverted on 9.1.1.
+
+[9.0.1] - 2023-12-06
+--------------------
+
+Fixed
+~~~~~
+
+* Fixed bug for successful JWTs where the JWT user id was still using the service user id, rather than the LMS user id, so comparison against the LMS user id would fail.
+
+Updated
+~~~~~~~
+
+* As part of the bug fix, the custom attribute ``failed_jwt_cookie_user_id`` was renamed to ``jwt_cookie_lms_user_id``, and will be set for all JWT cookies. Since this is only a breaking change for recently added monitoring, this won't be versioned as a breaking change.
+
+[9.0.0] - 2023-11-27
+--------------------
+
+Fixed
+~~~~~
+* **BREAKING CHANGE**: Fixes a bug for any service other than the identity service (LMS/CMS), where the session's local service user id would never match the JWT LMS user id when compared.
+
+  * The custom attribute jwt_auth_mismatch_session_user_id was renamed to jwt_auth_mismatch_session_lms_user_id to make this more clear.
+  * The setting EDX_DRF_EXTENSIONS[VERIFY_LMS_USER_ID_PROPERTY_NAME] was added to enable choosing the user object property that contains the LMS user id, if one exists. If this is set to None (the default), the check will use the lms_user_id property if it is found, and otherwise will skip this additional protection. In case of an unforeseen issue, use 'skip-check' to skip the check, even when there is an lms_user_id property.
+  * The custom attribute jwt_auth_get_lms_user_id_status was added to provide observability into the new functionality.
+  * The breaking change only affects services with ENABLE_FORGIVING_JWT_COOKIES enabled. It now requires the new setting VERIFY_LMS_USER_ID_PROPERTY_NAME to be set appropriately in order to provide the existing Session vs JWT user id check. Note that only LMS/CMS will likely need to set this value.
+
+[8.13.1] - 2023-11-15
+---------------------
+
+Fixed
+~~~~~
+* Fixed bug where JwtAuthentication called with a Django request instead of a DRF request would fail. Also added custom attribute jwt_auth_request_user_not_found to track down these unexpected cases.
+
+[8.13.0] - 2023-10-30
+---------------------
+
+Fixed
+~~~~~
+* Bug fix for when both ENABLE_SET_REQUEST_USER_FOR_JWT_COOKIE and the JWT cookie user vs session user check behind ENABLE_FORGIVING_JWT_COOKIES were enabled at the same time.
+
+Added
+~~~~~
+* Added custom attributes set_user_from_jwt_status and skip_jwt_vs_session_check.
+
+Updated
+~~~~~~~
+* ADR for removing HTTP_USE_JWT_COOKIE, which explains forgiven JWT cookies, was updated to explain the cases where the JWT cookie user and session user do not match.
+
+Removed
+~~~~~~~
+* Toggle EDX_DRF_EXTENSIONS[ENABLE_JWT_VS_SESSION_USER_CHECK] has been removed. This check is now a default part of the ENABLE_FORGIVING_JWT_COOKIES functionality. ENABLE_JWT_VS_SESSION_USER_CHECK was just a temporary roll-out toggle that was already proven out everywhere ENABLE_FORGIVING_JWT_COOKIES was already enabled.
+
+[8.12.0] - 2023-10-16
+---------------------
+
+Changed
+~~~~~~~
+* Made changes to the recent ENABLE_JWT_VS_SESSION_USER_CHECK custom attributes. Although this is technically a breaking change, skipping major release because of limited use of these attributes.
+
+    * The jwt_auth_session_user_id attribute has been renamed to clarify that this attribute only appears in the case of a mismatch.
+    * Dropped jwt_auth_and_session_user_mismatch, which is redundant to simply checking for the existence of jwt_auth_mismatch_session_user_id.
+    * Updated annotations for jwt_auth_request_user_not_found, because it has proven to be a real case in Production and not just in testing.
+
+[8.11.1] - 2023-10-11
+---------------------
+
+Added
+~~~~~
+* Added support for Django 4.2
+
+[8.11.0] - 2023-10-04
+---------------------
+
+Added
+~~~~~
+* Added toggle EDX_DRF_EXTENSIONS[ENABLE_JWT_VS_SESSION_USER_CHECK] to enable the following:
+
+    * New custom attributes is_jwt_vs_session_user_check_enabled, jwt_auth_session_user_id, jwt_auth_and_session_user_mismatch, and invalid_jwt_cookie_user_id for monitoring and debugging.
+    * When forgiving JWT cookies are also enabled, user mismatches will now result in a failure, rather than a forgiving JWT.
+
+Changed
+~~~~~~~
+* BREAKING CHANGE: For tests only, the test utility method generate_unversioned_payload now requires that the user argument contains an id attribute. In the case of a Mock user, you must set user.id.
+
+[8.10.0] - 2023-09-19
+---------------------
+
+Added
+~~~~~
+* (`#354 <https://github.com/openedx/edx-drf-extensions/pull/354>`_) Implemented ``verify_jwk_signature_using_keyset`` function.
+  This function allows for easy verification of JSON Web Key (JWK) signatures using a provided keyset.
+
+[8.9.3] - 2023-09-13
+--------------------
+
+Fixed
+~~~~~
+
+* Added more useful exception logging when JWT auth fails.  The exception we
+  get for that did not have enough detail about how the auth check failed so we
+  dig deeper to an exception that is more useful and log that.
+
 [8.9.2] - 2023-08-31
 --------------------
 
@@ -26,6 +190,13 @@ Changed
 
 [8.9.1] - 2023-08-22
 --------------------
+
+Removed
+~~~~~~~
+
+* Removed unused direct dependency on ``six``.
+* Removed unused direct dependency on ``python-dateutil``.
+
 
 Fixed
 ~~~~~

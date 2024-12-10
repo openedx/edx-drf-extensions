@@ -17,16 +17,22 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
 
     Possible custom attributes include:
         request_authenticated_user_set_in_middleware:
-            Example values: 'process_request', 'process_view', 'process_response',
-            or 'process_exception'. Attribute won't exist if user is not authenticated.
-        request_auth_type_guess: Example values include: no-user, unauthenticated,
-            jwt, bearer, other-token-type, jwt-cookie, or session-or-other
+            Example values: 'process_request', 'process_view', 'process_response', or 'process_exception'.
+
+            Attribute won't exist if user is not authenticated.
+
+        request_auth_type_guess:
+            Example values include: no-user, unauthenticated, jwt, bearer, other-token-type, jwt-cookie, or
+            session-or-other
+
             Note: These are just guesses because if a token was expired, for example,
-              the user could have been authenticated by some other means.
+            the user could have been authenticated by some other means.
+
         request_client_name: The client name from edx-rest-api-client calls.
-        request_referer
+        request_referer: The referrer for the request.
         request_user_agent: The user agent string from the request header.
         request_user_id: The user id of the request user.
+
         request_is_staff_or_superuser: `staff` or `superuser` depending on whether the
             user in the request is a django staff or superuser.
 
@@ -122,8 +128,8 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
         """
         Add custom attribute 'request_referer' for http referer.
         """
-        if 'HTTP_REFERER' in request.META and request.META['HTTP_REFERER']:
-            monitoring.set_custom_attribute('request_referer', request.META['HTTP_REFERER'])
+        if 'referer' in request.headers and request.headers['referer']:
+            monitoring.set_custom_attribute('request_referer', request.headers['referer'])
 
     def _set_request_user_agent_attributes(self, request):
         """
@@ -133,8 +139,8 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
              request_user_agent
              request_client_name: The client name from edx-rest-api-client calls.
         """
-        if 'HTTP_USER_AGENT' in request.META and request.META['HTTP_USER_AGENT']:
-            user_agent = request.META['HTTP_USER_AGENT']
+        if 'user-agent' in request.headers and request.headers['user-agent']:
+            user_agent = request.headers['user-agent']
             monitoring.set_custom_attribute('request_user_agent', user_agent)
             if user_agent:
                 # Example agent string from edx-rest-api-client:
@@ -152,8 +158,8 @@ class RequestCustomAttributesMiddleware(MiddlewareMixin):
             auth_type = 'no-user'
         elif not request.user.is_authenticated:
             auth_type = 'unauthenticated'
-        elif 'HTTP_AUTHORIZATION' in request.META and request.META['HTTP_AUTHORIZATION']:
-            token_parts = request.META['HTTP_AUTHORIZATION'].split()
+        elif 'authorization' in request.headers and request.headers['authorization']:
+            token_parts = request.headers['authorization'].split()
             # Example: "JWT eyJhbGciO..."
             if len(token_parts) == 2:
                 auth_type = token_parts[0].lower()  # 'jwt' or 'bearer' (for example)
