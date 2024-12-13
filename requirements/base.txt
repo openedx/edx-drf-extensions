@@ -47,7 +47,7 @@ edx-opaque-keys==2.11.0
     # via -r requirements/base.in
 idna==3.10
     # via requests
-newrelic==10.3.1
+newrelic==10.4.0
     # via edx-django-utils
 pbr==6.1.0
     # via stevedore
@@ -67,7 +67,7 @@ requests==2.32.3
     # via -r requirements/base.in
 semantic-version==2.10.0
     # via -r requirements/base.in
-sqlparse==0.5.2
+sqlparse==0.5.3
     # via django
 stevedore==5.4.0
     # via

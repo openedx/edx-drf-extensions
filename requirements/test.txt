@@ -8,7 +8,7 @@ asgiref==3.8.1
     # via
     #   -r requirements/base.txt
     #   django
-astroid==3.3.5
+astroid==3.3.6
     # via
     #   pylint
     #   pylint-celery
@@ -38,11 +38,11 @@ click==8.1.7
     #   edx-lint
 click-log==0.4.0
     # via edx-lint
-code-annotations==2.0.0
+code-annotations==2.1.0
     # via edx-lint
 colorama==0.4.6
     # via tox
-coverage[toml]==7.6.8
+coverage[toml]==7.6.9
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -113,7 +113,7 @@ markupsafe==3.0.2
     # via jinja2
 mccabe==0.7.0
     # via pylint
-newrelic==10.3.1
+newrelic==10.4.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -195,7 +195,7 @@ six==1.17.0
     # via
     #   edx-lint
     #   python-dateutil
-sqlparse==0.5.2
+sqlparse==0.5.3
     # via
     #   -r requirements/base.txt
     #   django
