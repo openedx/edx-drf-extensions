@@ -6,7 +6,7 @@
 #
 asgiref==3.8.1
     # via django
-certifi==2024.12.14
+certifi==2025.1.31
     # via requests
 cffi==1.17.1
     # via
@@ -16,9 +16,9 @@ charset-normalizer==3.4.1
     # via requests
 click==8.1.8
     # via edx-django-utils
-cryptography==44.0.0
+cryptography==44.0.2
     # via pyjwt
-django==4.2.17
+django==4.2.20
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
@@ -41,17 +41,17 @@ dnspython==2.7.0
     # via pymongo
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==7.1.0
+edx-django-utils==7.2.0
     # via -r requirements/base.in
 edx-opaque-keys==2.11.0
     # via -r requirements/base.in
 idna==3.10
     # via requests
-newrelic==10.4.0
+newrelic==10.7.0
     # via edx-django-utils
-pbr==6.1.0
+pbr==6.1.1
     # via stevedore
-psutil==6.1.1
+psutil==7.0.0
     # via edx-django-utils
 pycparser==2.22
     # via cffi
@@ -59,7 +59,7 @@ pyjwt[crypto]==2.10.1
     # via
     #   -r requirements/base.in
     #   drf-jwt
-pymongo==4.10.1
+pymongo==4.11.2
     # via edx-opaque-keys
 pynacl==1.5.0
     # via edx-django-utils
@@ -69,11 +69,16 @@ semantic-version==2.10.0
     # via -r requirements/base.in
 sqlparse==0.5.3
     # via django
-stevedore==5.4.0
+stevedore==5.4.1
     # via
     #   edx-django-utils
     #   edx-opaque-keys
 typing-extensions==4.12.2
     # via edx-opaque-keys
-urllib3==2.3.0
-    # via requests
+urllib3==2.2.3
+    # via
+    #   -c requirements/common_constraints.txt
+    #   requests
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
