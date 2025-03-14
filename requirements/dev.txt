@@ -17,7 +17,7 @@ asgiref==3.8.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   django
-astroid==3.3.8
+astroid==3.3.9
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -147,7 +147,7 @@ edx-opaque-keys==2.11.0
     #   -r requirements/test.txt
 factory-boy==2.12.0
     # via -r requirements/test.txt
-faker==36.2.2
+faker==37.0.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -248,7 +248,7 @@ pyjwt[crypto]==2.10.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==3.3.4
+pylint==3.3.5
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -373,7 +373,7 @@ tomlkit==0.13.2
     # via
     #   -r requirements/test.txt
     #   pylint
-tox==4.24.1
+tox==4.24.2
     # via -r requirements/test.txt
 typing-extensions==4.12.2
     # via
