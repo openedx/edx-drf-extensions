@@ -1,11 +1,11 @@
 """
 Unit tests for jwt authentication middlewares.
 """
+from http.cookies import SimpleCookie
 from itertools import product
 from unittest.mock import Mock, patch
 
 import ddt
-from django.http.cookie import SimpleCookie
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import re_path as url_pattern
 from django.utils.deprecation import MiddlewareMixin

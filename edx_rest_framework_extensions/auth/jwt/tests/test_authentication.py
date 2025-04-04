@@ -1,10 +1,10 @@
 """ Tests for JWT authentication class. """
+from http.cookies import SimpleCookie
 from logging import Logger
 from unittest import mock
 
 import ddt
 from django.contrib.auth import get_user_model
-from django.http.cookie import SimpleCookie
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import re_path as url_pattern
 from django.urls import reverse
