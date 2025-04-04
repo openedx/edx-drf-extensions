@@ -12,6 +12,10 @@ Change Log
 Unreleased
 ----------
 
+[10.6.0] - 2025-04-04
+---------------------
+* Added Support for ``django 5.2``.
+
 [10.5.0] - 2024-10-21
 ---------------------
 * Upgraded to use ``Python 3.12``
