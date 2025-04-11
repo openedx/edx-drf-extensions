@@ -69,7 +69,7 @@ click-log==0.4.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-code-annotations==2.2.0
+code-annotations==2.3.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -268,7 +268,7 @@ pylint-plugin-utils==0.8.2
     #   -r requirements/test.txt
     #   pylint-celery
     #   pylint-django
-pymongo==4.11.3
+pymongo==4.12.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -287,7 +287,7 @@ pytest==8.3.5
     #   -r requirements/test.txt
     #   pytest-cov
     #   pytest-django
-pytest-cov==6.1.0
+pytest-cov==6.1.1
     # via -r requirements/test.txt
 pytest-django==4.11.1
     # via -r requirements/test.txt
@@ -375,7 +375,7 @@ tomlkit==0.13.2
     #   pylint
 tox==4.25.0
     # via -r requirements/test.txt
-typing-extensions==4.13.1
+typing-extensions==4.13.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
