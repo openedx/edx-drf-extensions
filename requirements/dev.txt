@@ -27,7 +27,7 @@ babel==2.17.0
     #   -r requirements/docs.txt
     #   pydata-sphinx-theme
     #   sphinx
-beautifulsoup4==4.13.3
+beautifulsoup4==4.13.4
     # via
     #   -r requirements/docs.txt
     #   pydata-sphinx-theme
@@ -35,7 +35,7 @@ cachetools==5.5.2
     # via
     #   -r requirements/test.txt
     #   tox
-certifi==2025.1.31
+certifi==2025.4.26
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -51,7 +51,7 @@ chardet==5.2.0
     # via
     #   -r requirements/test.txt
     #   tox
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -69,7 +69,7 @@ click-log==0.4.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-code-annotations==2.2.0
+code-annotations==2.3.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -81,14 +81,14 @@ coverage[toml]==7.8.0
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==44.0.2
+cryptography==44.0.3
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   pyjwt
 ddt==1.7.2
     # via -r requirements/test.txt
-dill==0.3.9
+dill==0.4.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -96,7 +96,7 @@ distlib==0.3.9
     # via
     #   -r requirements/test.txt
     #   virtualenv
-django==4.2.20
+django==4.2.21
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
@@ -135,13 +135,13 @@ drf-jwt==1.19.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
-edx-django-utils==7.2.0
+edx-django-utils==7.4.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
 edx-lint==5.6.0
     # via -r requirements/test.txt
-edx-opaque-keys==2.12.0
+edx-opaque-keys==3.0.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -191,12 +191,12 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-newrelic==10.8.1
+newrelic==10.11.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   edx-django-utils
-packaging==24.2
+packaging==25.0
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -210,7 +210,7 @@ pbr==6.1.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==4.3.7
+platformdirs==4.3.8
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -248,7 +248,7 @@ pyjwt[crypto]==2.10.1
     #   -r requirements/base.txt
     #   -r requirements/test.txt
     #   drf-jwt
-pylint==3.3.6
+pylint==3.3.7
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -268,7 +268,7 @@ pylint-plugin-utils==0.8.2
     #   -r requirements/test.txt
     #   pylint-celery
     #   pylint-django
-pymongo==4.11.3
+pymongo==4.12.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
@@ -287,7 +287,7 @@ pytest==8.3.5
     #   -r requirements/test.txt
     #   pytest-cov
     #   pytest-django
-pytest-cov==6.1.0
+pytest-cov==6.1.1
     # via -r requirements/test.txt
 pytest-django==4.11.1
     # via -r requirements/test.txt
@@ -313,11 +313,11 @@ six==1.17.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-snowballstemmer==2.2.0
+snowballstemmer==3.0.0.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-soupsieve==2.6
+soupsieve==2.7
     # via
     #   -r requirements/docs.txt
     #   beautifulsoup4
@@ -375,7 +375,7 @@ tomlkit==0.13.2
     #   pylint
 tox==4.25.0
     # via -r requirements/test.txt
-typing-extensions==4.13.1
+typing-extensions==4.13.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
@@ -394,7 +394,7 @@ urllib3==2.2.3
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-virtualenv==20.30.0
+virtualenv==20.31.2
     # via
     #   -r requirements/test.txt
     #   tox
