@@ -12,13 +12,13 @@ babel==2.17.0
     # via
     #   pydata-sphinx-theme
     #   sphinx
-beautifulsoup4==4.13.3
+beautifulsoup4==4.13.4
     # via pydata-sphinx-theme
-certifi==2025.1.31
+certifi==2025.4.26
     # via
     #   -c requirements/test.txt
     #   requests
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via
     #   -c requirements/test.txt
     #   requests
@@ -40,7 +40,7 @@ markupsafe==3.0.2
     # via
     #   -c requirements/test.txt
     #   jinja2
-packaging==24.2
+packaging==25.0
     # via
     #   -c requirements/test.txt
     #   pydata-sphinx-theme
@@ -56,9 +56,9 @@ requests==2.32.3
     # via
     #   -c requirements/test.txt
     #   sphinx
-snowballstemmer==2.2.0
+snowballstemmer==3.0.0.1
     # via sphinx
-soupsieve==2.6
+soupsieve==2.7
     # via beautifulsoup4
 sphinx==5.3.0
     # via
@@ -80,7 +80,7 @@ sphinxcontrib-qthelp==2.0.0
     # via sphinx
 sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
-typing-extensions==4.13.1
+typing-extensions==4.13.2
     # via
     #   -c requirements/test.txt
     #   beautifulsoup4
