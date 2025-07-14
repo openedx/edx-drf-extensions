@@ -12,6 +12,10 @@ Change Log
 Unreleased
 ----------
 
+[10.6.1] - 2025-07-14
+---------------------
+* fix: Expand DRF permission composition support to JwtRedirectToLoginIfUnauthenticatedMiddleware.
+
 [10.6.0] - 2025-04-04
 ---------------------
 * Added Support for ``django 5.2``.
