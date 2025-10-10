@@ -35,32 +35,33 @@ from edx_rest_framework_extensions.settings import get_setting
 log = logging.getLogger(__name__)
 
 
+def _iter_included_base_classes(view_permissions):
+    """
+    Yield all the permissions that are encapsulated in provided view_permissions, directly or as
+    a part of DRF's composed permissions.
+    """
+    # Not all permissions are classes, some will be OperandHolder
+    # objects from DRF. So we have to crawl all those and expand them to see
+    # if our target classes are inside the conditionals somewhere.
+    for permission in view_permissions:
+        # Composition using DRF native support in 3.9+:
+        # IsStaff | IsSuperuser -> [IsStaff, IsSuperuser]
+        # IsOwner | IsStaff | IsSuperuser -> [IsOwner | IsStaff, IsSuperuser]
+        if isinstance(permission, OperandHolder):
+            decomposed_permissions = [permission.op1_class, permission.op2_class]
+            yield from _iter_included_base_classes(decomposed_permissions)
+        elif isinstance(permission, SingleOperandHolder):
+            yield permission.op1_class
+        else:
+            yield permission
+
+
 class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):
     """
     Django middleware object that ensures the proper Permission classes
     are set on all endpoints that use JWTAuthentication.
     """
     _required_permission_classes = (NotJwtRestrictedApplication,)
-
-    def _iter_included_base_classes(self, view_permissions):
-        """
-        Yield all the permissions that are encapsulated in provided view_permissions, directly or as
-        a part of DRF's composed permissions.
-        """
-        # Not all permissions are classes, some will be OperandHolder
-        # objects from DRF. So we have to crawl all those and expand them to see
-        # if our target classes are inside the conditionals somewhere.
-        for permission in view_permissions:
-            # Composition using DRF native support in 3.9+:
-            # IsStaff | IsSuperuser -> [IsStaff, IsSuperuser]
-            # IsOwner | IsStaff | IsSuperuser -> [IsOwner | IsStaff, IsSuperuser]
-            if isinstance(permission, OperandHolder):
-                decomposed_permissions = [permission.op1_class, permission.op2_class]
-                yield from self._iter_included_base_classes(decomposed_permissions)
-            elif isinstance(permission, SingleOperandHolder):
-                yield permission.op1_class
-            else:
-                yield permission
 
     def _add_missing_jwt_permission_classes(self, view_class):
         """
@@ -71,7 +72,7 @@ class EnsureJWTAuthSettingsMiddleware(MiddlewareMixin):
         view_permissions = list(getattr(view_class, 'permission_classes', []))
 
         for perm_class in self._required_permission_classes:
-            if not _includes_base_class(self._iter_included_base_classes(view_permissions), perm_class):
+            if not _includes_base_class(_iter_included_base_classes(view_permissions), perm_class):
                 message = (
                     "The view %s allows Jwt Authentication. The required permission class, %s,",
                     " was automatically added."
@@ -161,8 +162,11 @@ class JwtRedirectToLoginIfUnauthenticatedMiddleware(MiddlewareMixin):
         Checks for LoginRedirectIfUnauthenticated permission and caches the result.
         """
         view_class = _get_view_class(view_func)
-        view_permission_classes = getattr(view_class, 'permission_classes', tuple())
-        is_login_required_found = _includes_base_class(view_permission_classes, LoginRedirectIfUnauthenticated)
+        view_permissions = getattr(view_class, 'permission_classes', tuple())
+        is_login_required_found = _includes_base_class(
+            _iter_included_base_classes(view_permissions),
+            LoginRedirectIfUnauthenticated,
+        )
         self._get_request_cache()[self._LOGIN_REQUIRED_FOUND_CACHE_KEY] = is_login_required_found
 
 
