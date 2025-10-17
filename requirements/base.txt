@@ -12,11 +12,11 @@ cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.3
+charset-normalizer==3.4.4
     # via requests
 click==8.3.0
     # via edx-django-utils
-cryptography==46.0.2
+cryptography==46.0.3
     # via pyjwt
 django==4.2.25
     # via
@@ -45,7 +45,7 @@ edx-django-utils==8.0.1
     # via -r requirements/base.in
 edx-opaque-keys==3.0.0
     # via -r requirements/base.in
-idna==3.10
+idna==3.11
     # via requests
 psutil==7.1.0
     # via edx-django-utils
