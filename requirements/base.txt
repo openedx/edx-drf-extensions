@@ -18,10 +18,10 @@ click==8.3.0
     # via edx-django-utils
 cryptography==46.0.2
     # via pyjwt
-django==4.2.25
+django==4.2.26
     # via
-    #   -c requirements/common_constraints.txt
-    #   -r requirements/base.in
+    #   -c common_constraints.txt
+    #   -r base.in
     #   django-crum
     #   django-waffle
     #   djangorestframework
@@ -31,20 +31,20 @@ django-crum==0.7.9
     # via edx-django-utils
 django-waffle==5.0.0
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   edx-django-utils
 djangorestframework==3.16.1
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   drf-jwt
 dnspython==2.8.0
     # via pymongo
 drf-jwt==1.19.2
-    # via -r requirements/base.in
+    # via -r base.in
 edx-django-utils==8.0.1
-    # via -r requirements/base.in
+    # via -r base.in
 edx-opaque-keys==3.0.0
-    # via -r requirements/base.in
+    # via -r base.in
 idna==3.10
     # via requests
 psutil==7.1.0
@@ -53,16 +53,16 @@ pycparser==2.23
     # via cffi
 pyjwt[crypto]==2.10.1
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   drf-jwt
 pymongo==4.15.3
     # via edx-opaque-keys
 pynacl==1.6.0
     # via edx-django-utils
 requests==2.32.5
-    # via -r requirements/base.in
+    # via -r base.in
 semantic-version==2.10.0
-    # via -r requirements/base.in
+    # via -r base.in
 sqlparse==0.5.3
     # via django
 stevedore==5.5.0
