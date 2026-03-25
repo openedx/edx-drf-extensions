@@ -12,6 +12,8 @@ Change Log
 Unreleased
 ----------
 
+* Dropped Django 4.2 support; bumped djangorestframework, pyjwt 2.10→2.12.1, edx-opaque-keys 3.0→3.1, pymongo; loosened Django constraint to <6.0
+
 [10.6.0] - 2025-04-04
 ---------------------
 * Added Support for ``django 5.2``.
