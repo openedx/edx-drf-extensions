@@ -6,6 +6,6 @@ drf-jwt
 django-waffle
 edx-django-utils>=3.8.0      # using new set_custom_attribute method
 edx-opaque-keys
-pyjwt[crypto]>=2.1.0      # depends on newer jwt.decode and jwt.encode
+pyjwt[crypto]>=2.13.0      # depends on newer jwt.decode and jwt.encode
 requests>=2.7.0
 semantic_version
