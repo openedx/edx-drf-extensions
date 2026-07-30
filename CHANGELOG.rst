@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[10.7.0] - 2026-07-30
+---------------------
+* Added a ``scoping`` module providing the OEP-66 record-visibility building
+  blocks for DRF list endpoints: ``ScopingPolicy`` (a ``typing.Protocol``, so
+  implementers need not inherit from it) and ``ScopedQuerysetMixin``, which
+  applies a configured policy in ``get_queryset()``.
+
 [10.6.0] - 2025-04-04
 ---------------------
 * Added Support for ``django 5.2``.
