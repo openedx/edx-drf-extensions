@@ -32,6 +32,7 @@ Table of Contents
     authentication
     middleware
     permissions
+    scoping
     utils
     changelog
     decisions/index
