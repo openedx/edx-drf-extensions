@@ -15,7 +15,6 @@ clean: ## remove intermediate files
 	rm -rf build
 
 piptools: ## install pip-compile and pip-sync.
-	pip install -qr requirements/pip.txt
 	pip install -r requirements/pip-tools.txt
 
 upgrade-piptools: piptools # upgrade pip-tools using pip-tools.
@@ -33,9 +32,7 @@ upgrade:
 	## upgrade requirement pins.
 	sed 's/pyjwt\[crypto\]<2.0.0//g' requirements/common_constraints.txt > requirements/common_constraints.tmp
 	mv requirements/common_constraints.tmp requirements/common_constraints.txt
-	pip-compile --allow-unsafe --rebuild --upgrade -o requirements/pip.txt requirements/pip.in
-	pip-compile --upgrade -o requirements/pip-tools.txt requirements/pip-tools.in
-	pip install -qr requirements/pip.txt
+	pip-compile --allow-unsafe --upgrade -o requirements/pip-tools.txt requirements/pip-tools.in
 	pip install -qr requirements/pip-tools.txt
 	pip-compile requirements/base.in --upgrade -o requirements/base.txt
 	pip-compile requirements/test.in --upgrade -o requirements/test.txt
