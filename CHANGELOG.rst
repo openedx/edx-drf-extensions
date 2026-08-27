@@ -12,6 +12,42 @@ Change Log
 Unreleased
 ----------
 
+[10.8.0] - 2026-08-28
+---------------------
+Added the reusable core of edx-platform's FC-0118 REST API conventions
+(edx-platform ADR 0039, "Extract the REST API Reference Implementation into a
+Shared Library"), so plugins and IDAs can follow the conventions by installing
+this package. No new dependencies.
+
+* Added an ``errors`` module (ADR 0029 standardized error responses):
+
+  * ``standardized_error_exception_handler`` — DRF exception handler returning
+    the standardized JSON error envelope. Its platform coupling is inverted:
+    it delegates to a base handler resolved from the new
+    ``EDX_DRF_EXTENSIONS['STANDARDIZED_ERROR_BASE_HANDLER']`` setting (dotted
+    path or callable, default DRF's ``exception_handler``), so services keep
+    their own error monitoring.
+  * ``Conflict`` — HTTP 409 ``APIException``.
+  * Envelope formatters: ``build_error_envelope``, ``flatten_detail``,
+    ``normalize_validation_errors``.
+  * The error-type URI catalog (``ERROR_TYPE_BASE_URI``, ``error_type_uri``,
+    ``classify_error``) and its extension helper ``register_error_type``.
+  * ``ErrorResponseSerializer`` — plain-DRF serializer documenting the
+    envelope in OpenAPI response declarations.
+
+* Added a ``mixins`` module with ``StandardizedErrorMixin``, the per-view
+  opt-in for the ADR 0029 handler.
+* Added a ``shaping`` module (ADR 0036 response shaping): ``project()``
+  (top-level field selection, e.g. ``?fields=a,b``) and ``MinimalViewMixin``
+  (the ``?view=minimal`` response preset).
+* Added ``paginate_manually()`` and ``IterablePaginationMixin`` to
+  ``paginators`` (ADR 0032 pagination envelope for endpoints outside DRF's
+  generic ``list`` machinery).
+* Added a ``routers`` module with opaque-key ``lookup_value_regex`` constants
+  (``COURSE_KEY_LOOKUP_REGEX``, ``USAGE_KEY_LOOKUP_REGEX``).
+* Added a ``testing`` module with ``assert_error_envelope()`` for asserting
+  ADR 0029 envelopes in consumer test suites.
+
 [10.7.0] - 2026-07-30
 ---------------------
 * Added a ``scoping`` module providing the OEP-66 record-visibility building

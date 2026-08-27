@@ -30,9 +30,14 @@ Table of Contents
 
     settings
     authentication
+    errors
     middleware
+    mixins
     permissions
+    routers
     scoping
+    shaping
+    testing
     utils
     changelog
     decisions/index
