@@ -5,12 +5,15 @@ from unittest import TestCase
 from unittest.mock import MagicMock, Mock
 
 import ddt
+from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404
 from django.test import RequestFactory
 from rest_framework import serializers
 
 from edx_rest_framework_extensions.paginators import (
+    IterablePaginationMixin,
     NamespacedPageNumberPagination,
+    paginate_manually,
     paginate_search_results,
 )
 
@@ -188,3 +191,84 @@ def get_object_range(page, page_size):
     start = min((page - 1) * page_size, max_id)
     end = min(start + page_size, max_id + 1)
     return list(range(start, end))
+
+
+class ManualPaginationTestCase(TestCase):
+    """ Test cases for paginate_manually() and IterablePaginationMixin. """
+
+    def setUp(self):
+        super().setUp()
+        self.items = [{'id': idx} for idx in range(25)]
+        self.request_factory = RequestFactory()
+
+    def _request(self, **params):
+        request = self.request_factory.get('/endpoint', data=params)
+        request.query_params = params
+        return request
+
+    def test_paginate_manually_default_pagination(self):
+        request = self._request(page=2, page_size=5)
+        response = paginate_manually(request, self.items, serialize=lambda page: page)
+
+        self.assertEqual(response.data['results'], self.items[5:10])
+        self.assertEqual(response.data['count'], 25)
+        self.assertEqual(response.data['num_pages'], 5)
+        self.assertEqual(response.data['current_page'], 2)
+        self.assertEqual(response.data['start'], 5)
+        self.assertIn('next', response.data)
+        self.assertIn('previous', response.data)
+
+    def test_paginate_manually_serialize_receives_only_the_page(self):
+        request = self._request(page=1, page_size=3)
+        seen = []
+        paginate_manually(request, self.items, serialize=lambda page: seen.append(list(page)))
+        self.assertEqual(seen, [self.items[:3]])
+
+    def test_paginate_manually_custom_pagination_class(self):
+        request = self._request(page=1, page_size=4)
+        response = paginate_manually(
+            request, self.items, serialize=lambda page: page,
+            pagination_class=NamespacedPageNumberPagination,
+        )
+        self.assertEqual(response.data['results'], self.items[:4])
+        self.assertEqual(response.data['pagination']['count'], 25)
+
+    def test_mixin_uses_get_serializer(self):
+        items = self.items
+
+        class _FakeSerializer:
+            """ Stand-in for a DRF serializer: uppercases nothing, wraps items. """
+            def __init__(self, page, many=False):
+                assert many
+                self.data = [{'wrapped': item['id']} for item in page]
+
+        class _View(IterablePaginationMixin):
+            def get_serializer(self, page, many=False):
+                return _FakeSerializer(page, many=many)
+
+        response = _View().paginate_iterable(self._request(page=1, page_size=2), items)
+        self.assertEqual(response.data['results'], [{'wrapped': 0}, {'wrapped': 1}])
+        self.assertEqual(response.data['count'], 25)
+
+    def test_mixin_explicit_serialize_argument(self):
+        class _View(IterablePaginationMixin):
+            pass
+
+        response = _View().paginate_iterable(
+            self._request(page=1, page_size=2), self.items, serialize=list,
+        )
+        self.assertEqual(response.data['results'], self.items[:2])
+
+    def test_mixin_without_serializer_or_serialize_raises(self):
+        class _View(IterablePaginationMixin):
+            pass
+
+        with self.assertRaises(ImproperlyConfigured):
+            _View().paginate_iterable(self._request(page=1), self.items)
+
+    def test_mixin_with_none_pagination_class_raises(self):
+        class _View(IterablePaginationMixin):
+            pagination_class = None
+
+        with self.assertRaises(ImproperlyConfigured):
+            _View().paginate_iterable(self._request(page=1), self.items, serialize=list)

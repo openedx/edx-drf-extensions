@@ -1,5 +1,6 @@
 """ Paginatator methods for edX API implementations."""
 
+from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import InvalidPage, Paginator
 from django.http import Http404
 from rest_framework import pagination
@@ -30,6 +31,84 @@ class DefaultPagination(pagination.PageNumberPagination):
             'start': (self.page.number - 1) * self.get_page_size(self.request),
             'results': data
         })
+
+
+def paginate_manually(request, items, serialize, pagination_class=DefaultPagination, view=None):
+    """
+    Paginate ``items`` by hand and return the paginated ``Response``.
+
+    ADR 0032 requires the standard pagination envelope even on endpoints whose
+    data is not a queryset flowing through DRF's generic ``list`` machinery —
+    a plain ``ViewSet`` action, or results assembled from an API call. This is
+    the shared spelling of the paginate-serialize-respond sequence those
+    endpoints otherwise hand-write.
+
+    Arguments:
+        request: the DRF request (supplies the ``page``/``page_size`` params).
+        items: a sequence or queryset (anything Django's ``Paginator`` can
+            ``len()`` and slice; a bare generator will not do).
+        serialize: callable receiving the page's items (a list) and returning
+            their serialized representation.
+        pagination_class: the DRF pagination class to use; defaults to
+            :class:`DefaultPagination`.
+        view: the view handling the request, when there is one (passed through
+            to ``paginate_queryset``).
+
+    Returns:
+        rest_framework.response.Response: the paginated response.
+    """
+    paginator = pagination_class()
+    page = paginator.paginate_queryset(items, request, view=view)
+    return paginator.get_paginated_response(serialize(page))
+
+
+class IterablePaginationMixin:
+    """
+    ADR 0032 pagination for views outside DRF's generic ``list`` machinery.
+
+    Mix into a ``ViewSet`` or ``APIView`` whose handler builds its own item
+    sequence (rather than exposing a queryset through ``GenericAPIView``), and
+    return ``self.paginate_iterable(request, items)`` from the handler::
+
+        class EnrollmentViewSet(IterablePaginationMixin, viewsets.ViewSet):
+            serializer_class = CourseEnrollmentSerializer
+
+            def list(self, request):
+                enrollments = ops.list_enrollments_for_user(...)
+                return self.paginate_iterable(request, enrollments)
+
+    The view's ``pagination_class`` controls the envelope; it defaults to
+    :class:`DefaultPagination` (the ADR 0032 seven-field envelope).
+    """
+
+    #: The DRF pagination class applied by :meth:`paginate_iterable`.
+    pagination_class = DefaultPagination
+
+    def paginate_iterable(self, request, items, serialize=None):
+        """
+        Paginate ``items`` (a sequence or queryset) and return the paginated
+        ``Response``.
+
+        ``serialize`` defaults to ``self.get_serializer(page, many=True).data``,
+        matching DRF's generic views; pass a callable to serialize differently.
+        """
+        if self.pagination_class is None:
+            raise ImproperlyConfigured(
+                f"{type(self).__name__} uses IterablePaginationMixin but its 'pagination_class' is None."
+            )
+        if serialize is None:
+            if not callable(getattr(self, "get_serializer", None)):
+                raise ImproperlyConfigured(
+                    f"{type(self).__name__}.paginate_iterable needs either a 'serialize' argument "
+                    f"or a 'get_serializer' method on the view."
+                )
+
+            def serialize(page):
+                return self.get_serializer(page, many=True).data
+
+        return paginate_manually(
+            request, items, serialize, pagination_class=self.pagination_class, view=self,
+        )
 
 
 class NamespacedPageNumberPagination(pagination.PageNumberPagination):
