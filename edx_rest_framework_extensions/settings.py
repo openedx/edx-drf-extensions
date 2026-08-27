@@ -36,6 +36,12 @@ DEFAULT_SETTINGS = {
     },
 
     'OAUTH2_USER_INFO_URL': None,
+
+    # Exception handler that edx_rest_framework_extensions.errors
+    # .standardized_error_exception_handler delegates to before shaping the
+    # ADR 0029 envelope. A dotted import path or a callable; None means DRF's
+    # own rest_framework.views.exception_handler.
+    'STANDARDIZED_ERROR_BASE_HANDLER': None,
 }
 
 
