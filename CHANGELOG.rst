@@ -47,6 +47,11 @@ this package. No new dependencies.
   (``COURSE_KEY_LOOKUP_REGEX``, ``USAGE_KEY_LOOKUP_REGEX``).
 * Added a ``testing`` module with ``assert_error_envelope()`` for asserting
   ADR 0029 envelopes in consumer test suites.
+* Added a ``url_converters`` module (ADR 0038 URL structure): the shared
+  opaque-key path converters ``CourseKeyConverter`` and ``UsageKeyConverter``
+  (non-deprecated keys only — deprecated ``Org/Course/Run`` / ``i4x://`` forms
+  404), plus ``register_url_converters()`` to register them once per service
+  as ``<course_key:...>`` / ``<usage_key:...>``.
 
 [10.7.0] - 2026-07-30
 ---------------------
