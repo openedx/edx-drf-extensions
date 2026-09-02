@@ -41,7 +41,7 @@ dnspython==2.8.0
     # via pymongo
 drf-jwt==1.19.2
     # via -r requirements/base.in
-edx-django-utils==8.0.1
+edx-django-utils==8.0.2
     # via -r requirements/base.in
 edx-opaque-keys==4.0.0
     # via -r requirements/base.in
