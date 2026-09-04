@@ -55,7 +55,7 @@ pyjwt[crypto]==2.13.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
-pymongo==4.17.0
+pymongo==4.18.0
     # via edx-opaque-keys
 pynacl==1.6.2
     # via edx-django-utils

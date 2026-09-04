@@ -262,7 +262,7 @@ pylint-plugin-utils==0.9.0
     #   -r requirements/test.txt
     #   pylint-celery
     #   pylint-django
-pymongo==4.17.0
+pymongo==4.18.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.txt
