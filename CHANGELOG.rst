@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[10.9.0] - 2026-09-12
+---------------------
+* Added ``FullScopePolicy`` to the ``scoping`` module: a reusable
+  ``ScopingPolicy`` that returns the queryset unchanged, for list endpoints
+  whose ``permission_classes`` already restrict callers to subjects that may
+  see every row.
+
 [10.8.0] - 2026-08-28
 ---------------------
 Added the reusable core of edx-platform's FC-0118 REST API conventions

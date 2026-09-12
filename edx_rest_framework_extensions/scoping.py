@@ -16,8 +16,9 @@ by a dedicated layer:
   queryset and must never widen it.
 
 This module provides the reusable record-visibility layer: a structural
-:class:`ScopingPolicy` interface and a :class:`ScopedQuerysetMixin` that applies
-it. It is deliberately engine-agnostic -- a policy typically resolves the
+:class:`ScopingPolicy` interface, a :class:`ScopedQuerysetMixin` that applies
+it, and :class:`FullScopePolicy` for endpoints whose callers may see every row.
+It is deliberately engine-agnostic -- a policy typically resolves the
 subject's accessible scopes in one bulk lookup (for example openedx-authz
 ``get_scopes_for_subject_and_permission``) and turns that scope set into a
 ``WHERE`` clause, rather than running an ``enforce``-style check on every row --
@@ -59,6 +60,20 @@ class ScopingPolicy(Protocol):
 
     def scope(self, queryset: QuerySet, subject: Any) -> QuerySet:
         """Return ``queryset`` filtered to the rows visible to ``subject``."""
+
+
+class FullScopePolicy:
+    """
+    A :class:`ScopingPolicy` that leaves the queryset unchanged.
+
+    Use it on list endpoints whose ``permission_classes`` already restrict the
+    endpoint to subjects that may see every row (for example platform admins),
+    so the view is wired for record-visibility scoping without narrowing.
+    """
+
+    def scope(self, queryset: QuerySet, subject: Any) -> QuerySet:  # pylint: disable=unused-argument
+        """Return ``queryset`` as-is: every row is within ``subject``'s scope."""
+        return queryset
 
 
 class ScopedQuerysetMixin:
