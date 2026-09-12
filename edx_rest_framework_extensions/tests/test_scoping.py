@@ -4,7 +4,7 @@ from unittest.mock import Mock, sentinel
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
-from edx_rest_framework_extensions.scoping import ScopedQuerysetMixin
+from edx_rest_framework_extensions.scoping import FullScopePolicy, ScopedQuerysetMixin
 
 
 class _RecordingPolicy:
@@ -63,3 +63,24 @@ class ScopedQuerysetMixinTests(TestCase):
         view = self._make_view(policy=Mock(scope="not-callable"))
         with self.assertRaises(ImproperlyConfigured):
             view.get_queryset()
+
+
+class FullScopePolicyTests(TestCase):
+    """ Tests for ``FullScopePolicy``. """
+
+    def test_scope_returns_queryset_unchanged(self):
+        self.assertIs(FullScopePolicy().scope(sentinel.base_qs, sentinel.user), sentinel.base_qs)
+
+    def test_works_with_scoped_queryset_mixin(self):
+        # The policy satisfies the mixin's duck-typed check and yields the base queryset as-is.
+        base_request = Mock(user=sentinel.user)
+
+        class _BaseView:
+            def get_queryset(self):
+                return sentinel.base_qs
+
+        class _View(ScopedQuerysetMixin, _BaseView):
+            request = base_request
+            scoping_policy = FullScopePolicy()
+
+        self.assertIs(_View().get_queryset(), sentinel.base_qs)
