@@ -26,7 +26,7 @@ docutils==0.19
     # via
     #   pydata-sphinx-theme
     #   sphinx
-idna==3.19
+idna==3.20
     # via
     #   -c requirements/test.txt
     #   requests
@@ -86,7 +86,7 @@ typing-extensions==4.16.0
     #   -c requirements/test.txt
     #   beautifulsoup4
     #   pydata-sphinx-theme
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   -c requirements/test.txt
     #   requests
