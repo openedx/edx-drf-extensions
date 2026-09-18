@@ -45,13 +45,13 @@ edx-django-utils==8.0.2
     # via -r requirements/base.in
 edx-opaque-keys==4.0.0
     # via -r requirements/base.in
-idna==3.19
+idna==3.20
     # via requests
 psutil==7.2.2
     # via edx-django-utils
 pycparser==3.0
     # via cffi
-pyjwt[crypto]==2.13.0
+pyjwt[crypto]==2.14.0
     # via
     #   -r requirements/base.in
     #   drf-jwt
@@ -71,5 +71,5 @@ stevedore==5.9.1
     #   edx-opaque-keys
 typing-extensions==4.16.0
     # via edx-opaque-keys
-urllib3==2.7.0
+urllib3==2.8.0
     # via requests
