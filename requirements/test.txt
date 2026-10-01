@@ -6,7 +6,7 @@
 #
 asgiref==3.12.1
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   django
 astroid==4.0.4
     # via
@@ -16,20 +16,20 @@ cachetools==7.1.8
     # via tox
 certifi==2026.7.22
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   requests
 cffi==2.1.1
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   cryptography
     #   pynacl
 charset-normalizer==3.5.1
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   requests
 click==8.5.0
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   click-log
     #   code-annotations
     #   edx-django-utils
@@ -42,21 +42,22 @@ colorama==0.4.6
     # via tox
 coverage[toml]==7.16.0
     # via
-    #   -r requirements/test.in
+    #   -r test.in
     #   pytest-cov
 cryptography==50.0.1
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   pyjwt
 ddt==1.7.2
-    # via -r requirements/test.in
+    # via -r test.in
 dill==0.4.1
     # via pylint
 distlib==0.4.3
     # via virtualenv
+django==5.2.17
     # via
-    #   -c requirements/common_constraints.txt
-    #   -r requirements/base.txt
+    #   -c common_constraints.txt
+    #   -r base.txt
     #   django-crum
     #   django-waffle
     #   djangorestframework
@@ -64,29 +65,30 @@ distlib==0.4.3
     #   edx-django-utils
 django-crum==0.7.9
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   edx-django-utils
 django-waffle==5.0.0
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   edx-django-utils
+djangorestframework==3.18.1
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   drf-jwt
 dnspython==2.8.0
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   pymongo
 drf-jwt==1.19.2
-    # via -r requirements/base.txt
+    # via -r base.txt
 edx-django-utils==8.0.2
-    # via -r requirements/base.txt
+    # via -r base.txt
 edx-lint==6.2.0
-    # via -r requirements/test.in
+    # via -r test.in
 edx-opaque-keys==4.0.0
-    # via -r requirements/base.txt
+    # via -r base.txt
 factory-boy==2.12.0
-    # via -r requirements/test.in
+    # via -r test.in
 faker==40.38.0
     # via factory-boy
 filelock==3.32.6
@@ -95,16 +97,16 @@ filelock==3.32.6
     #   tox
     #   virtualenv
 httpretty==1.1.4
-    # via -r requirements/test.in
+    # via -r test.in
 idna==3.19
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   requests
 iniconfig==2.3.0
     # via pytest
 isort==9.0.1
     # via
-    #   -r requirements/test.in
+    #   -r test.in
     #   pylint
 jinja2==3.1.6
     # via code-annotations
@@ -131,19 +133,19 @@ pluggy==1.6.0
     #   tox
 psutil==7.2.2
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   edx-django-utils
 pycodestyle==2.14.0
-    # via -r requirements/test.in
+    # via -r test.in
 pycparser==3.0
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   cffi
 pygments==2.21.0
     # via pytest
-pyjwt[crypto]==2.13.0
+pyjwt[crypto]==2.15.0
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   drf-jwt
 pylint==4.0.8
     # via
@@ -161,11 +163,11 @@ pylint-plugin-utils==0.9.0
     #   pylint-django
 pymongo==4.18.1
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   edx-opaque-keys
 pynacl==1.6.2
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   edx-django-utils
 pyproject-api==1.11.0
     # via tox
@@ -174,9 +176,9 @@ pytest==9.1.1
     #   pytest-cov
     #   pytest-django
 pytest-cov==7.1.0
-    # via -r requirements/test.in
+    # via -r test.in
 pytest-django==4.14.0
-    # via -r requirements/test.in
+    # via -r test.in
 python-discovery==1.6.0
     # via
     #   tox
@@ -186,18 +188,18 @@ python-slugify==9.0.0
 pyyaml==6.0.3
     # via code-annotations
 requests==2.34.2
-    # via -r requirements/base.txt
+    # via -r base.txt
 semantic-version==2.10.0
-    # via -r requirements/base.txt
+    # via -r base.txt
 six==1.17.0
     # via edx-lint
 sqlparse==0.6.0
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   django
 stevedore==5.9.1
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
@@ -210,15 +212,15 @@ tomlkit==0.15.1
     #   edx-lint
     #   pylint
 tox==4.61.4
-    # via -r requirements/test.in
+    # via -r test.in
 typing-extensions==4.16.0
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   edx-opaque-keys
     #   tox
 urllib3==2.7.0
     # via
-    #   -r requirements/base.txt
+    #   -r base.txt
     #   requests
 virtualenv==21.7.9
     # via tox
