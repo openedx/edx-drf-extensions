@@ -1,5 +1,0 @@
-# Requirements for working with requirements.
-
--c constraints.txt
-
-pip-tools

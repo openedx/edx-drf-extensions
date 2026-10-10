@@ -16,19 +16,14 @@ Some of these concerns include extensions of `Django REST Framework <https://www
 Publishing a Release
 --------------------
 
-After a PR merges, a new version of the package will automatically be released by Travis when the commit is tagged. Use::
-
-    git tag -a X.Y.Z -m "Releasing version X.Y.Z"
-    git push origin X.Y.Z
-
-Do **not** create a Github Release, or ensure its message points to the CHANGELOG.rst and ADR 0001-use-changelog.rst.
+After a PR merges to ``master``, ``python-semantic-release`` automatically determines the next version from the `Conventional Commits <https://docs.openedx.org/projects/openedx-proposals/en/latest/best-practices/oep-0051-bp-conventional-commits.html>`_ types, tags it, creates a GitHub Release, and publishes the package to PyPI.
 
 JWT Authentication and REST API Endpoints
 -----------------------------------------
 
 JWT Authentication is the preferred method of authentication for Open edX API endpoints. See `JWT Authentication README`_ for more details.
 
-.. _JWT Authentication README: ./edx_rest_framework_extensions/auth/jwt/README.rst
+.. _JWT Authentication README: ./src/edx_rest_framework_extensions/auth/jwt/README.rst
 
 CSRF API
 --------
