@@ -136,5 +136,5 @@ skip = [
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "test_settings"
-addopts = "--cov --cov-report term-missing --cov-report html"
+addopts = "--cov --cov-report term-missing --cov-report html --cov-report xml"
 norecursedirs = [".*", "tests.py", "docs"]
