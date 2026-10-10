@@ -4,7 +4,11 @@
 Status
 ------
 
-Accepted
+Superseded
+
+As of the move to ``python-semantic-release``, release notes are generated
+from Conventional Commit messages and published to GitHub Releases.
+``CHANGELOG.rst`` is no longer updated.
 
 Context
 -------

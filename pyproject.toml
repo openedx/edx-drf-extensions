@@ -1,0 +1,141 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm>8.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edx-drf-extensions"
+description = "edX extensions of Django REST Framework"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE*"]
+authors = [
+    {name = "Open edX Project", email = "oscm@openedx.org"},
+]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.12',
+    'Framework :: Django',
+    'Framework :: Django :: 4.2',
+    'Framework :: Django :: 5.2',
+]
+
+dynamic = ["readme", "version"]
+
+dependencies = [
+    "Django>=2.2",
+    "djangorestframework>=3.9.0",
+    "drf-jwt",
+    "django-waffle",
+    "edx-django-utils>=3.8.0",
+    "edx-opaque-keys",
+    "pyjwt[crypto]>=2.1.0",
+    "requests>=2.7.0",
+    "semantic_version",
+]
+
+[project.urls]
+Homepage = "https://github.com/openedx/edx-drf-extensions"
+Repository = "https://github.com/openedx/edx-drf-extensions"
+
+[dependency-groups]
+test-base = [
+    "coverage",
+    "ddt",
+    "edx-lint",
+    "isort",
+    "factory_boy>=2.6.1,<3.0.0",
+    "httpretty",
+    "pycodestyle",
+    "pytest-cov",
+    "pytest-django",
+    "tox",
+]
+test = [
+    {include-group = "test-base"},
+    "Django>=5.2,<5.3",
+]
+django42 = [
+    {include-group = "test-base"},
+    "Django>=4.2,<4.3",
+]
+quality = [
+    {include-group = "test"},
+    "edx-lint",
+    "isort",
+    "pycodestyle",
+]
+docs = [
+    "Sphinx>=1.3.6",
+    "sphinx-book-theme",
+]
+ci = [
+    "tox",
+    "tox-uv",
+]
+dev = [
+    {include-group = "test"},
+    {include-group = "docs"},
+    {include-group = "ci"},
+]
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst"], content-type = "text/x-rst"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.semantic_release]
+build_command = "pip install build && SETUPTOOLS_SCM_PRETEND_VERSION=$NEW_VERSION python -m build"
+
+[tool.setuptools_scm]
+version_scheme = 'only-version'
+local_scheme = 'no-local-version'
+fallback_version = "0.0.0.dev0"
+
+[tool.uv]
+conflicts = [
+    [{group = "test"}, {group = "django42"}],
+]
+constraint-dependencies = [
+    "Django<6.0",
+    "elasticsearch<7.14.0",
+    "social-auth-app-django<6.0.0",
+    "social-auth-core<5.0.0",
+    "pip<26.2.1",
+    "sphinx==5.3.0",
+]
+
+[tool.edx_lint]
+uv_constraints = [
+    # Sphinx>5.3.0 requires docutils>=0.18,<0.20 but
+    # sphinx_rtd_theme which needs docutils<0.18
+    # which is causing make upgrade job to fail due to conflicts
+    # Constraint can be removed once sphinx_rtd_theme>=1.1.1 is available on PyPI
+    "sphinx==5.3.0",
+]
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.isort]
+indent = '    '
+line_length = 88
+multi_line_output = 3
+lines_after_imports = 2
+include_trailing_comma = true
+skip = [
+    "settings",
+    "migrations",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "test_settings"
+addopts = "--cov --cov-report term-missing --cov-report html --cov-report xml"
+norecursedirs = [".*", "tests.py", "docs"]
