@@ -8,11 +8,11 @@ asgiref==3.12.1
     # via
     #   -r requirements/base.txt
     #   django
-astroid==4.3.3
+astroid==4.3.4
     # via
     #   pylint
     #   pylint-celery
-cachetools==7.2.0
+cachetools==7.2.1
     # via tox
 certifi==2026.7.22
     # via
@@ -73,7 +73,7 @@ django-waffle==5.0.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-dnspython==2.8.0
+dnspython==2.9.0
     # via
     #   -r requirements/base.txt
     #   pymongo
@@ -87,9 +87,9 @@ edx-opaque-keys==4.0.1
     # via -r requirements/base.txt
 factory-boy==2.12.0
     # via -r requirements/test.in
-faker==40.40.0
+faker==40.41.0
     # via factory-boy
-filelock==4.0.9
+filelock==4.0.12
     # via
     #   python-discovery
     #   tox
@@ -100,7 +100,7 @@ idna==3.20
     # via
     #   -r requirements/base.txt
     #   requests
-iniconfig==2.3.0
+iniconfig==2.3.1
     # via pytest
 isort==9.0.2
     # via
@@ -108,7 +108,7 @@ isort==9.0.2
     #   pylint
 jinja2==3.1.6
     # via code-annotations
-markupsafe==3.0.3
+markupsafe==3.0.4
     # via jinja2
 mccabe==0.7.0
     # via pylint
@@ -120,7 +120,7 @@ packaging==26.3
     #   pytest
     #   tox
     #   virtualenv
-platformdirs==4.12.2
+platformdirs==4.12.4
     # via
     #   pylint
     #   tox
@@ -136,7 +136,7 @@ psutil==7.2.2
     #   edx-django-utils
 pycodestyle==2.15.0
     # via -r requirements/test.in
-pycparser==3.0
+pycparser==3.1
     # via
     #   -r requirements/base.txt
     #   cffi
@@ -146,7 +146,7 @@ pyjwt[crypto]==2.15.1
     # via
     #   -r requirements/base.txt
     #   drf-jwt
-pylint==4.1.1
+pylint==4.1.2
     # via
     #   edx-lint
     #   pylint-celery
@@ -160,7 +160,7 @@ pylint-plugin-utils==0.9.0
     # via
     #   pylint-celery
     #   pylint-django
-pymongo==4.18.2
+pymongo==4.18.3
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
@@ -168,7 +168,7 @@ pynacl==1.6.2
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-pyproject-api==1.11.2
+pyproject-api==1.11.4
     # via tox
 pytest==9.1.1
     # via
@@ -182,7 +182,7 @@ python-discovery==1.6.1
     # via
     #   tox
     #   virtualenv
-python-slugify==9.1.2
+python-slugify==9.1.3
     # via code-annotations
 pyyaml==6.0.3
     # via code-annotations
@@ -210,7 +210,7 @@ tomlkit==0.15.1
     # via
     #   edx-lint
     #   pylint
-tox==4.64.7
+tox==4.64.10
     # via -r requirements/test.in
 typing-extensions==4.16.0
     # via
@@ -221,5 +221,5 @@ urllib3==2.8.0
     # via
     #   -r requirements/base.txt
     #   requests
-virtualenv==21.14.3
+virtualenv==21.14.6
     # via tox
