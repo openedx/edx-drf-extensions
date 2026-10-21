@@ -1,8 +1,15 @@
-include requirements/base.in
-include requirements/test.in
-include requirements/docs.in
-include CHANGELOG.rst
-include LICENSE
-include README.rst
-test_settings.py
-include requirements/constraints.txt
+# Exclude development, test, and documentation folders
+prune .github
+prune docs
+
+# Exclude root level configuration and build files
+exclude Makefile
+exclude .gitignore
+exclude tox.ini
+exclude uv.lock
+exclude CHANGELOG.rst
+
+# Exclude test/coverage artifacts
+prune htmlcov
+global-exclude .coverage
+global-exclude coverage.xml
