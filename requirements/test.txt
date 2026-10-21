@@ -14,7 +14,7 @@ astroid==4.3.4
     #   pylint-celery
 cachetools==7.2.1
     # via tox
-certifi==2026.7.22
+certifi==2026.10.19
     # via
     #   -r requirements/base.txt
     #   requests

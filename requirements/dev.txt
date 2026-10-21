@@ -35,7 +35,7 @@ cachetools==7.2.1
     # via
     #   -r requirements/test.txt
     #   tox
-certifi==2026.7.22
+certifi==2026.10.19
     # via
     #   -r requirements/base.txt
     #   -r requirements/docs.txt
