@@ -22,7 +22,7 @@ wheel==0.48.0
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==26.2
+pip==26.2.2
     # via
     #   -c requirements/common_constraints.txt
     #   pip-tools
