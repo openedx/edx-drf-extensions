@@ -19,12 +19,12 @@ consistent 404 rather than an ad-hoc 400::
     ]
 
 New and migrated APIs accept only non-deprecated keys (``course-v1:``,
-``ccx-v1:``, ``block-v1:`` …). Deprecated ``Org/Course/Run`` and ``i4x://``
-forms contain ``/`` and exist only for pre-existing Old Mongo content, which
-conforming routes do not serve; the converters reject them in ``to_python``,
-which Django turns into a 404. Because only non-deprecated keys are accepted,
-the regex is simply "no slash" rather than a transcription of the permissive
-platform patterns — endpoints that must keep serving Old Mongo content should
+``ccx-v1:``, ``block-v1:``, ``asset-v1:`` …). Deprecated ``Org/Course/Run``,
+``i4x://`` and ``/c4x/`` forms contain ``/`` and exist only for pre-existing
+Old Mongo content, which conforming routes do not serve; the converters reject
+them in ``to_python``, which Django turns into a 404. Because only
+non-deprecated keys are accepted, the regex is simply "no slash" rather than a
+transcription of the permissive platform patterns — endpoints that must keep serving Old Mongo content should
 keep their slash-tolerant ``re_path`` routes (or, for router-registered
 ViewSets, the :mod:`~edx_rest_framework_extensions.routers` lookup regexes)
 instead of these converters.
@@ -32,7 +32,7 @@ instead of these converters.
 
 from django.urls import register_converter
 from opaque_keys import InvalidKeyError
-from opaque_keys.edx.keys import CourseKey, UsageKey
+from opaque_keys.edx.keys import AssetKey, CourseKey, UsageKey
 
 
 class CourseKeyConverter:
@@ -85,11 +85,40 @@ class UsageKeyConverter:
         return str(value)
 
 
+class AssetKeyConverter:
+    """
+    Match non-deprecated asset keys (``asset-v1:``).
+
+    Views receive a parsed :class:`~opaque_keys.edx.keys.AssetKey`;
+    ``reverse()`` accepts an ``AssetKey`` (or its string form). Asset keys need
+    their own converter: they are an ``asset_key`` entry point, so
+    ``UsageKey.from_string`` does not parse them.
+    """
+
+    regex = r'[^/]+'
+
+    def to_python(self, value: str) -> AssetKey:
+        """ Parse ``value``; raise ``ValueError`` (→ 404) if invalid or deprecated. """
+        try:
+            asset_key = AssetKey.from_string(value)
+        except InvalidKeyError as exc:
+            raise ValueError from exc          # Django turns this into a 404
+        if asset_key.deprecated:               # /c4x/ — Old Mongo only
+            raise ValueError(f"deprecated asset key: {value}")
+        return asset_key
+
+    def to_url(self, value: AssetKey) -> str:
+        """ Serialize for ``reverse()``. """
+        return str(value)
+
+
 def register_url_converters():
     """
-    Register the shared converters under the names ``course_key`` and
-    ``usage_key``. Call once per service, from the project URLconf, before
-    any URL pattern that uses ``<course_key:...>`` or ``<usage_key:...>``.
+    Register the shared converters under the names ``course_key``,
+    ``usage_key`` and ``asset_key``. Call once per service, from the project
+    URLconf, before any URL pattern that uses ``<course_key:...>``,
+    ``<usage_key:...>`` or ``<asset_key:...>``.
     """
     register_converter(CourseKeyConverter, "course_key")
     register_converter(UsageKeyConverter, "usage_key")
+    register_converter(AssetKeyConverter, "asset_key")
