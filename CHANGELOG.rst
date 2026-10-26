@@ -12,6 +12,15 @@ Change Log
 Unreleased
 ----------
 
+[10.10.0] - 2026-10-25
+----------------------
+* Added ``AssetKeyConverter`` to the ``url_converters`` module, registered by
+  ``register_url_converters()`` as ``asset_key``. It accepts non-deprecated
+  ``asset-v1:`` keys, hands views a parsed ``AssetKey`` and turns malformed or
+  deprecated (``/c4x/``) keys into a 404, as the course and usage key
+  converters do. ``UsageKeyConverter`` cannot serve asset routes: asset keys
+  are an ``asset_key`` entry point, so ``UsageKey.from_string`` rejects them.
+
 [10.9.0] - 2026-09-12
 ---------------------
 * Added ``FullScopePolicy`` to the ``scoping`` module: a reusable

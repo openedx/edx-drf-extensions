@@ -13,9 +13,10 @@ import pytest
 from django.http import HttpResponse
 from django.test import SimpleTestCase, override_settings
 from django.urls import NoReverseMatch, Resolver404, path, resolve, reverse
-from opaque_keys.edx.keys import CourseKey, UsageKey
+from opaque_keys.edx.keys import AssetKey, CourseKey, UsageKey
 
 from edx_rest_framework_extensions.url_converters import (
+    AssetKeyConverter,
     CourseKeyConverter,
     UsageKeyConverter,
     register_url_converters,
@@ -27,6 +28,10 @@ CCX_KEY = "ccx-v1:edX+DemoX+Demo_2024+ccx@1"
 USAGE_KEY = "block-v1:edX+DemoX+Demo_2024+type@problem+block@abc123"
 DEPRECATED_COURSE_KEY = "edX/DemoX/Demo_2014"
 DEPRECATED_USAGE_KEY = "i4x://edX/DemoX/problem/abc123"
+ASSET_KEY = "asset-v1:edX+DemoX+Demo_2024+type@asset+block@images_logo.png"
+# '%' is a legal character in an asset's block id, and must survive reverse().
+PERCENT_ASSET_KEY = "asset-v1:edX+DemoX+Demo_2024+type@asset+block@100%25_score.png"
+DEPRECATED_ASSET_KEY = "/c4x/edX/DemoX/asset/images_logo.png"
 
 
 def _dummy_view(request, **kwargs):  # pylint: disable=unused-argument  # pragma: no cover - never called
@@ -51,6 +56,11 @@ urlpatterns = [
         "api/course/v1/courses/<course_key:course_key>/blocks/<usage_key:usage_key>/",
         _dummy_view,
         name="course_block_detail",
+    ),
+    path(
+        "api/authoring/v1/courses/<course_key:course_key>/assets/<asset_key:asset_key>/",
+        _dummy_view,
+        name="course_asset_detail",
     ),
 ]
 
@@ -122,6 +132,42 @@ class UsageKeyConverterTests(TestCase):
         self.assertEqual(self.converter.to_url(key), USAGE_KEY)
 
 
+class AssetKeyConverterTests(TestCase):
+    """ Unit tests for AssetKeyConverter. """
+
+    def setUp(self):
+        super().setUp()
+        self.converter = AssetKeyConverter()
+
+    def test_to_python_parses_asset_v1_key(self):
+        key = self.converter.to_python(ASSET_KEY)
+        self.assertIsInstance(key, AssetKey)
+        self.assertEqual(str(key), ASSET_KEY)
+
+    def test_to_python_rejects_malformed_key(self):
+        with pytest.raises(ValueError):
+            self.converter.to_python("not-an-asset-key")
+
+    def test_to_python_rejects_a_usage_key(self):
+        # A block key is not an asset key, though both name content in a course.
+        with pytest.raises(ValueError):
+            self.converter.to_python(USAGE_KEY)
+
+    def test_to_python_rejects_deprecated_key(self):
+        self.assertTrue(AssetKey.from_string(DEPRECATED_ASSET_KEY).deprecated)
+        with pytest.raises(ValueError):
+            self.converter.to_python(DEPRECATED_ASSET_KEY)
+
+    def test_to_url_round_trips(self):
+        key = AssetKey.from_string(ASSET_KEY)
+        self.assertEqual(self.converter.to_url(key), ASSET_KEY)
+
+    def test_usage_key_converter_cannot_parse_asset_keys(self):
+        # Why asset routes need their own converter.
+        with pytest.raises(ValueError):
+            UsageKeyConverter().to_python(ASSET_KEY)
+
+
 @override_settings(ROOT_URLCONF=__name__)
 class UrlConverterIntegrationTests(SimpleTestCase):
     """ resolve()/reverse() behaviour of the registered converters. """
@@ -172,3 +218,21 @@ class UrlConverterIntegrationTests(SimpleTestCase):
                 "course_detail",
                 kwargs={"course_key": CourseKey.from_string(DEPRECATED_COURSE_KEY)},
             )
+
+    def test_resolve_passes_parsed_asset_key_to_the_view(self):
+        match = resolve(f"/api/authoring/v1/courses/{COURSE_KEY}/assets/{ASSET_KEY}/")
+        self.assertEqual(match.url_name, "course_asset_detail")
+        self.assertIsInstance(match.kwargs["course_key"], CourseKey)
+        self.assertIsInstance(match.kwargs["asset_key"], AssetKey)
+        self.assertEqual(str(match.kwargs["asset_key"]), ASSET_KEY)
+
+    def test_deprecated_asset_key_is_404(self):
+        with pytest.raises(Resolver404):
+            resolve(f"/api/authoring/v1/courses/{COURSE_KEY}/assets/{DEPRECATED_ASSET_KEY}/")
+
+    def test_reverse_round_trips_an_asset_key_with_a_percent_sign(self):
+        # The path is percent-decoded before matching, so '%' travels as '%25'.
+        key = AssetKey.from_string(PERCENT_ASSET_KEY.replace("%25", "%"))
+        url = reverse("course_asset_detail", kwargs={"course_key": COURSE_KEY, "asset_key": key})
+        self.assertEqual(url, f"/api/authoring/v1/courses/{COURSE_KEY}/assets/{PERCENT_ASSET_KEY}/")
+        self.assertEqual(resolve(url.replace("%25", "%")).kwargs["asset_key"], key)
