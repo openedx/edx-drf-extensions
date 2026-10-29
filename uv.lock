@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.12"
 conflicts = [[
     { package = "edx-drf-extensions", group = "django42" },
@@ -106,7 +106,7 @@ name = "cffi"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "implementation_name != 'PyPy' or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz", hash = "sha256:dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be", size = 530807, upload-time = "2026-08-03T21:21:18.939Z" }
 wheels = [
@@ -467,7 +467,7 @@ name = "cryptography"
 version = "50.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_python_implementation != 'PyPy' or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9d/af/182eb91b0df3fe75c4d9f26fe70684569566745f6ba7e5c9c73a862c5252/cryptography-50.0.2.tar.gz", hash = "sha256:7b46165bb56eb4704e2eaaf86f3c940d19154535d9b0ca7d6d590b04060e00d5", size = 880623, upload-time = "2026-09-30T15:30:04.884Z" }
 wheels = [
@@ -573,7 +573,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
-    { name = "tzdata", marker = "(sys_platform == 'win32' and extra == 'group-18-edx-drf-extensions-dev') or (sys_platform == 'win32' and extra != 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "tzdata", marker = "(sys_platform == 'win32' and extra != 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/85/fe/79e692b430c7721bf4b812c328bfe687e73e3f28f56611a6a18a97e887cc/django-5.2.18.tar.gz", hash = "sha256:461c5dd06d2ea16bd5ca37d3f46e4def1d6b0fe7588c6f4e2119517bb0af8b2d", size = 10910238, upload-time = "2026-10-06T13:01:09.371Z" }
 wheels = [
@@ -586,7 +586,7 @@ version = "0.7.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django", version = "4.2.30", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-django42'" },
-    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or extra == 'group-18-edx-drf-extensions-quality' or extra == 'group-18-edx-drf-extensions-test'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/34/1d/c56588f67130aeef8828e47535e8551337d2ae02f91f1414da61bc5e49fb/django-crum-0.7.9.tar.gz", hash = "sha256:65e9bc0f070a663fafc4d9e357f45fd4e6f01838b20a9e2fb7670f5706754288", size = 5168, upload-time = "2020-11-10T17:15:35.124Z" }
 wheels = [
@@ -599,7 +599,7 @@ version = "5.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django", version = "4.2.30", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-django42'" },
-    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or extra == 'group-18-edx-drf-extensions-quality' or extra == 'group-18-edx-drf-extensions-test'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/22/e1/6f533da0d4ac89f427dfd9410e39bfc14ae3a23335ecd549d76be4b2a834/django_waffle-5.0.0.tar.gz", hash = "sha256:62f9d00eedf68dafb82657beab56e601bddedc1ea1ccfef91d83df8658708509", size = 37761, upload-time = "2025-06-12T07:38:54.895Z" }
 wheels = [
@@ -623,7 +623,7 @@ name = "djangorestframework"
 version = "3.18.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or extra == 'group-18-edx-drf-extensions-quality' or extra == 'group-18-edx-drf-extensions-test'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/8d/b2/1cee76b188301f7d03169ca77fab2b3d3ec5d01b3469189f944af2d7f11a/djangorestframework-3.18.3.tar.gz", hash = "sha256:446a9b352e7eff630421ab3f2328bd2401b109a9470afa4a31189994911ed030", size = 923563, upload-time = "2026-10-06T21:33:51.521Z" }
 wheels = [
@@ -654,9 +654,9 @@ version = "1.19.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django", version = "4.2.30", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-django42'" },
-    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or extra == 'group-18-edx-drf-extensions-quality' or extra == 'group-18-edx-drf-extensions-test'" },
     { name = "djangorestframework", version = "3.17.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-django42'" },
-    { name = "djangorestframework", version = "3.18.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "djangorestframework", version = "3.18.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or extra == 'group-18-edx-drf-extensions-quality' or extra == 'group-18-edx-drf-extensions-test'" },
     { name = "pyjwt", extra = ["crypto"] },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/19/8e/3c60992bafd0ac51bcfa136ff9f5e1cff65ef45ebbcb393477672e699e82/drf-jwt-1.19.2.tar.gz", hash = "sha256:660bc66f992065cef59832adcbbdf871847e9738671c19e5121971e773768235", size = 38208, upload-time = "2022-01-09T09:23:38.903Z" }
@@ -671,7 +671,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "django", version = "4.2.30", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-django42'" },
-    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or extra == 'group-18-edx-drf-extensions-quality' or extra == 'group-18-edx-drf-extensions-test'" },
     { name = "django-crum" },
     { name = "django-waffle" },
     { name = "psutil" },
@@ -688,10 +688,10 @@ name = "edx-drf-extensions"
 source = { editable = "." }
 dependencies = [
     { name = "django", version = "4.2.30", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-django42'" },
-    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or extra == 'group-18-edx-drf-extensions-quality' or extra == 'group-18-edx-drf-extensions-test'" },
     { name = "django-waffle" },
     { name = "djangorestframework", version = "3.17.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-django42'" },
-    { name = "djangorestframework", version = "3.18.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "djangorestframework", version = "3.18.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-18-edx-drf-extensions-dev' or extra != 'group-18-edx-drf-extensions-django42' or extra == 'group-18-edx-drf-extensions-quality' or extra == 'group-18-edx-drf-extensions-test'" },
     { name = "drf-jwt" },
     { name = "edx-django-utils" },
     { name = "edx-opaque-keys" },
@@ -917,7 +917,7 @@ name = "faker"
 version = "40.43.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "tzdata", marker = "sys_platform == 'win32' or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/33/6c/b8793efc2f00a912ef17cf0b61b717cddf34607499efcb8a32238c119368/faker-40.43.0.tar.gz", hash = "sha256:02fae4327c03a4a6315e1b428a3878f435bfc276c93435ea349b95c0c9372361", size = 2032713, upload-time = "2026-10-09T20:06:29.652Z" }
 wheels = [
@@ -926,11 +926,11 @@ wheels = [
 
 [[package]]
 name = "filelock"
-version = "4.1.0"
+version = "4.2.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4c/58/6fd434bec86eff7c38a3168454cb132b762b2bea9b3ac094101a2f7bc32a/filelock-4.1.0.tar.gz", hash = "sha256:ad7f724afef953e731b1cc39bcd3a09166d72ed7fcdf29e6e88b1c3235c6715d", size = 561277, upload-time = "2026-10-09T19:57:20.34Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d5/98/771d8ca889f220d7d7e352addf500666368f0fd081c6080a83767580c6e4/filelock-4.2.1.tar.gz", hash = "sha256:c4c937ccac2a813cee448e662a56366cfb374c0f8702e75f295c412cc1c5d5a3", size = 650997, upload-time = "2026-10-17T16:48:14.435Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ee/86/032133892a5de43b5a98200b01aadcad68cc255e274a762f08b8a76d2912/filelock-4.1.0-py3-none-any.whl", hash = "sha256:2ce9818e3e2d8f284c1a964414447ef148d42a5fd5e2a477a7118e574b293ec1", size = 133003, upload-time = "2026-10-09T19:57:18.716Z" },
+    { url = "https://files.pythonhosted.org/packages/28/00/db89d339bc4ecdc8087fa7b8607ba22ffc27bf96286f340c9620bea428b3/filelock-4.2.1-py3-none-any.whl", hash = "sha256:7be2662e9e826b9bba28afc0f843a123280d799a2ea44bb5d35ccec67905ae44", size = 162455, upload-time = "2026-10-17T16:48:12.937Z" },
 ]
 
 [[package]]
@@ -1269,7 +1269,7 @@ version = "4.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astroid" },
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "dill" },
     { name = "isort" },
     { name = "mccabe" },
@@ -1373,7 +1373,7 @@ name = "pynacl"
 version = "1.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_python_implementation != 'PyPy' or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/d9/9a/4019b524b03a13438637b11538c82781a5eda427394380381af8f04f467a/pynacl-1.6.2.tar.gz", hash = "sha256:018494d6d696ae03c7e656e5e74cdfd8ea1326962cc401bcf018f1ed8436811c", size = 3511692, upload-time = "2026-01-01T17:48:10.851Z" }
 wheels = [
@@ -1420,7 +1420,7 @@ name = "pytest"
 version = "9.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
@@ -1585,7 +1585,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "alabaster" },
     { name = "babel" },
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "docutils" },
     { name = "imagesize" },
     { name = "jinja2" },
@@ -1731,7 +1731,7 @@ dependencies = [
     { name = "pyproject-api" },
     { name = "python-discovery" },
     { name = "tomli-w" },
-    { name = "typing-extensions", marker = "python_full_version < '3.13' or (extra == 'group-18-edx-drf-extensions-dev' and extra == 'group-18-edx-drf-extensions-django42') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-quality') or (extra == 'group-18-edx-drf-extensions-django42' and extra == 'group-18-edx-drf-extensions-test')" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
     { name = "virtualenv" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/41/05/a79f2c293f5b5b2188978b4e8b60d12c64277662de1254184769f3e96571/tox-4.65.0.tar.gz", hash = "sha256:582c4adba07b8fbeca1454b528a512dfc66c19635154289c7032555dbc72d56c", size = 333143, upload-time = "2026-10-09T20:33:09.306Z" }
