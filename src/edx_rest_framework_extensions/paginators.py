@@ -32,6 +32,41 @@ class DefaultPagination(pagination.PageNumberPagination):
             'results': data
         })
 
+    def get_paginated_response_schema(self, schema):
+        """
+        Describe the response envelope that ``get_paginated_response`` returns.
+
+        The schema inherited from DRF names only ``count``, ``next``,
+        ``previous`` and ``results``, and requires only two of them.
+        """
+        inherited = super().get_paginated_response_schema(schema)['properties']
+        properties = {
+            'next': inherited['next'],
+            'previous': inherited['previous'],
+            'count': inherited['count'],
+            'num_pages': {
+                'type': 'integer',
+                'description': 'Number of pages the results are divided into.',
+                'example': 13,
+            },
+            'current_page': {
+                'type': 'integer',
+                'description': 'Number of the page returned, starting at 1.',
+                'example': 4,
+            },
+            'start': {
+                'type': 'integer',
+                'description': 'Zero-based index of the first result on this page.',
+                'example': 30,
+            },
+            'results': schema,
+        }
+        return {
+            'type': 'object',
+            'required': list(properties),
+            'properties': properties,
+        }
+
 
 def paginate_manually(request, items, serialize, pagination_class=DefaultPagination, view=None):
     """
