@@ -11,6 +11,7 @@ from django.test import RequestFactory
 from rest_framework import serializers
 
 from edx_rest_framework_extensions.paginators import (
+    DefaultPagination,
     IterablePaginationMixin,
     NamespacedPageNumberPagination,
     paginate_manually,
@@ -217,6 +218,19 @@ class ManualPaginationTestCase(TestCase):
         self.assertEqual(response.data['start'], 5)
         self.assertIn('next', response.data)
         self.assertIn('previous', response.data)
+
+    def test_default_pagination_schema_describes_the_whole_envelope(self):
+        request = self._request(page=1, page_size=5)
+        response = paginate_manually(request, self.items, serialize=lambda page: page)
+        item_schema = {'type': 'array', 'items': {'type': 'object'}}
+
+        described = DefaultPagination().get_paginated_response_schema(item_schema)
+
+        self.assertEqual(set(described['properties']), set(response.data))
+        self.assertEqual(set(described['required']), set(response.data))
+        self.assertIs(described['properties']['results'], item_schema)
+        self.assertTrue(described['properties']['next']['nullable'])
+        self.assertTrue(described['properties']['previous']['nullable'])
 
     def test_paginate_manually_serialize_receives_only_the_page(self):
         request = self._request(page=1, page_size=3)
