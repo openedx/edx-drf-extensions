@@ -37,7 +37,9 @@ class DefaultPagination(pagination.PageNumberPagination):
         Describe the response envelope that ``get_paginated_response`` returns.
 
         The schema inherited from DRF names only ``count``, ``next``,
-        ``previous`` and ``results``, and requires only two of them.
+        ``previous`` and ``results``, and requires only two of them. A
+        subclass that changes the envelope in ``get_paginated_response``
+        has to override this method too, otherwise it publishes this schema.
         """
         inherited = super().get_paginated_response_schema(schema)['properties']
         properties = {
